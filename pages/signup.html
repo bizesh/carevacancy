@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sign Up — CareVacancy</title>
+<link rel="stylesheet" href="../css/global.css"/>
+<link rel="stylesheet" href="../css/nav.css"/>
+<link rel="stylesheet" href="../css/auth.css"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="cv-nav">
+  <a class="nav-logo" href="../index.html">Care<span>Vacancy</span></a>
+  <div class="nav-actions">
+    <span style="font-size:13px;color:var(--muted);">Already have an account?</span>
+    <a href="login.html" class="nav-login-btn">Log in</a>
+  </div>
+</nav>
+
+<div class="auth-page">
+  <div class="auth-container">
+
+    <!-- ══ STEP 0: ROLE SELECTION ══ -->
+    <div class="auth-step active" id="step-role">
+      <div class="auth-header">
+        <div class="auth-badge">Step 1 of 3</div>
+        <h1>Who are you?</h1>
+        <p class="auth-sub">Choose the option that best describes you. This determines what features you get access to.</p>
+      </div>
+
+      <div class="role-grid">
+
+        <div class="role-card provider-role" onclick="selectRole('org')" id="role-org">
+          <div class="role-check">✓</div>
+          <div class="role-icon" style="background:#E1F5EE;">🏠</div>
+          <div class="role-body">
+            <div class="role-name">Organisation</div>
+            <div class="role-desc">Registered NDIS provider — SIL, SDA, personal care, community access</div>
+            <div class="role-tags">
+              <span class="rtag offer">Offers services</span>
+              <span class="rtag seek">Seeks SCs &amp; allied health</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="role-card provider-role" onclick="selectRole('sc')" id="role-sc">
+          <div class="role-check">✓</div>
+          <div class="role-icon" style="background:#dbeafe;">🧭</div>
+          <div class="role-body">
+            <div class="role-name">Support Coordinator</div>
+            <div class="role-desc">Independent or org-based SC placing participants with providers</div>
+            <div class="role-tags">
+              <span class="rtag offer">Offers SC services</span>
+              <span class="rtag seek">Seeks SIL, allied health</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="role-card provider-role" onclick="selectRole('pm')" id="role-pm">
+          <div class="role-check">✓</div>
+          <div class="role-icon" style="background:#fef3c7;">💼</div>
+          <div class="role-body">
+            <div class="role-name">Plan Manager</div>
+            <div class="role-desc">Managing NDIS plans and helping participants use their funding</div>
+            <div class="role-tags">
+              <span class="rtag offer">Offers plan management</span>
+              <span class="rtag seek">Seeks providers for clients</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="role-card provider-role" onclick="selectRole('allied')" id="role-allied">
+          <div class="role-check">✓</div>
+          <div class="role-icon" style="background:#ede9fe;">🩺</div>
+          <div class="role-body">
+            <div class="role-name">Allied Health Professional</div>
+            <div class="role-desc">OT, speech pathologist, physiotherapist, behaviour support, psychologist</div>
+            <div class="role-tags">
+              <span class="rtag offer">Offers therapy services</span>
+              <span class="rtag seek">Seeks SIL referrals</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="role-card" onclick="selectRole('participant')" id="role-participant">
+          <div class="role-check">✓</div>
+          <div class="role-icon" style="background:#dcfce7;">🙋</div>
+          <div class="role-body">
+            <div class="role-name">Participant</div>
+            <div class="role-desc">NDIS participant looking for providers, accommodation or services</div>
+            <div class="role-tags">
+              <span class="rtag seek">Search &amp; enquire only</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="role-card" onclick="selectRole('family')" id="role-family">
+          <div class="role-check">✓</div>
+          <div class="role-icon" style="background:#fce7f3;">👨‍👩‍👧</div>
+          <div class="role-body">
+            <div class="role-name">Family Member / Carer</div>
+            <div class="role-desc">Searching on behalf of a participant — parent, sibling, partner, carer</div>
+            <div class="role-tags">
+              <span class="rtag seek">Search &amp; enquire only</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Warning for provider roles trying to use participant -->
+      <div class="alert alert-warning" id="role-warning" style="display:none;">
+        ⚠️ <strong>Are you an NDIS provider?</strong> Signing up as a participant or family member won't give you access to listing, vacancy, or enquiry features. Please select your correct role above.
+      </div>
+
+      <button class="btn btn-navy btn-full btn-lg" id="role-next-btn" onclick="goToStep('details')" disabled>
+        Continue →
+      </button>
+    </div>
+
+    <!-- ══ STEP 1: ACCOUNT DETAILS ══ -->
+    <div class="auth-step" id="step-details">
+      <div class="auth-header">
+        <button class="auth-back" onclick="goToStep('role')">← Back</button>
+        <div class="auth-badge">Step 2 of 3</div>
+        <h1 id="details-title">Create your account</h1>
+        <p class="auth-sub" id="details-sub">Your personal login details.</p>
+      </div>
+
+      <!-- PERSONAL DETAILS -->
+      <div class="field-group">
+        <label>Full name <span class="req">*</span></label>
+        <input type="text" id="full-name" placeholder="Your full name" oninput="clearError('full-name')"/>
+        <div class="field-error" id="full-name-error"></div>
+      </div>
+
+      <div class="field-group">
+        <label>Email address <span class="req">*</span></label>
+        <input type="email" id="email" placeholder="your@email.com" oninput="clearError('email')"/>
+        <div class="field-error" id="email-error"></div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label>Password <span class="req">*</span></label>
+          <div class="password-wrap">
+            <input type="password" id="password" placeholder="Min. 8 characters" oninput="checkPasswordStrength()"/>
+            <button class="pw-toggle" onclick="togglePassword('password')" type="button">👁</button>
+          </div>
+          <div class="password-strength" id="pw-strength"></div>
+          <div class="field-error" id="password-error"></div>
+        </div>
+        <div class="field-group">
+          <label>Confirm password <span class="req">*</span></label>
+          <div class="password-wrap">
+            <input type="password" id="password-confirm" placeholder="Repeat password"/>
+            <button class="pw-toggle" onclick="togglePassword('password-confirm')" type="button">👁</button>
+          </div>
+          <div class="field-error" id="password-confirm-error"></div>
+        </div>
+      </div>
+
+      <!-- PROVIDER-ONLY FIELDS -->
+      <div id="provider-fields" style="display:none;">
+        <hr class="divider"/>
+        <div class="auth-section-title" id="provider-section-title">About your organisation</div>
+
+        <div class="field-group" id="org-name-group">
+          <label id="org-name-label">Organisation name <span class="req">*</span></label>
+          <input type="text" id="org-name" placeholder="e.g. Harmony Care Services" oninput="clearError('org-name')"/>
+          <div class="field-error" id="org-name-error"></div>
+        </div>
+
+        <div class="field-row">
+          <div class="field-group" id="abn-group">
+            <label>ABN <span class="req">*</span></label>
+            <input type="text" id="abn" placeholder="XX XXX XXX XXX" oninput="formatABN(this); clearError('abn')" maxlength="14"/>
+            <div class="field-hint">11-digit Australian Business Number</div>
+            <div class="field-error" id="abn-error"></div>
+          </div>
+          <div class="field-group" id="registration-group">
+            <label id="reg-label">NDIS registration # <span class="opt">(optional)</span></label>
+            <input type="text" id="registration" placeholder="4050XXXXXX"/>
+            <div class="field-hint" id="reg-hint">From your NDIS provider registration</div>
+          </div>
+        </div>
+
+        <!-- AHPRA field for allied health -->
+        <div class="field-group" id="ahpra-group" style="display:none;">
+          <label>AHPRA registration number <span class="req">*</span></label>
+          <input type="text" id="ahpra" placeholder="e.g. OCC0001234567" oninput="clearError('ahpra')"/>
+          <div class="field-hint">Required for OTs, physios, speech pathologists, psychologists</div>
+          <div class="field-error" id="ahpra-error"></div>
+        </div>
+
+        <div class="field-row">
+          <div class="field-group">
+            <label>State <span class="req">*</span></label>
+            <select id="state">
+              <option value="">Select state</option>
+              <option>NSW</option><option>VIC</option><option>QLD</option>
+              <option>SA</option><option>WA</option><option>TAS</option>
+              <option>ACT</option><option>NT</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label>Phone <span class="req">*</span></label>
+            <input type="tel" id="phone" placeholder="08 XXXX XXXX"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- PARTICIPANT PREFERENCES -->
+      <div id="participant-fields" style="display:none;">
+        <hr class="divider"/>
+        <div class="auth-section-title">Set your search preferences</div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">This helps us show you relevant providers and send vacancy alerts when something matching becomes available.</p>
+
+        <div class="field-row">
+          <div class="field-group">
+            <label>Looking in <span class="opt">(optional)</span></label>
+            <input type="text" id="pref-suburb" placeholder="Suburb or region"/>
+          </div>
+          <div class="field-group">
+            <label>State <span class="opt">(optional)</span></label>
+            <select id="pref-state">
+              <option value="">Any state</option>
+              <option>NSW</option><option>VIC</option><option>QLD</option>
+              <option>SA</option><option>WA</option><option>TAS</option>
+              <option>ACT</option><option>NT</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>Support type needed <span class="opt">(optional)</span></label>
+          <div class="checkbox-grid-sm" id="pref-support">
+            <label class="check-pill"><input type="checkbox" value="sil"/> SIL accommodation</label>
+            <label class="check-pill"><input type="checkbox" value="sda"/> SDA accommodation</label>
+            <label class="check-pill"><input type="checkbox" value="sc"/> Support Coordinator</label>
+            <label class="check-pill"><input type="checkbox" value="pm"/> Plan Manager</label>
+            <label class="check-pill"><input type="checkbox" value="allied"/> Allied Health</label>
+            <label class="check-pill"><input type="checkbox" value="personal-care"/> Personal Care</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- TERMS -->
+      <div class="field-group" style="margin-top:8px;">
+        <label class="check-label-inline">
+          <input type="checkbox" id="terms"/>
+          <span>I agree to CareVacancy's <a href="../pages/terms.html" target="_blank">Terms of Use</a> and <a href="../pages/privacy.html" target="_blank">Privacy Policy</a> <span class="req">*</span></span>
+        </label>
+        <div class="field-error" id="terms-error"></div>
+      </div>
+
+      <div id="signup-error" class="alert alert-error" style="display:none;"></div>
+
+      <button class="btn btn-navy btn-full btn-lg" onclick="submitSignup()" id="signup-btn">
+        <span id="signup-btn-text">Create account</span>
+        <span class="spinner" id="signup-spinner"></span>
+      </button>
+
+      <div class="divider-text"><span>or sign up with</span></div>
+      <button class="btn btn-outline btn-full" onclick="signupWithGoogle()" style="gap:10px;">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        Continue with Google
+      </button>
+    </div>
+
+    <!-- ══ STEP 2: VERIFICATION PENDING ══ -->
+    <div class="auth-step" id="step-pending">
+      <div class="pending-screen">
+        <div class="pending-icon">📧</div>
+        <h2 id="pending-title">Check your email</h2>
+        <p class="pending-sub" id="pending-sub">We've sent a verification link to <strong id="pending-email"></strong>. Click the link to verify your email address.</p>
+
+        <div class="pending-box" id="verification-box" style="display:none;">
+          <div class="pending-box-icon">⏳</div>
+          <div class="pending-box-title">Verification in progress</div>
+          <div class="pending-box-sub">Your NDIS registration is being verified. This usually takes 24–48 hours. You'll receive an email once your profile is live.</div>
+          <div class="pending-steps">
+            <div class="pstep done"><span class="pstep-dot"></span>Account created</div>
+            <div class="pstep done"><span class="pstep-dot"></span>Email verified</div>
+            <div class="pstep active"><span class="pstep-dot"></span>Registration check (ABN / NDIS / AHPRA)</div>
+            <div class="pstep"><span class="pstep-dot"></span>Admin approval</div>
+            <div class="pstep"><span class="pstep-dot"></span>Profile goes live — you're notified by email</div>
+          </div>
+        </div>
+
+        <div class="pending-actions">
+          <a href="login.html" class="btn btn-navy">Go to login</a>
+          <button class="btn btn-outline" onclick="resendVerification()">Resend verification email</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="../js/nav.js"></script>
+<script>
+let selectedRole = null;
+
+// ── ROLE SELECTION ──
+function selectRole(role) {
+  selectedRole = role;
+  document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('role-' + role).classList.add('selected');
+  document.getElementById('role-next-btn').disabled = false;
+  document.getElementById('role-warning').style.display = 'none';
+
+  // Highlight active role and update CTA
+  const isProvider = ['org','sc','pm','allied'].includes(role);
+  document.getElementById('role-next-btn').textContent = isProvider
+    ? 'Continue — list my service →'
+    : 'Continue — start searching →';
+}
+
+function goToStep(step) {
+  document.querySelectorAll('.auth-step').forEach(s => s.classList.remove('active'));
+
+  if (step === 'details') {
+    if (!selectedRole) return;
+    document.getElementById('step-details').classList.add('active');
+    updateDetailsForm();
+  } else if (step === 'role') {
+    document.getElementById('step-role').classList.add('active');
+  } else if (step === 'pending') {
+    document.getElementById('step-pending').classList.add('active');
+  }
+
+  window.scrollTo(0, 0);
+}
+
+function updateDetailsForm() {
+  const isProvider = ['org','sc','pm','allied'].includes(selectedRole);
+  const isParticipant = ['participant','family'].includes(selectedRole);
+
+  document.getElementById('provider-fields').style.display = isProvider ? 'block' : 'none';
+  document.getElementById('participant-fields').style.display = isParticipant ? 'block' : 'none';
+
+  // Customise labels per role
+  const labels = {
+    org:    { title: 'About your organisation', orgName: 'Organisation name', regLabel: 'NDIS registration #', regHint: 'From your NDIS provider registration' },
+    sc:     { title: 'About you', orgName: 'Your name or trading name', regLabel: 'NDIS registration #', regHint: 'SC registration number from NDIS provider register' },
+    pm:     { title: 'About you', orgName: 'Your name or trading name', regLabel: 'NDIS registration #', regHint: 'Plan manager registration from NDIS provider register' },
+    allied: { title: 'About you', orgName: 'Your name or practice name', regLabel: 'AHPRA number', regHint: 'Required for regulated health professions' },
+  };
+
+  if (labels[selectedRole]) {
+    const l = labels[selectedRole];
+    document.getElementById('provider-section-title').textContent = l.title;
+    document.getElementById('org-name-label').innerHTML = l.orgName + ' <span class="req">*</span>';
+    document.getElementById('reg-label').innerHTML = l.regLabel + ' <span class="opt">(optional)</span>';
+    document.getElementById('reg-hint').textContent = l.regHint;
+  }
+
+  // Show AHPRA field for allied health
+  document.getElementById('ahpra-group').style.display = selectedRole === 'allied' ? 'block' : 'none';
+  document.getElementById('registration-group').style.display = selectedRole !== 'allied' ? 'block' : 'none';
+
+  // Update title
+  document.getElementById('details-title').textContent = isProvider ? 'Set up your account' : 'Create your account';
+  document.getElementById('details-sub').textContent = isProvider
+    ? 'Your account will be reviewed before your listing goes live.'
+    : 'You can start searching straight away.';
+}
+
+// ── FORM VALIDATION ──
+function validateDetails() {
+  let valid = true;
+
+  const name = document.getElementById('full-name').value.trim();
+  if (!name) { showError('full-name', 'Please enter your full name'); valid = false; }
+
+  const email = document.getElementById('email').value.trim();
+  if (!email || !email.includes('@')) { showError('email', 'Please enter a valid email address'); valid = false; }
+
+  const pw = document.getElementById('password').value;
+  if (pw.length < 8) { showError('password', 'Password must be at least 8 characters'); valid = false; }
+
+  const pwc = document.getElementById('password-confirm').value;
+  if (pw !== pwc) { showError('password-confirm', 'Passwords do not match'); valid = false; }
+
+  const isProvider = ['org','sc','pm','allied'].includes(selectedRole);
+  if (isProvider) {
+    const orgName = document.getElementById('org-name').value.trim();
+    if (!orgName) { showError('org-name', 'Please enter your name or organisation name'); valid = false; }
+
+    const abn = document.getElementById('abn').value.replace(/\s/g,'');
+    if (!CV.isValidABN(abn)) { showError('abn', 'Please enter a valid 11-digit ABN'); valid = false; }
+
+    if (selectedRole === 'allied') {
+      const ahpra = document.getElementById('ahpra').value.trim();
+      if (!ahpra) { showError('ahpra', 'AHPRA registration number is required for allied health professionals'); valid = false; }
+    }
+  }
+
+  if (!document.getElementById('terms').checked) {
+    showError('terms', 'You must agree to the Terms of Use to continue');
+    valid = false;
+  }
+
+  return valid;
+}
+
+function showError(fieldId, msg) {
+  const el = document.getElementById(fieldId + '-error');
+  if (el) { el.textContent = msg; el.classList.add('show'); }
+  const input = document.getElementById(fieldId);
+  if (input) input.classList.add('error');
+}
+
+function clearError(fieldId) {
+  const el = document.getElementById(fieldId + '-error');
+  if (el) el.classList.remove('show');
+  const input = document.getElementById(fieldId);
+  if (input) input.classList.remove('error');
+}
+
+// ── SUBMIT ──
+async function submitSignup() {
+  if (!validateDetails()) return;
+
+  const btn = document.getElementById('signup-btn');
+  const spinner = document.getElementById('signup-spinner');
+  const btnText = document.getElementById('signup-btn-text');
+  btn.disabled = true;
+  spinner.classList.add('show');
+  btnText.textContent = 'Creating account...';
+  document.getElementById('signup-error').style.display = 'none';
+
+  try {
+    const email = CV.sanitise(document.getElementById('email').value.trim());
+    const password = document.getElementById('password').value;
+    const fullName = CV.sanitise(document.getElementById('full-name').value.trim());
+    const isProvider = ['org','sc','pm','allied'].includes(selectedRole);
+
+    // Check for suspicious email domain (provider trying to use family account)
+    if (!isProvider) {
+      const flagged = await CV.checkEmailDomainFlag(email);
+      if (flagged) {
+        showSignupError('This email domain appears to belong to an NDIS provider. Please sign up with the correct role, or use a personal email address.');
+        return;
+      }
+    }
+
+    // Create auth user
+    const { data: authData, error: authError } = await CV.db.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { full_name: fullName, role: selectedRole }
+      }
+    });
+
+    if (authError) throw authError;
+
+    // Build profile object
+    const profile = {
+      id: authData.user.id,
+      full_name: fullName,
+      email: email,
+      email_domain: email.split('@')[1],
+      role: selectedRole,
+      status: isProvider ? 'pending' : 'active',  // providers need verification
+      tier: 'basic',
+      current_mode: isProvider ? 'provider' : 'search',
+      created_at: new Date().toISOString(),
+    };
+
+    // Add provider-specific fields
+    if (isProvider) {
+      profile.org_name = CV.sanitise(document.getElementById('org-name').value.trim());
+      profile.abn = document.getElementById('abn').value.replace(/\s/g,'');
+      profile.state = document.getElementById('state').value;
+      profile.phone = document.getElementById('phone').value.trim();
+      profile.ndis_registration = document.getElementById('registration')?.value.trim() || null;
+      if (selectedRole === 'allied') {
+        profile.ahpra_number = document.getElementById('ahpra').value.trim();
+      }
+      // Flag for admin verification queue
+      profile.verification_status = 'unverified';
+      profile.verification_notes = '';
+    }
+
+    // Add participant preferences
+    if (['participant','family'].includes(selectedRole)) {
+      const checkedSupport = [...document.querySelectorAll('#pref-support input:checked')].map(i => i.value);
+      profile.pref_suburb = document.getElementById('pref-suburb')?.value.trim() || null;
+      profile.pref_state = document.getElementById('pref-state')?.value || null;
+      profile.pref_support_types = checkedSupport;
+    }
+
+    // Save profile to database
+    const { error: profileError } = await CV.db.from('profiles').insert(profile);
+    if (profileError) throw profileError;
+
+    // Notify admin of new provider signup (insert into verification queue)
+    if (isProvider) {
+      await CV.db.from('verification_queue').insert({
+        user_id: authData.user.id,
+        role: selectedRole,
+        org_name: profile.org_name,
+        abn: profile.abn,
+        submitted_at: new Date().toISOString(),
+        status: 'pending'
+      });
+    }
+
+    // Show pending screen
+    document.getElementById('pending-email').textContent = email;
+    if (isProvider) {
+      document.getElementById('verification-box').style.display = 'block';
+      document.getElementById('pending-title').textContent = 'Almost there!';
+      document.getElementById('pending-sub').textContent = `We've sent a verification email to`;
+    }
+    goToStep('pending');
+
+  } catch (err) {
+    console.error(err);
+    showSignupError(err.message || 'Something went wrong. Please try again.');
+  } finally {
+    btn.disabled = false;
+    spinner.classList.remove('show');
+    btnText.textContent = 'Create account';
+  }
+}
+
+async function signupWithGoogle() {
+  await CV.db.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.origin + '/pages/signup-complete.html' }
+  });
+}
+
+function showSignupError(msg) {
+  const el = document.getElementById('signup-error');
+  el.textContent = msg;
+  el.style.display = 'flex';
+}
+
+async function resendVerification() {
+  const email = document.getElementById('pending-email').textContent;
+  if (email) {
+    await CV.db.auth.resend({ type: 'signup', email });
+    alert('Verification email resent to ' + email);
+  }
+}
+
+// ── HELPERS ──
+function togglePassword(id) {
+  const input = document.getElementById(id);
+  input.type = input.type === 'password' ? 'text' : 'password';
+}
+
+function formatABN(input) {
+  let v = input.value.replace(/\D/g,'').slice(0,11);
+  if (v.length > 2) v = v.slice(0,2) + ' ' + v.slice(2);
+  if (v.length > 6) v = v.slice(0,6) + ' ' + v.slice(6);
+  if (v.length > 10) v = v.slice(0,10) + ' ' + v.slice(10);
+  input.value = v;
+}
+
+function checkPasswordStrength() {
+  const pw = document.getElementById('password').value;
+  const el = document.getElementById('pw-strength');
+  if (!pw) { el.innerHTML = ''; return; }
+  let score = 0;
+  if (pw.length >= 8) score++;
+  if (pw.length >= 12) score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+  const labels = ['','Weak','Fair','Good','Strong','Very strong'];
+  const colours = ['','#dc2626','#f59e0b','#0d9488','#16a34a','#0f766e'];
+  el.innerHTML = `<div style="margin-top:6px;display:flex;align-items:center;gap:8px;">
+    <div style="flex:1;height:4px;background:var(--border);border-radius:2px;">
+      <div style="width:${score*20}%;height:100%;background:${colours[score]};border-radius:2px;transition:all 0.3s;"></div>
+    </div>
+    <span style="font-size:11px;color:${colours[score]};font-weight:500;">${labels[score]}</span>
+  </div>`;
+}
+
+// Pre-select role from URL param
+const urlRole = new URLSearchParams(window.location.search).get('role');
+if (urlRole) selectRole(urlRole);
+</script>
+</body>
+</html>

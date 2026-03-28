@@ -1,0 +1,225 @@
+/* ============================================
+   CAREVACANCY — AUTH STYLES
+   signup.html + login.html
+   ============================================ */
+
+.auth-page {
+  min-height: calc(100vh - 64px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 16px 60px;
+  background: var(--bg);
+}
+
+.auth-container {
+  width: 100%;
+  max-width: 640px;
+}
+
+/* STEP VISIBILITY */
+.auth-step { display: none; }
+.auth-step.active { display: block; animation: fadeIn 0.3s ease; }
+
+/* HEADER */
+.auth-header { margin-bottom: 28px; }
+.auth-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--teal-dark);
+  background: var(--teal-light);
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+}
+.auth-header h1 { margin-bottom: 8px; }
+.auth-sub { font-size: 15px; color: var(--muted); }
+.auth-back {
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  padding: 0;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.auth-back:hover { color: var(--teal); }
+.auth-section-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: 16px;
+}
+
+/* ROLE GRID */
+.role-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.role-card {
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+  background: white;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.role-card:hover { border-color: var(--teal); box-shadow: 0 4px 16px rgba(13,148,136,0.08); }
+.role-card.selected { border-color: var(--teal); background: rgba(13,148,136,0.03); }
+
+.role-check {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--teal);
+  color: white;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+}
+.role-card.selected .role-check { display: flex; }
+
+.role-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.role-body { flex: 1; min-width: 0; }
+.role-name { font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 3px; }
+.role-desc { font-size: 11px; color: var(--muted); line-height: 1.4; margin-bottom: 8px; }
+.role-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.rtag {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 20px;
+}
+.rtag.offer { background: #dcfce7; color: #15803d; }
+.rtag.seek { background: #dbeafe; color: #1e40af; }
+
+/* PASSWORD */
+.password-wrap { position: relative; }
+.password-wrap input { padding-right: 40px; }
+.pw-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  opacity: 0.5;
+}
+.pw-toggle:hover { opacity: 1; }
+
+/* CHECKBOX PILL */
+.check-label-inline {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+  cursor: pointer;
+}
+.check-label-inline input { margin-top: 3px; accent-color: var(--teal); flex-shrink: 0; }
+.check-label-inline a { color: var(--teal); }
+
+.checkbox-grid-sm {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.check-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  color: var(--text);
+}
+.check-pill:hover { border-color: var(--teal); }
+.check-pill input { accent-color: var(--teal); }
+.check-pill:has(input:checked) { border-color: var(--teal); background: var(--teal-light); color: var(--teal-dark); }
+
+/* PENDING SCREEN */
+.pending-screen { text-align: center; padding: 20px 0; }
+.pending-icon { font-size: 56px; margin-bottom: 20px; }
+.pending-screen h2 { font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--navy); margin-bottom: 12px; }
+.pending-sub { font-size: 15px; color: var(--muted); margin-bottom: 28px; line-height: 1.7; }
+
+.pending-box {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 28px;
+  text-align: left;
+}
+.pending-box-icon { font-size: 28px; margin-bottom: 10px; }
+.pending-box-title { font-size: 15px; font-weight: 600; color: var(--navy); margin-bottom: 6px; }
+.pending-box-sub { font-size: 13px; color: var(--muted); margin-bottom: 16px; line-height: 1.6; }
+
+.pending-steps { display: flex; flex-direction: column; gap: 8px; }
+.pstep { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); }
+.pstep-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border); flex-shrink: 0; }
+.pstep.done { color: var(--teal-dark); }
+.pstep.done .pstep-dot { background: var(--teal); }
+.pstep.active { color: var(--text); font-weight: 500; }
+.pstep.active .pstep-dot { background: var(--amber); animation: pulse 1.5s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+.pending-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+/* LOGIN PAGE */
+.auth-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 36px;
+}
+.auth-logo-center {
+  font-family: 'DM Serif Display', serif;
+  font-size: 28px;
+  color: var(--teal-dark);
+  text-align: center;
+  margin-bottom: 4px;
+}
+.auth-logo-center span { color: var(--navy); }
+.auth-tagline { text-align: center; font-size: 14px; color: var(--muted); margin-bottom: 28px; }
+
+@media (max-width: 600px) {
+  .role-grid { grid-template-columns: 1fr; }
+  .auth-card { padding: 24px 16px; }
+}

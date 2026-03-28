@@ -1,0 +1,261 @@
+/* ============================================
+   CAREVACANCY — NAV STYLES
+   ============================================ */
+
+#cv-nav {
+  background: white;
+  border-bottom: 1px solid var(--border);
+  padding: 0 5%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  gap: 24px;
+}
+
+.nav-logo {
+  font-family: 'DM Serif Display', serif;
+  font-size: 22px;
+  color: var(--teal-dark);
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.nav-logo span { color: var(--navy); }
+
+.nav-links {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  flex: 1;
+}
+.nav-links a {
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.15s;
+  white-space: nowrap;
+}
+.nav-links a:hover, .nav-links a.active { color: var(--teal); }
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* Logged out state */
+.nav-login-btn {
+  background: none;
+  border: 1.5px solid var(--border);
+  color: var(--text);
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+.nav-login-btn:hover { border-color: var(--teal); color: var(--teal); }
+
+.nav-cta-btn {
+  background: var(--teal);
+  color: white;
+  border: none;
+  padding: 9px 20px;
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.nav-cta-btn:hover { background: var(--teal-dark); }
+
+/* Logged in state */
+.nav-user-menu {
+  position: relative;
+}
+.nav-user-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 7px 14px;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  transition: all 0.15s;
+}
+.nav-user-btn:hover { border-color: var(--teal); }
+.nav-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--teal-light);
+  color: var(--teal-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* Role badge in nav */
+.nav-role-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.role-org { background: #E1F5EE; color: #085041; }
+.role-sc { background: #dbeafe; color: #1e40af; }
+.role-pm { background: #fef3c7; color: #92400e; }
+.role-allied { background: #ede9fe; color: #5b21b6; }
+.role-participant { background: #dcfce7; color: #15803d; }
+.role-family { background: #fce7f3; color: #9d174d; }
+.role-admin { background: #fee2e2; color: #991b1b; }
+
+/* Dropdown */
+.nav-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  min-width: 220px;
+  overflow: hidden;
+  display: none;
+  z-index: 200;
+}
+.nav-dropdown.open { display: block; animation: fadeIn 0.15s ease; }
+.nav-dropdown-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+.nav-dropdown-name { font-size: 14px; font-weight: 600; color: var(--navy); }
+.nav-dropdown-email { font-size: 12px; color: var(--muted); }
+.nav-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 16px;
+  font-size: 13px;
+  color: var(--text);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.1s;
+  border: none;
+  background: none;
+  width: 100%;
+  font-family: 'DM Sans', sans-serif;
+}
+.nav-dropdown-item:hover { background: var(--bg); }
+.nav-dropdown-item.danger { color: var(--red); }
+.nav-dropdown-item svg { flex-shrink: 0; opacity: 0.5; }
+.nav-dropdown-divider { border-top: 1px solid var(--border); margin: 4px 0; }
+
+/* Mode toggle (for SCs and PMs) */
+.nav-mode-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 6px;
+  font-size: 12px;
+}
+.mode-btn {
+  padding: 4px 12px;
+  border-radius: 16px;
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  background: none;
+  color: var(--muted);
+  transition: all 0.15s;
+}
+.mode-btn.active { background: white; color: var(--navy); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+
+/* Notification dot */
+.nav-notif {
+  position: relative;
+}
+.notif-dot {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--red);
+  border: 2px solid white;
+}
+
+/* Hamburger (mobile) */
+.nav-hamburger {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: var(--text);
+}
+
+/* Mobile nav */
+.nav-mobile-menu {
+  display: none;
+  position: fixed;
+  top: 64px;
+  left: 0;
+  right: 0;
+  background: white;
+  border-bottom: 1px solid var(--border);
+  padding: 16px;
+  z-index: 99;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+}
+.nav-mobile-menu.open { display: block; animation: fadeIn 0.2s ease; }
+.nav-mobile-menu a, .nav-mobile-menu button {
+  display: block;
+  padding: 12px 8px;
+  font-size: 15px;
+  color: var(--text);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+  font-family: 'DM Sans', sans-serif;
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+.nav-mobile-menu a:last-child { border-bottom: none; }
+
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .nav-hamburger { display: block; }
+  .nav-actions .nav-login-btn { display: none; }
+}
