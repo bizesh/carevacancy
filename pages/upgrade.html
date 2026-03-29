@@ -240,36 +240,34 @@
     }
 
     function highlightCurrentPlan(tier) {
-      // Reset all
-      ['basic','featured','premium'].forEach(t => {
-        const btn = document.getElementById('btn-' + t);
-        const card = document.getElementById('card-' + t);
-        if (t === tier) {
-          btn.textContent = 'Current plan';
-          btn.disabled = true;
-          btn.className = 'btn-upgrade current-btn';
-          // Add current plan tag
-          const tag = document.createElement('div');
-          tag.className = 'current-plan-tag';
-          tag.textContent = '✓ Your current plan';
-          card.insertBefore(tag, card.querySelector('.plan-name'));
-        }
-      });
+    if (!tier || tier === 'basic') return; // nothing to highlight, show all upgrade buttons
 
-      // Hide upgrade buttons below current tier
-      if (tier === 'featured') {
-        const btnBasic = document.getElementById('btn-basic');
-        btnBasic.textContent = 'Downgrade';
-        btnBasic.disabled = true;
+    ['basic','featured','premium'].forEach(t => {
+      const btn = document.getElementById('btn-' + t);
+      const card = document.getElementById('card-' + t);
+      if (t === tier) {
+        btn.textContent = 'Current plan';
+        btn.disabled = true;
+        btn.className = 'btn-upgrade current-btn';
+        const tag = document.createElement('div');
+        tag.className = 'current-plan-tag';
+        tag.textContent = '✓ Your current plan';
+        card.insertBefore(tag, card.querySelector('.plan-name'));
       }
-      if (tier === 'premium') {
-        ['basic','featured'].forEach(t => {
-          const btn = document.getElementById('btn-' + t);
-          btn.textContent = 'Lower tier';
-          btn.disabled = true;
-        });
-      }
+    });
+
+    if (tier === 'featured') {
+      document.getElementById('btn-basic').textContent = 'Lower tier';
+      document.getElementById('btn-basic').disabled = true;
     }
+    if (tier === 'premium') {
+      ['basic','featured'].forEach(t => {
+        const btn = document.getElementById('btn-' + t);
+        btn.textContent = 'Lower tier';
+        btn.disabled = true;
+      });
+    }
+  }
 
     async function startCheckout(plan) {
       const btn = document.getElementById('btn-' + plan);
