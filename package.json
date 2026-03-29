@@ -1,0 +1,25 @@
+{
+  "name": "carevacancy",
+  "version": "1.0.0",
+  "description": "``` carevacancy/ ├── pages/ │   ├── signup.html       ← Role selection + account creation + verification flow │   └── login.html        ← Login with status checks (pending/rejected/suspended) ├── dashboards/ │   └── dashboard-admin.html  ← Admin verification queue + user management ├── css/ │   ├── global.css        ← All shared styles (change once, updates everywhere) │   ├── nav.css           ← Navigation styles │   └── auth.css          ← Signup + login styles ├── js/ │   ├── supabase.js       ← Database connection + ROLES + TIERS config │   └── nav.js            ← Dynamic nav rendering (logged in/out states) └── components/     └── nav.html          ← Nav HTML template ```",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bizesh/carevacancy.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/bizesh/carevacancy/issues"
+  },
+  "homepage": "https://github.com/bizesh/carevacancy#readme",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.100.1",
+    "stripe": "^21.0.1"
+  }
+}
