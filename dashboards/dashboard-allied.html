@@ -265,6 +265,7 @@ let currentUser = null;
 document.addEventListener('DOMContentLoaded', async () => {
   currentUser = await CV.requireAuth('../pages/login.html');
   if (!currentUser) return;
+  document.body.style.visibility = 'visible';
 
   const p = currentUser.profile;
   if (p?.role !== 'org' && p?.role !== 'admin') {

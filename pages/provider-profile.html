@@ -93,6 +93,7 @@
 let profileData = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
+  document.body.style.visibility = 'visible';
   const params = new URLSearchParams(window.location.search);
   const id = params.get('id');
   if (!id) { window.location.href = 'search.html'; return; }

@@ -263,6 +263,7 @@ let allUsers = [];
 document.addEventListener('DOMContentLoaded', async () => {
   const user = await CV.requireAuth('../pages/login.html');
   if (!user) return;
+  document.body.style.visibility = 'visible';
 
   if (user.profile?.role !== 'admin') {
     alert('Access denied. Admin only.');

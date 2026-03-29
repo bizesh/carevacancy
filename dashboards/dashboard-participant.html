@@ -199,6 +199,7 @@ let currentUser = null;
 document.addEventListener('DOMContentLoaded', async () => {
   currentUser = await CV.requireAuth('../pages/login.html');
   if (!currentUser) return;
+  document.body.style.visibility = 'visible';
 
   const p = currentUser.profile;
   document.getElementById('ds-name').textContent = p.full_name || 'My Account';
