@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>My Dashboard — CareVacancy</title>
+<link rel="stylesheet" href="../css/global.css"/>
+<link rel="stylesheet" href="../css/dashboard.css"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+</head>
+<body>
+
+<div class="dash-sidebar">
+  <a class="ds-logo" href="../index.html">Care<span>Vacancy</span></a>
+  <div class="ds-user">
+    <div class="ds-user-name" id="ds-name">Loading...</div>
+    <div class="ds-user-role" id="ds-role">Participant</div>
+  </div>
+  <div class="ds-section">
+    <div class="ds-label">My account</div>
+    <button class="ds-item active" onclick="switchPanel(this,'search')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Find providers
+    </button>
+    <button class="ds-item" onclick="switchPanel(this,'enquiries')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      My enquiries
+      <span class="ds-badge" id="enq-badge" style="display:none;">0</span>
+    </button>
+    <button class="ds-item" onclick="switchPanel(this,'saved')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      Saved providers
+    </button>
+    <button class="ds-item" onclick="switchPanel(this,'alerts')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      Vacancy alerts
+    </button>
+    <button class="ds-item" onclick="switchPanel(this,'profile')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      My preferences
+    </button>
+  </div>
+  <div class="ds-footer">
+    <a href="../pages/search.html">← Search providers</a>
+    <a class="signout" onclick="signOut()">Sign out</a>
+  </div>
+</div>
+
+<div class="dash-main">
+  <div class="dash-topbar">
+    <span class="dash-topbar-title" id="panel-title">Find providers</span>
+    <a href="../pages/search.html" class="btn btn-primary btn-sm">Search providers</a>
+  </div>
+
+  <div class="dash-content">
+
+    <!-- SEARCH SHORTCUT -->
+    <div class="dash-panel active" id="panel-search">
+      <div class="dash-card" style="background:linear-gradient(135deg,#0f2942,#1e3a5f);border:none;color:white;margin-bottom:20px;">
+        <h2 style="font-family:'DM Serif Display',serif;font-size:24px;color:white;margin-bottom:6px;">Find the right support</h2>
+        <p style="color:rgba(255,255,255,0.7);font-size:14px;margin-bottom:20px;">Search verified NDIS providers by location, disability type and service.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;flex-wrap:wrap;">
+          <select style="padding:10px 12px;border-radius:8px;border:none;font-family:'DM Sans',sans-serif;font-size:13px;" id="quick-type">
+            <option value="">All providers</option>
+            <option value="sil">SIL Vacancies</option>
+            <option value="sc">Support Coordinators</option>
+            <option value="allied">Allied Health</option>
+            <option value="pm">Plan Managers</option>
+          </select>
+          <input type="text" id="quick-suburb" placeholder="Suburb or state" style="padding:10px 12px;border-radius:8px;border:none;font-family:'DM Sans',sans-serif;font-size:13px;"/>
+          <button onclick="quickSearch()" style="background:var(--teal);color:white;border:none;padding:10px 20px;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;">Search</button>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+        <a href="../pages/search.html?type=sil" style="background:white;border:1px solid var(--border);border-radius:12px;padding:18px;text-decoration:none;text-align:center;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--teal)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div style="font-size:28px;margin-bottom:8px;">🏠</div>
+          <div style="font-size:13px;font-weight:600;color:var(--navy);">SIL Vacancies</div>
+        </a>
+        <a href="../pages/search.html?type=sc" style="background:white;border:1px solid var(--border);border-radius:12px;padding:18px;text-decoration:none;text-align:center;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--teal)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div style="font-size:28px;margin-bottom:8px;">🧭</div>
+          <div style="font-size:13px;font-weight:600;color:var(--navy);">Support Coordinators</div>
+        </a>
+        <a href="../pages/search.html?type=allied" style="background:white;border:1px solid var(--border);border-radius:12px;padding:18px;text-decoration:none;text-align:center;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--teal)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div style="font-size:28px;margin-bottom:8px;">🩺</div>
+          <div style="font-size:13px;font-weight:600;color:var(--navy);">Allied Health</div>
+        </a>
+        <a href="../pages/search.html?type=pm" style="background:white;border:1px solid var(--border);border-radius:12px;padding:18px;text-decoration:none;text-align:center;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--teal)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div style="font-size:28px;margin-bottom:8px;">💼</div>
+          <div style="font-size:13px;font-weight:600;color:var(--navy);">Plan Managers</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- ENQUIRIES -->
+    <div class="dash-panel" id="panel-enquiries">
+      <h3 style="margin-bottom:16px;">My enquiries</h3>
+      <div class="dash-card">
+        <div id="my-enquiries">
+          <div class="empty-dash">
+            <div class="empty-dash-icon">📭</div>
+            <div class="empty-dash-title">No enquiries sent yet</div>
+            <div class="empty-dash-sub">When you contact a provider, your enquiries appear here.</div>
+            <a href="../pages/search.html" class="btn btn-primary btn-sm">Find a provider</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SAVED -->
+    <div class="dash-panel" id="panel-saved">
+      <h3 style="margin-bottom:16px;">Saved providers</h3>
+      <div class="dash-card">
+        <div id="saved-list">
+          <div class="empty-dash">
+            <div class="empty-dash-icon">♡</div>
+            <div class="empty-dash-title">No saved providers yet</div>
+            <div class="empty-dash-sub">Click "Save" on any provider profile to add them to your shortlist.</div>
+            <a href="../pages/search.html" class="btn btn-primary btn-sm">Browse providers</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALERTS -->
+    <div class="dash-panel" id="panel-alerts">
+      <h3 style="margin-bottom:16px;">Vacancy alerts</h3>
+      <div class="dash-card">
+        <p style="font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.6;">We'll email you when a new vacancy or service matching your preferences becomes available. Set your preferences below.</p>
+        <form onsubmit="saveAlert(event)">
+          <div class="field-row">
+            <div class="field-group">
+              <label>Suburb / region</label>
+              <input type="text" id="alert-suburb" placeholder="e.g. Adelaide, Inner East"/>
+            </div>
+            <div class="field-group">
+              <label>State</label>
+              <select id="alert-state">
+                <option value="">Any state</option>
+                <option>NSW</option><option>VIC</option><option>QLD</option>
+                <option>SA</option><option>WA</option><option>TAS</option>
+                <option>ACT</option><option>NT</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-group">
+            <label>Support type needed</label>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;">
+              <label style="display:flex;align-items:center;gap:6px;padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;"><input type="checkbox" name="alert-support" value="sil" style="accent-color:var(--teal);"/> SIL</label>
+              <label style="display:flex;align-items:center;gap:6px;padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;"><input type="checkbox" name="alert-support" value="sc"/> Support Coordinator</label>
+              <label style="display:flex;align-items:center;gap:6px;padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;"><input type="checkbox" name="alert-support" value="allied"/> Allied Health</label>
+              <label style="display:flex;align-items:center;gap:6px;padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;"><input type="checkbox" name="alert-support" value="pm"/> Plan Manager</label>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">Save alert preferences</button>
+        </form>
+        <div id="alerts-list" style="margin-top:20px;"></div>
+      </div>
+    </div>
+
+    <!-- PROFILE PREFERENCES -->
+    <div class="dash-panel" id="panel-profile">
+      <h3 style="margin-bottom:16px;">My preferences</h3>
+      <div class="dash-card">
+        <form onsubmit="savePreferences(event)">
+          <div class="field-group">
+            <label>Your name</label>
+            <input type="text" id="pref-name" placeholder="Your name"/>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label>Looking in suburb</label>
+              <input type="text" id="pref-suburb" placeholder="e.g. Norwood"/>
+            </div>
+            <div class="field-group">
+              <label>State</label>
+              <select id="pref-state">
+                <option value="">Any state</option>
+                <option>NSW</option><option>VIC</option><option>QLD</option>
+                <option>SA</option><option>WA</option><option>TAS</option>
+                <option>ACT</option><option>NT</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-navy">Save preferences</button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let currentUser = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
+  currentUser = await CV.requireAuth('../pages/login.html');
+  if (!currentUser) return;
+
+  const p = currentUser.profile;
+  document.getElementById('ds-name').textContent = p.full_name || 'My Account';
+  document.getElementById('ds-role').textContent = p.role === 'family' ? 'Family / Carer' : 'Participant';
+
+  await loadData();
+  prefillProfile();
+});
+
+async function loadData() {
+  const id = currentUser.id;
+
+  // Enquiries sent
+  const { data: enquiries } = await CV.db.from('enquiries').select('*').eq('from_user_id', id).order('created_at', { ascending: false });
+  const allEnquiries = enquiries || [];
+  if (allEnquiries.length > 0) {
+    document.getElementById('my-enquiries').innerHTML = allEnquiries.map(e => `
+    <div class="enq-item">
+      <div class="enq-avatar">${(e.subject||'E').slice(0,1).toUpperCase()}</div>
+      <div style="flex:1;min-width:0;">
+        <div class="enq-name">${e.subject || 'Enquiry'}</div>
+        <div class="enq-preview">${e.message}</div>
+      </div>
+      <div>
+        <span class="badge ${e.status === 'replied' ? 'badge-green' : 'badge-amber'}">${e.status}</span>
+        <div class="enq-time">${new Date(e.created_at).toLocaleDateString('en-AU')}</div>
+      </div>
+    </div>`).join('');
+  }
+
+  // Saved providers
+  const { data: saved } = await CV.db.from('saved_providers').select('*, profiles(*)').eq('user_id', id);
+  if (saved?.length > 0) {
+    document.getElementById('saved-list').innerHTML = saved.map(s => {
+      const p = s.profiles;
+      const name = p?.org_name || p?.full_name || 'Provider';
+      return `
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);">
+        <div style="width:40px;height:40px;border-radius:10px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--teal-dark);">${name.slice(0,2).toUpperCase()}</div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:500;color:var(--navy);">${name}</div>
+          <div style="font-size:12px;color:var(--muted);">${p?.suburb || ''} ${p?.state || ''}</div>
+        </div>
+        <a href="../pages/provider-profile.html?id=${p?.id}" class="btn btn-outline btn-sm">View profile</a>
+      </div>`;
+    }).join('');
+  }
+}
+
+function prefillProfile() {
+  const p = currentUser.profile;
+  if (p.full_name) document.getElementById('pref-name').value = p.full_name;
+  if (p.pref_suburb) document.getElementById('pref-suburb').value = p.pref_suburb;
+  if (p.pref_state) document.getElementById('pref-state').value = p.pref_state;
+}
+
+async function saveAlert(e) {
+  e.preventDefault();
+  const supportTypes = [...document.querySelectorAll('input[name="alert-support"]:checked')].map(i => i.value);
+  const { error } = await CV.db.from('vacancy_alerts').insert({
+    user_id: currentUser.id,
+    suburb: document.getElementById('alert-suburb').value.trim(),
+    state: document.getElementById('alert-state').value,
+    support_types: supportTypes,
+    is_active: true,
+  });
+  if (error) alert('Error: ' + error.message);
+  else showToast('Alert saved! We\'ll email you when something matches ✓');
+}
+
+async function savePreferences(e) {
+  e.preventDefault();
+  const { error } = await CV.db.from('profiles').update({
+    full_name: document.getElementById('pref-name').value.trim(),
+    pref_suburb: document.getElementById('pref-suburb').value.trim(),
+    pref_state: document.getElementById('pref-state').value,
+  }).eq('id', currentUser.id);
+  if (error) alert('Error: ' + error.message);
+  else showToast('Preferences saved ✓');
+}
+
+function quickSearch() {
+  const type = document.getElementById('quick-type').value;
+  const suburb = document.getElementById('quick-suburb').value;
+  const params = new URLSearchParams();
+  if (type) params.set('type', type);
+  if (suburb) params.set('suburb', suburb);
+  window.location.href = '../pages/search.html?' + params.toString();
+}
+
+function switchPanel(btn, panel) {
+  document.querySelectorAll('.ds-item').forEach(i => i.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.querySelectorAll('.dash-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + panel).classList.add('active');
+  const titles = { search:'Find providers', enquiries:'My enquiries', saved:'Saved providers', alerts:'Vacancy alerts', profile:'My preferences' };
+  document.getElementById('panel-title').textContent = titles[panel] || panel;
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+async function signOut() {
+  await CV.db.auth.signOut();
+  window.location.href = '../index.html';
+}
+</script>
+</body>
+</html>

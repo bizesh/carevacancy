@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Create a Post — CareVacancy</title>
+<link rel="stylesheet" href="../css/global.css"/>
+<link rel="stylesheet" href="../css/nav.css"/>
+<style>
+.post-page{max-width:720px;margin:0 auto;padding:32px 5%;}
+.post-toggle{display:flex;gap:0;background:var(--bg);border-radius:12px;padding:4px;margin-bottom:28px;border:1px solid var(--border);}
+.pt-btn{flex:1;padding:14px;border-radius:9px;border:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;background:none;color:var(--muted);transition:all 0.2s;text-align:center;}
+.pt-btn.active{background:white;color:var(--navy);box-shadow:0 2px 8px rgba(0,0,0,0.08);font-weight:600;}
+.pt-btn.offering.active{color:var(--teal-dark);}
+.pt-btn.seeking.active{color:#1e40af;}
+.post-form{background:white;border:1px solid var(--border);border-radius:14px;padding:28px;}
+.form-title{font-size:20px;font-weight:600;color:var(--navy);margin-bottom:4px;}
+.form-sub{font-size:14px;color:var(--muted);margin-bottom:24px;}
+.section-divider{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:20px 0 12px;padding-top:16px;border-top:1px solid var(--border);}
+.checkbox-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.check-pill{display:flex;align-items:center;gap:6px;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;transition:all 0.15s;color:var(--text);}
+.check-pill:hover{border-color:var(--teal);}
+.check-pill input{accent-color:var(--teal);}
+.check-pill:has(input:checked){border-color:var(--teal);background:var(--teal-light);color:var(--teal-dark);}
+.locked-overlay{background:var(--bg);border:2px dashed var(--border);border-radius:12px;padding:32px;text-align:center;margin-top:16px;}
+.locked-overlay h3{font-size:16px;font-weight:600;color:var(--navy);margin-bottom:8px;}
+.locked-overlay p{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6;}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+</head>
+<body>
+
+<nav id="cv-nav">
+  <a class="nav-logo" href="../index.html">Care<span>Vacancy</span></a>
+  <div class="nav-links"><a href="search.html">Search</a></div>
+  <div class="nav-actions" id="nav-actions"></div>
+</nav>
+
+<div style="background:var(--bg);min-height:calc(100vh - 64px);padding-top:8px;">
+<div class="post-page">
+
+  <div style="margin-bottom:20px;">
+    <h1 style="font-size:26px;margin-bottom:4px;">Create a post</h1>
+    <p style="font-size:14px;color:var(--muted);">Post what you're offering or what you're looking for. Both sides of the market see your post.</p>
+  </div>
+
+  <!-- TOGGLE -->
+  <div class="post-toggle">
+    <button class="pt-btn offering active" onclick="setType('offering',this)" id="btn-offering">
+      ✅ I am offering
+      <div style="font-size:11px;font-weight:400;margin-top:2px;">A service, vacancy or availability</div>
+    </button>
+    <button class="pt-btn seeking" onclick="setType('seeking',this)" id="btn-seeking">
+      🔎 I am seeking
+      <div style="font-size:11px;font-weight:400;margin-top:2px;">Looking for a provider or placement</div>
+    </button>
+  </div>
+
+  <!-- LOCKED STATE -->
+  <div id="locked-state" style="display:none;">
+    <div class="locked-overlay">
+      <div style="font-size:40px;margin-bottom:12px;">🔒</div>
+      <h3>Featured or Premium plan required</h3>
+      <p>Creating posts and receiving enquiries requires a Featured ($49/month) or Premium ($99/month) subscription. Upgrade to start connecting with participants and coordinators.</p>
+      <a href="#" style="background:var(--teal);color:white;padding:11px 24px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;display:inline-block;">Upgrade my plan</a>
+      <div style="margin-top:12px;"><a href="search.html" style="font-size:13px;color:var(--muted);">Back to search</a></div>
+    </div>
+  </div>
+
+  <!-- FORM -->
+  <div class="post-form" id="post-form">
+    <div class="form-title" id="form-title">Post a vacancy or service</div>
+    <div class="form-sub" id="form-sub">Tell participants and coordinators what you have available.</div>
+
+    <div class="field-group">
+      <label>Post title <span class="req">*</span></label>
+      <input type="text" id="post-title" placeholder="e.g. SIL vacancy available in Norwood SA" oninput="clearError('post-title')"/>
+      <div class="field-hint">Be specific — this is the first thing people see</div>
+      <div class="field-error" id="post-title-error"></div>
+    </div>
+
+    <div class="field-group">
+      <label>Category <span class="req">*</span></label>
+      <select id="post-category" onchange="updateCategoryFields()">
+        <option value="">Select category</option>
+        <option value="sil">SIL — Supported Independent Living</option>
+        <option value="sda">SDA — Specialist Disability Accommodation</option>
+        <option value="sc">Support Coordination</option>
+        <option value="pm">Plan Management</option>
+        <option value="allied">Allied Health</option>
+        <option value="personal-care">Personal Care / Support Worker</option>
+        <option value="respite">Respite / Short Term Accommodation</option>
+        <option value="other">Other</option>
+      </select>
+      <div class="field-error" id="post-category-error"></div>
+    </div>
+
+    <div class="field-group">
+      <label>Description</label>
+      <textarea id="post-description" placeholder="Describe what you're offering or what you need. Include details that will help the right person reach out." style="min-height:110px;"></textarea>
+    </div>
+
+    <div class="section-divider">Location</div>
+    <div class="field-row">
+      <div class="field-group">
+        <label>Suburb</label>
+        <input type="text" id="post-suburb" placeholder="e.g. Norwood"/>
+      </div>
+      <div class="field-group">
+        <label>State</label>
+        <select id="post-state">
+          <option value="">Select state</option>
+          <option>NSW</option><option>VIC</option><option>QLD</option>
+          <option>SA</option><option>WA</option><option>TAS</option>
+          <option>ACT</option><option>NT</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- SIL/SDA specific fields -->
+    <div id="sil-fields" style="display:none;">
+      <div class="section-divider">Vacancy details</div>
+      <div class="field-row">
+        <div class="field-group">
+          <label>Number of vacancies</label>
+          <input type="number" id="post-vacancy-count" min="0" max="20" value="1"/>
+        </div>
+        <div class="field-group">
+          <label>Gender preference</label>
+          <select id="post-gender">
+            <option value="any">No preference</option>
+            <option value="male">Male preferred</option>
+            <option value="female">Female preferred</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-divider">Disability types</div>
+    <div class="checkbox-grid">
+      <label class="check-pill"><input type="checkbox" name="disability" value="Autism"/> Autism</label>
+      <label class="check-pill"><input type="checkbox" name="disability" value="ABI"/> ABI</label>
+      <label class="check-pill"><input type="checkbox" name="disability" value="Physical"/> Physical</label>
+      <label class="check-pill"><input type="checkbox" name="disability" value="Intellectual"/> Intellectual</label>
+      <label class="check-pill"><input type="checkbox" name="disability" value="Mental health"/> Mental health</label>
+      <label class="check-pill"><input type="checkbox" name="disability" value="Down Syndrome"/> Down Syndrome</label>
+      <label class="check-pill"><input type="checkbox" name="disability" value="Neurological"/> Neurological</label>
+      <label class="check-pill"><input type="checkbox" name="disability" value="Psychosocial"/> Psychosocial</label>
+      <label class="check-pill"><input type="checkbox" name="disability" value="Any"/> Any / All</label>
+    </div>
+
+    <div class="section-divider">Support level &amp; availability</div>
+    <div class="field-row">
+      <div class="field-group">
+        <label>Support level</label>
+        <select id="post-support-level">
+          <option value="any">Any / Not specified</option>
+          <option value="low">Low</option>
+          <option value="moderate">Moderate</option>
+          <option value="high">High</option>
+          <option value="complex">Complex</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label>Availability</label>
+        <select id="post-availability" onchange="toggleAvailableFrom()">
+          <option value="immediate">Immediate</option>
+          <option value="date">From a specific date</option>
+          <option value="waitlist">Waitlist only</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field-group" id="available-from-field" style="display:none;">
+      <label>Available from</label>
+      <input type="date" id="post-available-from"/>
+    </div>
+
+    <div class="section-divider">Funding types accepted</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <label class="check-pill"><input type="checkbox" name="funding" value="NDIA managed" checked/> NDIA managed</label>
+      <label class="check-pill"><input type="checkbox" name="funding" value="Plan managed" checked/> Plan managed</label>
+      <label class="check-pill"><input type="checkbox" name="funding" value="Self managed" checked/> Self managed</label>
+    </div>
+
+    <div id="post-error" class="alert alert-error" style="display:none;margin-top:16px;"></div>
+    <div id="post-success" class="alert alert-success" style="display:none;margin-top:16px;"></div>
+
+    <div style="display:flex;gap:12px;margin-top:24px;">
+      <button class="btn btn-navy btn-lg" onclick="submitPost()" id="post-btn" style="flex:1;">
+        <span id="post-btn-text">Publish post</span>
+        <span class="spinner" id="post-spinner"></span>
+      </button>
+      <button class="btn btn-outline" onclick="history.back()">Cancel</button>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script src="../js/nav.js"></script>
+<script>
+let postType = 'offering';
+let currentUser = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
+  currentUser = await CV.requireAuth('../pages/login.html');
+  if (!currentUser) return;
+
+  const profile = currentUser.profile;
+  const canPost = CV.TIERS[profile?.tier || 'basic'].canPostVacancies;
+
+  if (!canPost) {
+    document.getElementById('post-form').style.display = 'none';
+    document.getElementById('locked-state').style.display = 'block';
+    return;
+  }
+
+  // Pre-select type from URL
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('type') === 'seeking') setType('seeking', document.getElementById('btn-seeking'));
+});
+
+function setType(type, btn) {
+  postType = type;
+  document.querySelectorAll('.pt-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  if (type === 'offering') {
+    document.getElementById('form-title').textContent = 'Post a vacancy or service';
+    document.getElementById('form-sub').textContent = 'Tell participants and coordinators what you have available.';
+    document.getElementById('post-btn-text').textContent = 'Publish post';
+  } else {
+    document.getElementById('form-title').textContent = 'Post what you\'re looking for';
+    document.getElementById('form-sub').textContent = 'Describe what you need — participants and providers will respond.';
+    document.getElementById('post-btn-text').textContent = 'Publish seeking post';
+  }
+}
+
+function updateCategoryFields() {
+  const cat = document.getElementById('post-category').value;
+  document.getElementById('sil-fields').style.display = ['sil','sda','respite'].includes(cat) ? 'block' : 'none';
+}
+
+function toggleAvailableFrom() {
+  const avail = document.getElementById('post-availability').value;
+  document.getElementById('available-from-field').style.display = avail === 'date' ? 'block' : 'none';
+}
+
+function clearError(id) {
+  const el = document.getElementById(id + '-error');
+  if (el) el.classList.remove('show');
+}
+
+async function submitPost() {
+  const title = document.getElementById('post-title').value.trim();
+  const category = document.getElementById('post-category').value;
+
+  if (!title) { showFieldError('post-title','Please enter a title'); return; }
+  if (!category) { showFieldError('post-category','Please select a category'); return; }
+
+  const btn = document.getElementById('post-btn');
+  const spinner = document.getElementById('post-spinner');
+  btn.disabled = true;
+  spinner.classList.add('show');
+  document.getElementById('post-error').style.display = 'none';
+
+  try {
+    const disabilityTypes = [...document.querySelectorAll('input[name="disability"]:checked')].map(i => i.value);
+    const fundingTypes = [...document.querySelectorAll('input[name="funding"]:checked')].map(i => i.value);
+
+    const post = {
+      user_id: currentUser.id,
+      type: postType,
+      category,
+      title: CV.sanitise(title),
+      description: CV.sanitise(document.getElementById('post-description').value.trim()),
+      suburb: CV.sanitise(document.getElementById('post-suburb').value.trim()),
+      state: document.getElementById('post-state').value,
+      disability_types: disabilityTypes,
+      support_level: document.getElementById('post-support-level').value,
+      availability: document.getElementById('post-availability').value,
+      available_from: document.getElementById('post-available-from').value || null,
+      gender_preference: document.getElementById('post-gender')?.value || 'any',
+      vacancy_count: parseInt(document.getElementById('post-vacancy-count')?.value || '0'),
+      funding_types: fundingTypes,
+      is_active: true,
+    };
+
+    const { error } = await CV.db.from('posts').insert(post);
+    if (error) throw error;
+
+    document.getElementById('post-success').textContent = '✓ Your post is live! Providers and participants can now find it.';
+    document.getElementById('post-success').style.display = 'flex';
+
+    // Redirect to dashboard after 2 seconds
+    setTimeout(() => {
+      CV.redirectToDashboard(currentUser.profile?.role);
+    }, 2000);
+
+  } catch(e) {
+    document.getElementById('post-error').textContent = e.message || 'Could not create post. Please try again.';
+    document.getElementById('post-error').style.display = 'flex';
+  } finally {
+    btn.disabled = false;
+    spinner.classList.remove('show');
+  }
+}
+
+function showFieldError(id, msg) {
+  const el = document.getElementById(id + '-error');
+  if (el) { el.textContent = msg; el.classList.add('show'); }
+}
+</script>
+</body>
+</html>

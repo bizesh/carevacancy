@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Search Providers — CareVacancy</title>
+<link rel="stylesheet" href="../css/global.css"/>
+<link rel="stylesheet" href="../css/nav.css"/>
+<style>
+.search-page{display:grid;grid-template-columns:280px 1fr;gap:0;min-height:calc(100vh - 64px);}
+
+/* SIDEBAR */
+.filters-sidebar{background:white;border-right:1px solid var(--border);padding:20px;position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto;}
+.filters-title{font-size:15px;font-weight:600;color:var(--navy);margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
+.clear-btn{font-size:12px;color:var(--teal);cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;}
+.filter-section{margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border);}
+.filter-section:last-child{border-bottom:none;}
+.filter-label{font-size:11px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.filter-input{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;}
+.filter-input:focus{border-color:var(--teal);}
+.filter-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.chip{padding:5px 12px;border-radius:20px;border:1.5px solid var(--border);font-size:12px;font-weight:500;cursor:pointer;transition:all 0.15s;background:white;color:var(--text);font-family:'DM Sans',sans-serif;}
+.chip:hover{border-color:var(--teal);color:var(--teal);}
+.chip.active{background:var(--teal);color:white;border-color:var(--teal);}
+.apply-btn{width:100%;background:var(--navy);color:white;border:none;padding:11px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;margin-top:8px;}
+.apply-btn:hover{background:#1e3a5f;}
+
+/* MAIN */
+.search-main{background:var(--bg);padding:24px;}
+.search-header{background:white;border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.search-bar-wrap{flex:1;display:flex;gap:8px;align-items:center;}
+.search-bar{flex:1;padding:9px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;}
+.search-bar:focus{border-color:var(--teal);}
+.search-go{background:var(--teal);color:white;border:none;padding:9px 20px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
+.type-tabs{display:flex;gap:4px;background:var(--bg);border-radius:8px;padding:3px;}
+.ttab{padding:7px 14px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;color:var(--muted);white-space:nowrap;}
+.ttab.active{background:white;color:var(--navy);box-shadow:0 1px 3px rgba(0,0,0,0.08);}
+
+.results-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;}
+.results-count{font-size:14px;color:var(--muted);}
+.results-count strong{color:var(--navy);}
+.sort-select{padding:7px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;background:white;}
+
+/* PROVIDER CARDS */
+.results-list{display:flex;flex-direction:column;gap:14px;}
+.result-card{background:white;border:1px solid var(--border);border-radius:14px;padding:20px;cursor:pointer;transition:all 0.2s;display:flex;gap:16px;align-items:flex-start;position:relative;}
+.result-card:hover{box-shadow:0 6px 24px rgba(0,0,0,0.08);transform:translateY(-1px);}
+.rc-avatar{width:56px;height:56px;border-radius:12px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:20px;color:var(--teal-dark);flex-shrink:0;}
+.rc-body{flex:1;min-width:0;}
+.rc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:6px;}
+.rc-name{font-size:16px;font-weight:600;color:var(--navy);}
+.rc-badges{display:flex;gap:5px;flex-wrap:wrap;}
+.rc-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;}
+.rb-verified{background:#dcfce7;color:#15803d;}
+.rb-featured{background:#E1F5EE;color:#085041;}
+.rb-premium{background:#ede9fe;color:#5b21b6;}
+.rb-vacancy{background:#dbeafe;color:#1e40af;}
+.rc-meta{display:flex;gap:16px;margin-bottom:8px;flex-wrap:wrap;}
+.rc-meta-item{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:4px;}
+.rc-desc{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.rc-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.rc-tag{font-size:11px;padding:3px 10px;border-radius:20px;background:var(--bg);color:var(--muted);border:1px solid var(--border);}
+.rc-actions{display:flex;gap:8px;}
+.rc-btn-primary{background:var(--teal);color:white;border:none;padding:8px 18px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.rc-btn-outline{background:none;border:1.5px solid var(--border);color:var(--text);padding:8px 14px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.rc-btn-outline:hover{border-color:var(--teal);color:var(--teal);}
+.rc-tier-pill{position:absolute;top:16px;right:16px;}
+
+/* EMPTY + LOADING */
+.empty-state{text-align:center;padding:60px 20px;background:white;border-radius:14px;}
+.empty-icon{font-size:48px;margin-bottom:16px;}
+.empty-title{font-size:18px;font-weight:600;color:var(--navy);margin-bottom:6px;}
+.empty-sub{font-size:14px;color:var(--muted);margin-bottom:20px;}
+.loading-card{background:white;border-radius:14px;padding:20px;margin-bottom:14px;display:flex;gap:16px;}
+.skeleton{background:linear-gradient(90deg,#f1f5f9 25%,#e2e8f0 50%,#f1f5f9 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px;}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+@media(max-width:900px){
+  .search-page{grid-template-columns:1fr;}
+  .filters-sidebar{display:none;}
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+</head>
+<body>
+
+<nav id="cv-nav">
+  <a class="nav-logo" href="../index.html">Care<span>Vacancy</span></a>
+  <div class="nav-links">
+    <a href="search.html" class="active">Find a Provider</a>
+    <a href="search.html?type=sil">SIL Vacancies</a>
+    <a href="search.html?type=sc">Support Coordinators</a>
+    <a href="search.html?type=allied">Allied Health</a>
+  </div>
+  <div class="nav-actions" id="nav-actions"></div>
+</nav>
+
+<div class="search-page">
+
+  <!-- SIDEBAR FILTERS -->
+  <div class="filters-sidebar">
+    <div class="filters-title">
+      Filters
+      <button class="clear-btn" onclick="clearFilters()">Clear all</button>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-label">Location</div>
+      <input class="filter-input" id="f-suburb" type="text" placeholder="Suburb or postcode" oninput="debounceSearch()"/>
+      <div style="height:8px;"></div>
+      <select class="filter-input" id="f-state" onchange="doSearch()">
+        <option value="">Any state</option>
+        <option>NSW</option><option>VIC</option><option>QLD</option>
+        <option>SA</option><option>WA</option><option>TAS</option>
+        <option>ACT</option><option>NT</option>
+      </select>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-label">Disability type</div>
+      <div class="filter-chips" id="disability-chips">
+        <button class="chip" onclick="toggleChip(this,'disability')">Autism</button>
+        <button class="chip" onclick="toggleChip(this,'disability')">ABI</button>
+        <button class="chip" onclick="toggleChip(this,'disability')">Physical</button>
+        <button class="chip" onclick="toggleChip(this,'disability')">Intellectual</button>
+        <button class="chip" onclick="toggleChip(this,'disability')">Mental health</button>
+        <button class="chip" onclick="toggleChip(this,'disability')">Down Syndrome</button>
+        <button class="chip" onclick="toggleChip(this,'disability')">Neurological</button>
+      </div>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-label">Support level</div>
+      <div class="filter-chips">
+        <button class="chip" onclick="toggleChip(this,'support')">Low</button>
+        <button class="chip" onclick="toggleChip(this,'support')">Moderate</button>
+        <button class="chip" onclick="toggleChip(this,'support')">High</button>
+        <button class="chip" onclick="toggleChip(this,'support')">Complex</button>
+      </div>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-label">Availability</div>
+      <div class="filter-chips">
+        <button class="chip" onclick="toggleChip(this,'availability')">Immediate</button>
+        <button class="chip" onclick="toggleChip(this,'availability')">Has vacancy</button>
+        <button class="chip" onclick="toggleChip(this,'availability')">Waitlist</button>
+      </div>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-label">Tier</div>
+      <div class="filter-chips">
+        <button class="chip" onclick="toggleChip(this,'tier')">⭐ Featured</button>
+        <button class="chip" onclick="toggleChip(this,'tier')">💎 Premium</button>
+      </div>
+    </div>
+
+    <button class="apply-btn" onclick="doSearch()">Apply filters</button>
+  </div>
+
+  <!-- MAIN RESULTS -->
+  <div class="search-main">
+    <div class="search-header">
+      <div class="search-bar-wrap">
+        <input class="search-bar" id="search-query" type="text" placeholder="Search by name, location or service..." onkeydown="if(event.key==='Enter')doSearch()"/>
+        <button class="search-go" onclick="doSearch()">Search</button>
+      </div>
+    </div>
+
+    <!-- TYPE TABS -->
+    <div style="background:white;border-radius:12px;padding:8px;margin-bottom:20px;display:flex;gap:2px;overflow-x:auto;">
+      <button class="ttab" onclick="setType(this,'')" id="tab-all">All providers</button>
+      <button class="ttab" onclick="setType(this,'org')" id="tab-org">🏠 SIL / SDA</button>
+      <button class="ttab" onclick="setType(this,'sc')" id="tab-sc">🧭 Support Coord.</button>
+      <button class="ttab" onclick="setType(this,'pm')" id="tab-pm">💼 Plan Managers</button>
+      <button class="ttab" onclick="setType(this,'allied')" id="tab-allied">🩺 Allied Health</button>
+    </div>
+
+    <div class="results-meta">
+      <div class="results-count" id="results-count">Loading...</div>
+      <select class="sort-select" id="sort-select" onchange="doSearch()">
+        <option value="tier">Sort: Featured first</option>
+        <option value="recent">Sort: Recently updated</option>
+        <option value="name">Sort: Name A–Z</option>
+      </select>
+    </div>
+
+    <div class="results-list" id="results-list">
+      <!-- Loading skeleton -->
+      ${[1,2,3].map(() => `
+      <div class="loading-card">
+        <div class="skeleton" style="width:56px;height:56px;border-radius:12px;flex-shrink:0;"></div>
+        <div style="flex:1;">
+          <div class="skeleton" style="height:16px;width:200px;margin-bottom:8px;"></div>
+          <div class="skeleton" style="height:12px;width:300px;margin-bottom:6px;"></div>
+          <div class="skeleton" style="height:12px;width:250px;"></div>
+        </div>
+      </div>`).join('')}
+    </div>
+  </div>
+</div>
+
+<script src="../js/nav.js"></script>
+<script>
+let activeType = '';
+let activeChips = { disability:[], support:[], availability:[], tier:[] };
+let searchTimer;
+
+// Read URL params on load
+document.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const type = params.get('type') || '';
+  const suburb = params.get('suburb') || '';
+  const state = params.get('state') || '';
+
+  if (suburb) document.getElementById('f-suburb').value = suburb;
+  if (state) document.getElementById('f-state').value = state;
+
+  // Map URL type to role
+  const typeMap = { sil:'org', sda:'org', sc:'sc', pm:'pm', allied:'allied' };
+  const mappedType = typeMap[type] || type;
+  setType(document.getElementById('tab-' + (mappedType || 'all')), mappedType);
+});
+
+function setType(btn, type) {
+  activeType = type;
+  document.querySelectorAll('.ttab').forEach(t => t.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  doSearch();
+}
+
+function toggleChip(chip, group) {
+  const val = chip.textContent.replace(/[⭐💎]/g,'').trim();
+  chip.classList.toggle('active');
+  if (chip.classList.contains('active')) {
+    if (!activeChips[group].includes(val)) activeChips[group].push(val);
+  } else {
+    activeChips[group] = activeChips[group].filter(v => v !== val);
+  }
+  doSearch();
+}
+
+function clearFilters() {
+  document.getElementById('f-suburb').value = '';
+  document.getElementById('f-state').value = '';
+  document.getElementById('search-query').value = '';
+  document.querySelectorAll('.chip.active').forEach(c => c.classList.remove('active'));
+  activeChips = { disability:[], support:[], availability:[], tier:[] };
+  activeType = '';
+  document.querySelectorAll('.ttab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-all').classList.add('active');
+  doSearch();
+}
+
+function debounceSearch() {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(doSearch, 400);
+}
+
+async function doSearch() {
+  const list = document.getElementById('results-list');
+  list.innerHTML = `<div class="loading-card"><div class="skeleton" style="width:56px;height:56px;border-radius:12px;flex-shrink:0;"></div><div style="flex:1;"><div class="skeleton" style="height:16px;width:200px;margin-bottom:8px;"></div><div class="skeleton" style="height:12px;width:300px;"></div></div></div>`.repeat(3);
+
+  try {
+    let query = CV.db.from('profiles')
+      .select('*')
+      .eq('status', 'active')
+      .in('role', activeType ? [activeType] : ['org','sc','pm','allied']);
+
+    // Text search
+    const q = document.getElementById('search-query').value.trim();
+    if (q) {
+      query = query.or(`full_name.ilike.%${q}%,org_name.ilike.%${q}%,bio.ilike.%${q}%`);
+    }
+
+    // Location filters
+    const suburb = document.getElementById('f-suburb').value.trim();
+    const state = document.getElementById('f-state').value;
+    if (suburb) query = query.ilike('suburb', `%${suburb}%`);
+    if (state) query = query.eq('state', state);
+
+    // Tier filter
+    if (activeChips.tier.length > 0) {
+      const tiers = activeChips.tier.map(t => t.toLowerCase());
+      query = query.in('tier', tiers);
+    }
+
+    // Sort
+    const sort = document.getElementById('sort-select').value;
+    if (sort === 'name') {
+      query = query.order('org_name', { ascending: true, nullsFirst: false });
+    } else if (sort === 'recent') {
+      query = query.order('created_at', { ascending: false });
+    } else {
+      // Featured first: premium > featured > basic
+      query = query.order('tier', { ascending: true });
+    }
+
+    const { data, error } = await query.limit(50);
+    if (error) throw error;
+
+    renderResults(data || []);
+  } catch(e) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Something went wrong</div><div class="empty-sub">${e.message}</div></div>`;
+  }
+}
+
+function renderResults(providers) {
+  const list = document.getElementById('results-list');
+  const count = document.getElementById('results-count');
+
+  // Sort: premium first, then featured, then basic
+  providers.sort((a,b) => {
+    const order = { premium:0, featured:1, basic:2 };
+    return (order[a.tier]||2) - (order[b.tier]||2);
+  });
+
+  count.innerHTML = `<strong>${providers.length}</strong> provider${providers.length !== 1 ? 's' : ''} found`;
+
+  if (providers.length === 0) {
+    list.innerHTML = `
+    <div class="empty-state">
+      <div class="empty-icon">🔍</div>
+      <div class="empty-title">No providers found</div>
+      <div class="empty-sub">Try adjusting your filters or search in a different area.</div>
+      <button onclick="clearFilters()" style="background:var(--teal);color:white;border:none;padding:10px 24px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Clear filters</button>
+    </div>`;
+    return;
+  }
+
+  list.innerHTML = providers.map(p => resultCard(p)).join('');
+}
+
+function resultCard(p) {
+  const initials = (p.org_name || p.full_name || '?').slice(0,2).toUpperCase();
+  const name = p.org_name || p.full_name || 'Provider';
+  const roleLabels = { org:'SIL/SDA Organisation', sc:'Support Coordinator', pm:'Plan Manager', allied:'Allied Health Professional' };
+  const location = [p.suburb, p.state].filter(Boolean).join(', ') || 'Location not specified';
+  const services = (p.services || []).slice(0,4);
+  const disabilities = (p.disability_types || []).slice(0,3);
+  const bio = p.bio || 'No description provided yet.';
+
+  return `
+  <div class="result-card" onclick="window.location='provider-profile.html?id=${p.id}'">
+    <div class="rc-tier-pill">
+      ${p.tier === 'premium' ? '<span class="rc-badge rb-premium">💎 Premium</span>' : p.tier === 'featured' ? '<span class="rc-badge rb-featured">⭐ Featured</span>' : ''}
+    </div>
+    <div class="rc-avatar">${initials}</div>
+    <div class="rc-body">
+      <div class="rc-top">
+        <div>
+          <div class="rc-name">${name}</div>
+          <div style="font-size:12px;color:var(--muted);">${roleLabels[p.role] || p.role}</div>
+        </div>
+        <div class="rc-badges">
+          <span class="rc-badge rb-verified">✓ Verified</span>
+        </div>
+      </div>
+      <div class="rc-meta">
+        <div class="rc-meta-item">📍 ${location}</div>
+        ${p.role === 'org' ? '<div class="rc-meta-item">🏠 SIL/SDA provider</div>' : ''}
+        ${p.tier !== 'basic' ? '<div class="rc-meta-item">✉️ Accepts enquiries</div>' : ''}
+      </div>
+      <div class="rc-desc">${bio}</div>
+      ${disabilities.length > 0 ? `<div class="rc-tags">${disabilities.map(d => `<span class="rc-tag">${d}</span>`).join('')}</div>` : ''}
+      ${services.length > 0 ? `<div class="rc-tags">${services.map(s => `<span class="rc-tag">${s}</span>`).join('')}</div>` : ''}
+      <div class="rc-actions">
+        <button class="rc-btn-primary" onclick="event.stopPropagation();window.location='provider-profile.html?id=${p.id}'">View profile</button>
+        <button class="rc-btn-outline" onclick="event.stopPropagation();saveProvider('${p.id}')">♡ Save</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+async function saveProvider(providerId) {
+  const user = await CV.getCurrentUser();
+  if (!user) { window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href); return; }
+  try {
+    await CV.db.from('saved_providers').insert({ user_id: user.id, provider_id: providerId });
+    alert('Provider saved to your shortlist ✓');
+  } catch(e) {
+    if (e.message?.includes('unique')) alert('Already saved!');
+  }
+}
+</script>
+</body>
+</html>
