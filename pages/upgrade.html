@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Upgrade Your Plan — CareVacancy</title>
+  <link rel="stylesheet" href="../css/global.css"/>
+  <link rel="stylesheet" href="../css/nav.css"/>
+  <script src="../js/supabase.js"></script>
+  <style>
+    .upgrade-hero {
+      text-align: center;
+      padding: 60px 20px 40px;
+    }
+    .upgrade-hero h1 { font-size: 2rem; margin-bottom: 10px; }
+    .upgrade-hero p { color: var(--text-muted); font-size: 1.1rem; }
+
+    .plans-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 20px 60px;
+    }
+
+    .plan-card {
+      background: var(--white);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      position: relative;
+      transition: box-shadow 0.2s;
+    }
+    .plan-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.08); }
+    .plan-card.featured {
+      border-color: var(--primary);
+    }
+    .plan-card.premium {
+      border-color: #7c3aed;
+    }
+
+    .plan-badge {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 16px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+    .plan-badge.premium { background: #7c3aed; }
+
+    .plan-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .plan-price {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--text);
+      margin: 12px 0 4px;
+    }
+    .plan-price span { font-size: 1rem; font-weight: 400; color: var(--text-muted); }
+    .plan-desc { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px; }
+
+    .plan-features {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 28px;
+    }
+    .plan-features li {
+      padding: 8px 0;
+      font-size: 0.9rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .plan-features li:last-child { border-bottom: none; }
+    .plan-features li .check { color: #16a34a; font-size: 1rem; }
+    .plan-features li .cross { color: #dc2626; font-size: 1rem; }
+
+    .btn-upgrade {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn-upgrade:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-upgrade:active { transform: translateY(0); }
+    .btn-upgrade.featured-btn { background: var(--primary); color: white; }
+    .btn-upgrade.premium-btn { background: #7c3aed; color: white; }
+    .btn-upgrade.current-btn { background: var(--border); color: var(--text-muted); cursor: default; }
+    .btn-upgrade:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .current-plan-tag {
+      display: inline-block;
+      background: #dcfce7;
+      color: #166534;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 8px;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .guarantee {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      padding: 0 20px 40px;
+    }
+    .guarantee strong { color: var(--text); }
+  </style>
+</head>
+<body>
+  <div id="nav-placeholder"></div>
+
+  <div class="upgrade-hero">
+    <h1>Choose your plan</h1>
+    <p>Upgrade anytime. Cancel anytime. No lock-in contracts.</p>
+  </div>
+
+  <div class="plans-grid">
+
+    <!-- Basic (Free) -->
+    <div class="plan-card" id="card-basic">
+      <div class="plan-name">Basic</div>
+      <div class="plan-price">$0 <span>/ month</span></div>
+      <div class="plan-desc">Get listed and verified. Good for getting started.</div>
+      <ul class="plan-features">
+        <li><span class="check">✓</span> Profile visible in search</li>
+        <li><span class="check">✓</span> Verified badge</li>
+        <li><span class="cross">✗</span> Post vacancies or services</li>
+        <li><span class="cross">✗</span> Receive direct enquiries</li>
+        <li><span class="cross">✗</span> Analytics</li>
+        <li><span class="cross">✗</span> Job board access</li>
+      </ul>
+      <button class="btn-upgrade current-btn" disabled id="btn-basic">Current plan</button>
+    </div>
+
+    <!-- Featured -->
+    <div class="plan-card featured" id="card-featured">
+      <div class="plan-badge">Most popular</div>
+      <div class="plan-name">Featured</div>
+      <div class="plan-price">$49 <span>/ month</span></div>
+      <div class="plan-desc">Everything you need to attract clients and fill vacancies.</div>
+      <ul class="plan-features">
+        <li><span class="check">✓</span> Everything in Basic</li>
+        <li><span class="check">✓</span> Priority search placement</li>
+        <li><span class="check">✓</span> Post vacancies &amp; services</li>
+        <li><span class="check">✓</span> Receive direct enquiries</li>
+        <li><span class="check">✓</span> Basic analytics</li>
+        <li><span class="check">✓</span> Job board access</li>
+        <li><span class="check">✓</span> Availability calendar</li>
+        <li><span class="check">✓</span> Homepage slider listing</li>
+      </ul>
+      <button class="btn-upgrade featured-btn" id="btn-featured" onclick="startCheckout('featured')">
+        Upgrade to Featured
+      </button>
+    </div>
+
+    <!-- Premium -->
+    <div class="plan-card premium" id="card-premium">
+      <div class="plan-badge premium">Best value</div>
+      <div class="plan-name">Premium</div>
+      <div class="plan-price">$99 <span>/ month</span></div>
+      <div class="plan-desc">Full automation, auto-matching, and market insights.</div>
+      <ul class="plan-features">
+        <li><span class="check">✓</span> Everything in Featured</li>
+        <li><span class="check">✓</span> Auto-match notifications</li>
+        <li><span class="check">✓</span> Vacancy alerts to participants</li>
+        <li><span class="check">✓</span> Waitlist management</li>
+        <li><span class="check">✓</span> Referral system</li>
+        <li><span class="check">✓</span> Advanced analytics</li>
+        <li><span class="check">✓</span> Market insights</li>
+        <li><span class="check">✓</span> Priority homepage slot</li>
+      </ul>
+      <button class="btn-upgrade premium-btn" id="btn-premium" onclick="startCheckout('premium')">
+        Upgrade to Premium
+      </button>
+    </div>
+
+  </div>
+
+  <div class="guarantee">
+    <strong>No risk.</strong> Cancel anytime from your billing dashboard. Your profile stays active until the end of your billing period.
+    Payments are processed securely by Stripe.
+  </div>
+
+  <script src="https://js.stripe.com/v3/"></script>
+  <script src="../js/nav.js"></script>
+  <script src="../js/stripe-client.js"></script>
+  <script>
+    const stripe = Stripe(sb_publishable_jBOmFV-wLjxcx8U5nDxv5g_wQ9Hylxs
+);
+
+    async function initPage() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { window.location.href = '/pages/login.html'; return; }
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('tier, role')
+        .eq('id', user.id)
+        .single();
+
+      if (!profile) return;
+
+      // Redirect participants/family — they don't need subscriptions
+      if (['participant','family','admin'].includes(profile.role)) {
+        window.location.href = '/index.html';
+        return;
+      }
+
+      highlightCurrentPlan(profile.tier);
+    }
+
+    function highlightCurrentPlan(tier) {
+      // Reset all
+      ['basic','featured','premium'].forEach(t => {
+        const btn = document.getElementById('btn-' + t);
+        const card = document.getElementById('card-' + t);
+        if (t === tier) {
+          btn.textContent = 'Current plan';
+          btn.disabled = true;
+          btn.className = 'btn-upgrade current-btn';
+          // Add current plan tag
+          const tag = document.createElement('div');
+          tag.className = 'current-plan-tag';
+          tag.textContent = '✓ Your current plan';
+          card.insertBefore(tag, card.querySelector('.plan-name'));
+        }
+      });
+
+      // Hide upgrade buttons below current tier
+      if (tier === 'featured') {
+        const btnBasic = document.getElementById('btn-basic');
+        btnBasic.textContent = 'Downgrade';
+        btnBasic.disabled = true;
+      }
+      if (tier === 'premium') {
+        ['basic','featured'].forEach(t => {
+          const btn = document.getElementById('btn-' + t);
+          btn.textContent = 'Lower tier';
+          btn.disabled = true;
+        });
+      }
+    }
+
+    async function startCheckout(plan) {
+      const btn = document.getElementById('btn-' + plan);
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loading-spinner"></span> Redirecting to Stripe...';
+
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) { window.location.href = '/pages/login.html'; return; }
+
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('email, full_name')
+          .eq('id', user.id)
+          .single();
+
+        const response = await fetch('/api/create-checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            plan,
+            userId: user.id,
+            email: profile.email || user.email,
+            name: profile.full_name || ''
+          })
+        });
+
+        const { sessionId, error } = await response.json();
+        if (error) throw new Error(error);
+
+        await stripe.redirectToCheckout({ sessionId });
+
+      } catch (err) {
+        console.error(err);
+        btn.disabled = false;
+        btn.innerHTML = plan === 'featured' ? 'Upgrade to Featured' : 'Upgrade to Premium';
+        alert('Something went wrong. Please try again.');
+      }
+    }
+
+    initPage();
+  </script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+/* ============================================
+   BILLING COMPONENT STYLES
+   Add these to the bottom of your global.css
+   ============================================ */
+
+.billing-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  margin-top: 8px;
+}
+
+.billing-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.billing-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.billing-plan {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tier-badge {
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.billing-hint {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.btn-manage-billing {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.2s, background 0.2s;
+}
+.btn-manage-billing:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.btn-manage-billing:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-upgrade-now {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  display: inline-block;
+  transition: opacity 0.2s;
+}
+.btn-upgrade-now:hover { opacity: 0.9; }
+
+.billing-upgrade-prompt {
+  background: #f8fafc;
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 4px;
+}
+
+.billing-upgrade-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.875rem;
+}
+.billing-upgrade-text strong { color: var(--text); }
+.billing-upgrade-text span { color: var(--text-muted); }
+
+.btn-see-plans {
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.btn-see-plans:hover { text-decoration: underline; }
+
+.billing-details {
+  border-top: 1px solid var(--border-light);
+  padding-top: 16px;
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.billing-detail-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+}
+.billing-detail-row span:first-child { color: var(--text-muted); }
+.billing-detail-row span:last-child { color: var(--text); font-weight: 500; }
+
+.status-active {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.billing-note {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 14px;
+  line-height: 1.5;
+  border-top: 1px solid var(--border-light);
+  padding-top: 14px;
+}

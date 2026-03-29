@@ -1,0 +1,58 @@
+{
+  "version": 2,
+  "functions": {
+    "api/*.js": {
+      "memory": 128,
+      "maxDuration": 10
+    }
+  }
+}
+
+/*
+============================================
+VERCEL ENVIRONMENT VARIABLES — SET THESE UP
+============================================
+
+Go to: vercel.com → carevacancy project → Settings → Environment Variables
+
+Add these 6 variables:
+
+NAME                          VALUE
+─────────────────────────────────────────────────────────
+STRIPE_SECRET_KEY             sk_test_... (your secret key)
+STRIPE_FEATURED_PRICE_ID      price_1... (Featured $49/mo)
+STRIPE_PREMIUM_PRICE_ID       price_1... (Premium $99/mo)
+STRIPE_WEBHOOK_SECRET         whsec_... (get this in next step)
+SUPABASE_URL                  https://zanxrugbtowbpbmhsnum.supabase.co
+SUPABASE_SERVICE_ROLE_KEY     eyJ... (from Supabase → Settings → API → service_role key)
+NEXT_PUBLIC_BASE_URL          https://carevacancy.vercel.app
+
+ALSO add to your frontend (these go in your HTML files directly):
+STRIPE_PUBLISHABLE_KEY        pk_test_... (safe for frontend)
+
+============================================
+GETTING THE WEBHOOK SECRET
+============================================
+
+1. Go to stripe.com → Developers → Webhooks
+2. Click "Add endpoint"
+3. URL: https://carevacancy.vercel.app/api/webhook
+4. Select these events:
+   - checkout.session.completed
+   - customer.subscription.deleted
+   - invoice.payment_failed
+   - invoice.payment_succeeded
+5. Click "Add endpoint"
+6. Click "Reveal" next to Signing secret
+7. Copy it → that's your STRIPE_WEBHOOK_SECRET
+
+============================================
+GETTING SUPABASE SERVICE ROLE KEY
+============================================
+
+1. Go to supabase.com → your project
+2. Settings → API
+3. Under "Project API keys" → copy "service_role" key
+   (WARNING: This key bypasses RLS — only use in server-side code, never in frontend)
+
+*/
