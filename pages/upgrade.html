@@ -22,6 +22,7 @@
       max-width: 1000px;
       margin: 0 auto;
       padding: 0 20px 60px;
+      align-items: stretch;
     }
 
     .plan-card {
@@ -33,14 +34,11 @@
       transition: box-shadow 0.2s;
       display: flex;
       flex-direction: column;
+      box-sizing: border-box;
     }
     .plan-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.08); }
-    .plan-card.featured {
-      border-color: var(--primary);
-    }
-    .plan-card.premium {
-      border-color: #7c3aed;
-    }
+    .plan-card.featured { border-color: var(--primary); }
+    .plan-card.premium { border-color: #7c3aed; }
 
     .plan-badge {
       position: absolute;
@@ -76,7 +74,7 @@
       list-style: none;
       padding: 0;
       margin: 0 0 28px;
-      flex:1;
+      flex: 1;
     }
     .plan-features li {
       padding: 8px 0;
@@ -88,8 +86,8 @@
       border-bottom: 1px solid var(--border-light);
     }
     .plan-features li:last-child { border-bottom: none; }
-    .plan-features li .check { color: #16a34a; font-size: 1rem; }
-    .plan-features li .cross { color: #dc2626; font-size: 1rem; }
+    .plan-features li .check { color: #16a34a; font-size: 1rem; flex-shrink: 0; }
+    .plan-features li .cross { color: #dc2626; font-size: 1rem; flex-shrink: 0; }
 
     .btn-upgrade {
       width: 100%;
@@ -100,6 +98,8 @@
       font-weight: 600;
       cursor: pointer;
       transition: opacity 0.2s, transform 0.1s;
+      margin-top: auto;
+      flex-shrink: 0;
     }
     .btn-upgrade:hover { opacity: 0.9; transform: translateY(-1px); }
     .btn-upgrade:active { transform: translateY(0); }
@@ -233,7 +233,6 @@
 
       if (!profile) return;
 
-      // Redirect participants/family — they don't need subscriptions
       if (['participant','family','admin'].includes(profile.role)) {
         window.location.href = '/index.html';
         return;
@@ -243,34 +242,34 @@
     }
 
     function highlightCurrentPlan(tier) {
-    if (!tier || tier === 'basic') return; // nothing to highlight, show all upgrade buttons
+      if (!tier || tier === 'basic') return;
 
-    ['basic','featured','premium'].forEach(t => {
-      const btn = document.getElementById('btn-' + t);
-      const card = document.getElementById('card-' + t);
-      if (t === tier) {
-        btn.textContent = 'Current plan';
-        btn.disabled = true;
-        btn.className = 'btn-upgrade current-btn';
-        const tag = document.createElement('div');
-        tag.className = 'current-plan-tag';
-        tag.textContent = '✓ Your current plan';
-        card.insertBefore(tag, card.querySelector('.plan-name'));
-      }
-    });
-
-    if (tier === 'featured') {
-      document.getElementById('btn-basic').textContent = 'Lower tier';
-      document.getElementById('btn-basic').disabled = true;
-    }
-    if (tier === 'premium') {
-      ['basic','featured'].forEach(t => {
+      ['basic','featured','premium'].forEach(t => {
         const btn = document.getElementById('btn-' + t);
-        btn.textContent = 'Lower tier';
-        btn.disabled = true;
+        const card = document.getElementById('card-' + t);
+        if (t === tier) {
+          btn.textContent = 'Current plan';
+          btn.disabled = true;
+          btn.className = 'btn-upgrade current-btn';
+          const tag = document.createElement('div');
+          tag.className = 'current-plan-tag';
+          tag.textContent = '✓ Your current plan';
+          card.insertBefore(tag, card.querySelector('.plan-name'));
+        }
       });
+
+      if (tier === 'featured') {
+        document.getElementById('btn-basic').textContent = 'Lower tier';
+        document.getElementById('btn-basic').disabled = true;
+      }
+      if (tier === 'premium') {
+        ['basic','featured'].forEach(t => {
+          const btn = document.getElementById('btn-' + t);
+          btn.textContent = 'Lower tier';
+          btn.disabled = true;
+        });
+      }
     }
-  }
 
     async function startCheckout(plan) {
       const btn = document.getElementById('btn-' + plan);
