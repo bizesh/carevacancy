@@ -4,311 +4,228 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Upgrade Your Plan — CareVacancy</title>
-  <link rel="stylesheet" href="../css/global.css"/>
-  <link rel="stylesheet" href="../css/nav.css"/>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/supabase.js"></script>
   <style>
-    .upgrade-hero {
-      text-align: center;
-      padding: 60px 20px 40px;
-    }
-    .upgrade-hero h1 { font-size: 2rem; margin-bottom: 10px; }
-    .upgrade-hero p { color: var(--text-muted); font-size: 1.1rem; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8fafc; color: #1a1a2e; }
 
-    .plans-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    .hero { text-align: center; padding: 60px 20px 40px; }
+    .hero h1 { font-size: 2rem; font-weight: 800; margin-bottom: 10px; }
+    .hero p { color: #64748b; font-size: 1.1rem; }
+
+    .grid {
+      display: flex;
       gap: 24px;
-      max-width: 1000px;
+      max-width: 1020px;
       margin: 0 auto;
-      padding: 0 20px 60px;
-      align-items: stretch;
+      padding: 20px 20px 60px;
+      justify-content: center;
+      flex-wrap: wrap;
     }
 
-    .plan-card {
-      background: var(--white);
-      border: 2px solid var(--border);
+    .card {
+      background: #fff;
+      border: 2px solid #e2e8f0;
       border-radius: 16px;
       padding: 32px;
-      position: relative;
-      transition: box-shadow 0.2s;
+      width: 300px;
+      min-height: 560px;
       display: flex;
       flex-direction: column;
-      box-sizing: border-box;
     }
-    .plan-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.08); }
-    .plan-card.featured { border-color: var(--primary); padding-top: 44px; }
-    .plan-card.premium { border-color: #7c3aed; padding-top: 44px; }
-    .plan-card.premium { border-color: #7c3aed; }
+    .card.featured { border-color: #2563eb; }
+    .card.premium  { border-color: #7c3aed; }
 
-    .plan-badge {
-      position: absolute;
-      top: -14px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--primary);
-      color: white;
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 4px 16px;
-      border-radius: 20px;
-      white-space: nowrap;
-    }
-    .plan-badge.premium { background: #7c3aed; }
-
-    .plan-name {
-      font-size: 1.1rem;
+    .badge {
+      display: inline-block;
+      font-size: 0.72rem;
       font-weight: 700;
-      color: var(--text);
-      margin-bottom: 4px;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+      width: fit-content;
     }
-    .plan-price {
-      font-size: 2.5rem;
-      font-weight: 800;
-      color: var(--text);
-      margin: 12px 0 4px;
-    }
-    .plan-price span { font-size: 1rem; font-weight: 400; color: var(--text-muted); }
-    .plan-desc { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px; }
+    .badge.popular { background: #dbeafe; color: #1d4ed8; }
+    .badge.best    { background: #ede9fe; color: #6d28d9; }
+    .badge.current { background: #dcfce7; color: #166534; }
 
-    .plan-features {
-      list-style: none;
-      padding: 0;
-      margin: 0 0 28px;
-      flex: 1;
-    }
-    .plan-features li {
-      padding: 8px 0;
-      font-size: 0.9rem;
-      color: var(--text);
+    .name  { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
+    .price { font-size: 2.4rem; font-weight: 800; margin: 10px 0 4px; }
+    .price span { font-size: 1rem; font-weight: 400; color: #64748b; }
+    .desc  { color: #64748b; font-size: 0.88rem; margin-bottom: 20px; }
+
+    .features { list-style: none; flex: 1; margin-bottom: 24px; }
+    .features li {
+      padding: 7px 0;
+      font-size: 0.88rem;
       display: flex;
       align-items: center;
-      gap: 10px;
-      border-bottom: 1px solid var(--border-light);
+      gap: 9px;
+      border-bottom: 1px solid #f1f5f9;
     }
-    .plan-features li:last-child { border-bottom: none; }
-    .plan-features li .check { color: #16a34a; font-size: 1rem; flex-shrink: 0; }
-    .plan-features li .cross { color: #dc2626; font-size: 1rem; flex-shrink: 0; }
+    .features li:last-child { border-bottom: none; }
+    .yes { color: #16a34a; font-weight: 700; flex-shrink: 0; }
+    .no  { color: #dc2626; font-weight: 700; flex-shrink: 0; }
 
-    .btn-upgrade {
+    .btn {
+      display: block;
       width: 100%;
       padding: 14px;
       border: none;
       border-radius: 10px;
       font-size: 1rem;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
-      transition: opacity 0.2s, transform 0.1s;
-      margin-top: auto;
-      flex-shrink: 0;
+      text-align: center;
+      transition: opacity 0.2s;
     }
-    .btn-upgrade:hover { opacity: 0.9; transform: translateY(-1px); }
-    .btn-upgrade:active { transform: translateY(0); }
-    .btn-upgrade.featured-btn { background: var(--primary); color: white; }
-    .btn-upgrade.premium-btn { background: #7c3aed; color: white; }
-    .btn-upgrade.current-btn { background: var(--border); color: var(--text-muted); cursor: default; }
-    .btn-upgrade:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .btn:hover   { opacity: 0.88; }
+    .btn:disabled { opacity: 0.5; cursor: default; }
+    .btn-blue   { background: #2563eb; color: #fff; }
+    .btn-purple { background: #7c3aed; color: #fff; }
+    .btn-gray   { background: #e2e8f0; color: #94a3b8; cursor: default; }
 
-    .current-plan-tag {
-      display: inline-block;
-      background: #dcfce7;
-      color: #166534;
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 3px 10px;
-      border-radius: 20px;
-      margin-bottom: 8px;
-    }
-
-    .loading-spinner {
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      border: 2px solid rgba(255,255,255,0.4);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      vertical-align: middle;
-      margin-right: 6px;
+    .spinner {
+      display: inline-block; width: 15px; height: 15px;
+      border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff;
+      border-radius: 50%; animation: spin 0.7s linear infinite;
+      vertical-align: middle; margin-right: 6px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .guarantee {
-      text-align: center;
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      padding: 0 20px 40px;
-    }
-    .guarantee strong { color: var(--text); }
+    .note { text-align: center; color: #94a3b8; font-size: 0.82rem; padding: 0 20px 48px; }
+    .note strong { color: #475569; }
   </style>
 </head>
 <body>
-  <div id="nav-placeholder"></div>
 
-  <div class="upgrade-hero">
+  <div class="hero">
     <h1>Choose your plan</h1>
     <p>Upgrade anytime. Cancel anytime. No lock-in contracts.</p>
   </div>
 
-  <div class="plans-grid">
+  <div class="grid">
 
-    <!-- Basic (Free) -->
-    <div class="plan-card" id="card-basic">
-      <div class="plan-name">Basic</div>
-      <div class="plan-price">$0 <span>/ month</span></div>
-      <div class="plan-desc">Get listed and verified. Good for getting started.</div>
-      <ul class="plan-features">
-        <li><span class="check">✓</span> Profile visible in search</li>
-        <li><span class="check">✓</span> Verified badge</li>
-        <li><span class="cross">✗</span> Post vacancies or services</li>
-        <li><span class="cross">✗</span> Receive direct enquiries</li>
-        <li><span class="cross">✗</span> Analytics</li>
-        <li><span class="cross">✗</span> Job board access</li>
+    <!-- Basic -->
+    <div class="card" id="card-basic">
+      <div class="name">Basic</div>
+      <div class="price">$0 <span>/ month</span></div>
+      <div class="desc">Get listed and verified. Good for getting started.</div>
+      <ul class="features">
+        <li><span class="yes">✓</span> Profile visible in search</li>
+        <li><span class="yes">✓</span> Verified badge</li>
+        <li><span class="no">✗</span> Post vacancies or services</li>
+        <li><span class="no">✗</span> Receive direct enquiries</li>
+        <li><span class="no">✗</span> Analytics</li>
+        <li><span class="no">✗</span> Job board access</li>
       </ul>
-      <button class="btn-upgrade current-btn" disabled id="btn-basic">Current plan</button>
+      <button class="btn btn-gray" disabled id="btn-basic">Current plan</button>
     </div>
 
     <!-- Featured -->
-    <div class="plan-card featured" id="card-featured">
-      <div class="plan-badge">Most popular</div>
-      <div class="plan-name">Featured</div>
-      <div class="plan-price">$49 <span>/ month</span></div>
-      <div class="plan-desc">Everything you need to attract clients and fill vacancies.</div>
-      <ul class="plan-features">
-        <li><span class="check">✓</span> Everything in Basic</li>
-        <li><span class="check">✓</span> Priority search placement</li>
-        <li><span class="check">✓</span> Post vacancies &amp; services</li>
-        <li><span class="check">✓</span> Receive direct enquiries</li>
-        <li><span class="check">✓</span> Basic analytics</li>
-        <li><span class="check">✓</span> Job board access</li>
-        <li><span class="check">✓</span> Availability calendar</li>
-        <li><span class="check">✓</span> Homepage slider listing</li>
+    <div class="card featured" id="card-featured">
+      <div class="badge popular">⭐ Most popular</div>
+      <div class="name">Featured</div>
+      <div class="price">$49 <span>/ month</span></div>
+      <div class="desc">Everything you need to attract clients and fill vacancies.</div>
+      <ul class="features">
+        <li><span class="yes">✓</span> Everything in Basic</li>
+        <li><span class="yes">✓</span> Priority search placement</li>
+        <li><span class="yes">✓</span> Post vacancies &amp; services</li>
+        <li><span class="yes">✓</span> Receive direct enquiries</li>
+        <li><span class="yes">✓</span> Basic analytics</li>
+        <li><span class="yes">✓</span> Job board access</li>
+        <li><span class="yes">✓</span> Availability calendar</li>
+        <li><span class="yes">✓</span> Homepage slider listing</li>
       </ul>
-      <button class="btn-upgrade featured-btn" id="btn-featured" onclick="startCheckout('featured')">
-        Upgrade to Featured
-      </button>
+      <button class="btn btn-blue" id="btn-featured" onclick="startCheckout('featured')">Upgrade to Featured</button>
     </div>
 
     <!-- Premium -->
-    <div class="plan-card premium" id="card-premium">
-      <div class="plan-badge premium">Best value</div>
-      <div class="plan-name">Premium</div>
-      <div class="plan-price">$99 <span>/ month</span></div>
-      <div class="plan-desc">Full automation, auto-matching, and market insights.</div>
-      <ul class="plan-features">
-        <li><span class="check">✓</span> Everything in Featured</li>
-        <li><span class="check">✓</span> Auto-match notifications</li>
-        <li><span class="check">✓</span> Vacancy alerts to participants</li>
-        <li><span class="check">✓</span> Waitlist management</li>
-        <li><span class="check">✓</span> Referral system</li>
-        <li><span class="check">✓</span> Advanced analytics</li>
-        <li><span class="check">✓</span> Market insights</li>
-        <li><span class="check">✓</span> Priority homepage slot</li>
+    <div class="card premium" id="card-premium">
+      <div class="badge best">💎 Best value</div>
+      <div class="name">Premium</div>
+      <div class="price">$99 <span>/ month</span></div>
+      <div class="desc">Full automation, auto-matching, and market insights.</div>
+      <ul class="features">
+        <li><span class="yes">✓</span> Everything in Featured</li>
+        <li><span class="yes">✓</span> Auto-match notifications</li>
+        <li><span class="yes">✓</span> Vacancy alerts to participants</li>
+        <li><span class="yes">✓</span> Waitlist management</li>
+        <li><span class="yes">✓</span> Referral system</li>
+        <li><span class="yes">✓</span> Advanced analytics</li>
+        <li><span class="yes">✓</span> Market insights</li>
+        <li><span class="yes">✓</span> Priority homepage slot</li>
       </ul>
-      <button class="btn-upgrade premium-btn" id="btn-premium" onclick="startCheckout('premium')">
-        Upgrade to Premium
-      </button>
+      <button class="btn btn-purple" id="btn-premium" onclick="startCheckout('premium')">Upgrade to Premium</button>
     </div>
 
   </div>
 
-  <div class="guarantee">
-    <strong>No risk.</strong> Cancel anytime from your billing dashboard. Your profile stays active until the end of your billing period.
-    Payments are processed securely by Stripe.
-  </div>
+  <p class="note"><strong>No risk.</strong> Cancel anytime from your dashboard. Payments processed securely by Stripe.</p>
 
   <script src="https://js.stripe.com/v3/"></script>
-  <script src="../js/nav.js"></script>
   <script>
-    const stripe = Stripe('pk_test_51TGBrmRYrQ3gSuOKbeC2JIer9CJ9EkUU2qv3McbTP09R0M1CWiqLC1lojG7CA4YB8QiROQZA0htjffhCSH1BEuNg00vOctzngf');
-
+    let stripe;
+window.addEventListener('load', () => {
+  stripe = Stripe('pk_test_51TGBrmRYrQ3gSuOKbeC2JIer9CJ9EkUU2qv3McbTP09R0M1CWiqLC1lojG7CA4YB8QiROQZA0htjffhCSH1BEuNg00vOctzngf');
+}); 
     async function initPage() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { window.location.href = '/pages/login.html'; return; }
-
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('tier, role')
-        .eq('id', user.id)
-        .single();
-
-      if (!profile) return;
-
-      if (['participant','family','admin'].includes(profile.role)) {
-        window.location.href = '/index.html';
-        return;
-      }
-
-      highlightCurrentPlan(profile.tier);
-    }
-
-    function highlightCurrentPlan(tier) {
-      if (!tier || tier === 'basic') return;
-
-      ['basic','featured','premium'].forEach(t => {
-        const btn = document.getElementById('btn-' + t);
-        const card = document.getElementById('card-' + t);
-        if (t === tier) {
-          btn.textContent = 'Current plan';
-          btn.disabled = true;
-          btn.className = 'btn-upgrade current-btn';
-          const tag = document.createElement('div');
-          tag.className = 'current-plan-tag';
-          tag.textContent = '✓ Your current plan';
-          card.insertBefore(tag, card.querySelector('.plan-name'));
-        }
-      });
-
-      if (tier === 'featured') {
-        document.getElementById('btn-basic').textContent = 'Lower tier';
-        document.getElementById('btn-basic').disabled = true;
-      }
-      if (tier === 'premium') {
-        ['basic','featured'].forEach(t => {
-          const btn = document.getElementById('btn-' + t);
-          btn.textContent = 'Lower tier';
-          btn.disabled = true;
-        });
-      }
-    }
-
-    async function startCheckout(plan) {
-      const btn = document.getElementById('btn-' + plan);
-      btn.disabled = true;
-      btn.innerHTML = '<span class="loading-spinner"></span> Redirecting to Stripe...';
-
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) { window.location.href = '/pages/login.html'; return; }
 
         const { data: profile } = await supabase
-          .from('profiles')
-          .select('email, full_name')
-          .eq('id', user.id)
-          .single();
+          .from('profiles').select('tier, role').eq('id', user.id).single();
 
-        const response = await fetch('/api/create-checkout', {
+        if (!profile) return;
+        if (['participant','family','admin'].includes(profile.role)) {
+          window.location.href = '/index.html'; return;
+        }
+        highlightCurrentPlan(profile.tier);
+      } catch(e) { console.error(e); }
+    }
+
+    function highlightCurrentPlan(tier) {
+      if (!tier || tier === 'basic') return;
+      ['basic','featured','premium'].forEach(t => {
+        if (t === tier) {
+          const btn = document.getElementById('btn-' + t);
+          btn.textContent = 'Current plan';
+          btn.disabled = true;
+          btn.className = 'btn btn-gray';
+          const badge = document.createElement('div');
+          badge.className = 'badge current';
+          badge.textContent = '✓ Your current plan';
+          document.getElementById('card-' + t).insertBefore(badge, document.getElementById('card-' + t).firstChild);
+        }
+      });
+      if (tier === 'featured') { document.getElementById('btn-basic').disabled = true; }
+      if (tier === 'premium')  { ['basic','featured'].forEach(t => { document.getElementById('btn-'+t).disabled = true; }); }
+    }
+
+    async function startCheckout(plan) {
+      const btn = document.getElementById('btn-' + plan);
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>Redirecting to Stripe...';
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) { window.location.href = '/pages/login.html'; return; }
+        const { data: profile } = await supabase.from('profiles').select('email, full_name').eq('id', user.id).single();
+        const res = await fetch('/api/create-checkout', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            plan,
-            userId: user.id,
-            email: profile.email || user.email,
-            name: profile.full_name || ''
-          })
+          body: JSON.stringify({ plan, userId: user.id, email: profile.email || user.email, name: profile.full_name || '' })
         });
-
-        const { sessionId, error } = await response.json();
+        const { sessionId, error } = await res.json();
         if (error) throw new Error(error);
-
         await stripe.redirectToCheckout({ sessionId });
-
-      } catch (err) {
+      } catch(err) {
         console.error(err);
         btn.disabled = false;
-        btn.innerHTML = plan === 'featured' ? 'Upgrade to Featured' : 'Upgrade to Premium';
-        alert('Something went wrong. Please try again.');
+        btn.textContent = plan === 'featured' ? 'Upgrade to Featured' : 'Upgrade to Premium';
+        alert('Something went wrong: ' + err.message);
       }
     }
 
