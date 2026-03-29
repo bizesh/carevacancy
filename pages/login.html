@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
+<style>body{visibility:hidden;}</style>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Log In — CareVacancy</title>
 <link rel="stylesheet" href="../css/global.css"/>
@@ -9,6 +10,7 @@
 <link rel="stylesheet" href="../css/auth.css"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase.js"></script>
+<script src="../js/auth-guard.js"></script>
 </head>
 <body>
 
@@ -39,7 +41,7 @@
 
       <!-- Rejected notice -->
       <div id="rejected-notice" class="alert alert-error" style="display:none;">
-        ✕ <strong>Your registration was not approved.</strong> <span id="rejected-reason"></span> <a href="mailto:hello@carevacancy.com.au">Contact us</a> if you think this is an error.
+        ✕ <strong>Your registration was not approved.</strong> <span id="rejected-reason"></span> <a href="/cdn-cgi/l/email-protection#4b232e2727240b282a392e3d2a282a25283265282426652a3e">Contact us</a> if you think this is an error.
       </div>
 
       <div class="field-group">
@@ -81,11 +83,11 @@
   </div>
 </div>
 
-<script src="../js/nav.js"></script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="../js/nav.js"></script>
 <script>
 // If already logged in, redirect to dashboard
 (async () => {
-  await CV.redirectIfLoggedIn();
+  await AuthGuard.redirectIfLoggedIn();
 })();
 
 async function login() {
@@ -122,20 +124,20 @@ async function login() {
     // Check verification status for providers
     if (profile.status === 'pending') {
       document.getElementById('pending-notice').style.display = 'flex';
-      await CV.db.auth.signOut();
+      await supabase.auth.signOut();
       return;
     }
 
     if (profile.status === 'rejected') {
       document.getElementById('rejected-notice').style.display = 'flex';
       document.getElementById('rejected-reason').textContent = profile.rejection_reason || '';
-      await CV.db.auth.signOut();
+      await supabase.auth.signOut();
       return;
     }
 
     if (profile.status === 'suspended') {
       showLoginError('Your account has been suspended. Please contact hello@carevacancy.com.au');
-      await CV.db.auth.signOut();
+      await supabase.auth.signOut();
       return;
     }
 
@@ -175,10 +177,4 @@ function showLoginError(msg) {
   el.style.display = 'flex';
 }
 
-function togglePassword(id) {
-  const input = document.getElementById(id);
-  input.type = input.type === 'password' ? 'text' : 'password';
-}
-</script>
-</body>
-</html>
+function tog

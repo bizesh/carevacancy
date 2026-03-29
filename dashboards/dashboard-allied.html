@@ -2,12 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
+<style>body{visibility:hidden;}</style>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Dashboard — CareVacancy</title>
 <link rel="stylesheet" href="../css/global.css"/>
 <link rel="stylesheet" href="../css/dashboard.css"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase.js"></script>
+<script src="../js/auth-guard.js"></script>
 </head>
 <body>
 
@@ -274,6 +276,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   const tierEl = document.getElementById('ds-tier');
   tierEl.textContent = (p.tier || 'basic').charAt(0).toUpperCase() + (p.tier || 'basic').slice(1);
   tierEl.className = `ds-tier tier-${p.tier || 'basic'}`;
+  if (!p.tier || p.tier === 'basic') {
+    const banner = document.getElementById('upgrade-banner');
+    if (banner) banner.style.display = 'flex';
+  }
+  if (typeof AuthGuard !== 'undefined') AuthGuard.lockFeatures(p.tier);
 
   document.getElementById('s-plan').textContent = (p.tier || 'Basic').charAt(0).toUpperCase() + (p.tier || 'basic').slice(1);
 
@@ -418,7 +425,7 @@ function showToast(msg) {
 }
 
 async function signOut() {
-  await CV.db.auth.signOut();
+  await AuthGuard.signOut(); return;
   window.location.href = '../index.html';
 }
 </script>
