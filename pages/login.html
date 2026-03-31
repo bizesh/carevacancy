@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<style>body{visibility:hidden;}</style>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Log In — CareVacancy</title>
 <link rel="stylesheet" href="../css/global.css"/>
@@ -10,7 +9,6 @@
 <link rel="stylesheet" href="../css/auth.css"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase.js"></script>
-<script src="../js/auth-guard.js"></script>
 </head>
 <body>
 
@@ -83,11 +81,16 @@
   </div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="../js/nav.js"></script>
+<script src="../js/nav.js"></script>
 <script>
 // If already logged in, redirect to dashboard
 (async () => {
-  await AuthGuard.redirectIfLoggedIn();
+  document.body.style.visibility = 'visible';
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) {
+    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+    if (profile) CV.redirectToDashboard(profile.role);
+  }
 })();
 
 async function login() {
@@ -177,4 +180,10 @@ function showLoginError(msg) {
   el.style.display = 'flex';
 }
 
-function tog
+function togglePassword(id) {
+  const input = document.getElementById(id);
+  input.type = input.type === 'password' ? 'text' : 'password';
+}
+</script>
+</body>
+</html>
