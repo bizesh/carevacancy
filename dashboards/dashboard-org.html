@@ -266,6 +266,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!currentUser) return;
   document.body.style.visibility = 'visible';
 
+  // Block pending/rejected/suspended providers
+  const status = currentUser.profile?.status;
+  if (status && status !== 'active') {
+    showStatusScreen(status, currentUser.profile?.rejection_reason);
+    return;
+  }
+
   const p = currentUser.profile;
   if (p?.role !== 'org' && p?.role !== 'admin') {
     CV.redirectToDashboard(p?.role);
@@ -403,7 +410,7 @@ async function deletePost(postId) {
 }
 
 function upgradePlan(tier) {
-  showToast('Stripe payments coming in Sprint 3! 🚀');
+  window.location.href = '../pages/upgrade.html';
 }
 
 function switchPanel(btn, panel) {
@@ -428,6 +435,56 @@ async function signOut() {
   window.location.href = '../pages/login.html';
   window.location.href = '../index.html';
 }
+
+function showStatusScreen(status, reason) {
+  const screens = {
+    pending: {
+      icon: '⏳',
+      title: 'Verification in progress',
+      color: '#92400e',
+      bg: '#fffbeb',
+      border: '#fcd34d',
+      message: 'Your account is currently being reviewed by our team. We check your ABN and NDIS/AHPRA registration to ensure the quality of our marketplace. You'll receive an email once approved — usually within 1 business day.',
+      sub: 'While you wait, you can complete your profile below.'
+    },
+    rejected: {
+      icon: '❌',
+      title: 'Application not approved',
+      color: '#991b1b',
+      bg: '#fef2f2',
+      border: '#fca5a5',
+      message: reason || 'Unfortunately your application was not approved. This may be due to incomplete registration details or ABN/NDIS verification issues.',
+      sub: 'Please contact us at hello@carevacancy.com.au if you believe this is an error.'
+    },
+    suspended: {
+      icon: '🚫',
+      title: 'Account suspended',
+      color: '#991b1b',
+      bg: '#fef2f2',
+      border: '#fca5a5',
+      message: 'Your account has been suspended. Please contact us at hello@carevacancy.com.au for more information.',
+      sub: ''
+    }
+  };
+  const s = screens[status] || screens.pending;
+  
+  // Hide main content
+  document.querySelector('.dash-main').innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:center;min-height:80vh;padding:40px 20px;">
+      <div style="background:${s.bg};border:2px solid ${s.border};border-radius:16px;padding:48px 40px;max-width:520px;width:100%;text-align:center;">
+        <div style="font-size:3rem;margin-bottom:16px;">${s.icon}</div>
+        <h2 style="font-size:1.4rem;font-weight:800;color:${s.color};margin-bottom:12px;">${s.title}</h2>
+        <p style="color:#64748b;line-height:1.7;margin-bottom:16px;">${s.message}</p>
+        ${s.sub ? `<p style="font-size:0.85rem;color:#94a3b8;">${s.sub}</p>` : ''}
+        <div style="margin-top:28px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+          <a href="../index.html" style="background:#f1f5f9;color:#475569;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:0.9rem;font-weight:600;">← Go to homepage</a>
+          ${status === 'pending' ? '<span style="background:#fcd34d;color:#92400e;padding:10px 20px;border-radius:8px;font-size:0.9rem;font-weight:600;">Awaiting approval</span>' : ''}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 </script>
 </body>
 </html>
