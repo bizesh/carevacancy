@@ -6,6 +6,38 @@
 <title>Dashboard — CareVacancy</title>
 <link rel="stylesheet" href="../css/global.css"/>
 <link rel="stylesheet" href="../css/dashboard.css"/>
+<style>
+.dash-hamburger {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  color: var(--navy);
+  padding: 4px 8px;
+}
+.dash-sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 49;
+}
+@media (max-width: 768px) {
+  .dash-hamburger { display: block; }
+  .dash-sidebar {
+    position: fixed;
+    left: -240px;
+    top: 0;
+    height: 100vh;
+    z-index: 50;
+    transition: left 0.25s ease;
+  }
+  .dash-sidebar.open { left: 0; }
+  .dash-sidebar-overlay.open { display: block; }
+  .dash-main { margin-left: 0 !important; }
+}
+</style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase.js"></script>
 <script src="../js/nav.js"></script>
@@ -60,6 +92,7 @@
 <!-- MAIN -->
 <div class="dash-main">
   <div class="dash-topbar">
+    <button class="dash-hamburger" onclick="toggleSidebar()">☰</button>
     <span class="dash-topbar-title" id="panel-title">Overview</span>
     <a href="../pages/post.html" class="btn btn-primary btn-sm">+ New post</a>
   </div>
@@ -267,6 +300,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.body.style.visibility = 'visible';
 
   // Block pending/rejected/suspended providers
+  // Set sidebar name immediately
+  const nameEl = document.getElementById('ds-name');
+  if (nameEl) nameEl.textContent = p.org_name || p.full_name || p.full_name || 'My Account';
+
   const status = currentUser.profile?.status;
   if (status && status !== 'active') {
     showStatusScreen(status, currentUser.profile?.rejection_reason);
@@ -274,7 +311,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   const p = currentUser.profile;
-  if (p?.role !== 'pm') {
+  if (p?.role !== 'sc') {
     CV.redirectToDashboard(p?.role);
     return;
   }
@@ -444,7 +481,7 @@ function showStatusScreen(status, reason) {
       color: '#92400e',
       bg: '#fffbeb',
       border: '#fcd34d',
-      message: 'Your account is currently being reviewed by our team. We check your ABN and NDIS/AHPRA registration to ensure the quality of our marketplace. You will receive an email once approved — usually within 1 business day.',
+      message: "Your account is currently being reviewed by our team. We check your ABN and NDIS/AHPRA registration to ensure the quality of our marketplace. You'll receive an email once approved — usually within 1 business day.",
       sub: 'While you wait, you can complete your profile below.'
     },
     rejected: {
