@@ -301,6 +301,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Block pending/rejected/suspended providers
   // Set sidebar name immediately
+   const p = currentUser.profile;
   const nameEl = document.getElementById('ds-name');
   if (nameEl) nameEl.textContent = p.org_name || p.full_name || p.full_name || 'My Account';
 
@@ -310,7 +311,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  const p = currentUser.profile;
+ 
   if (p?.role !== 'sc') {
     CV.redirectToDashboard(p?.role);
     return;
