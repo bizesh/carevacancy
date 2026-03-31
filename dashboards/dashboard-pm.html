@@ -267,7 +267,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.body.style.visibility = 'visible';
 
   const p = currentUser.profile;
-  if (p?.role !== 'org' && p?.role !== 'admin') {
+  if (p?.role !== 'pm') {
     CV.redirectToDashboard(p?.role);
     return;
   }
