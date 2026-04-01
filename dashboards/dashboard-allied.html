@@ -525,63 +525,6 @@ function showStatusScreen(status, reason) {
   `;
 }
 
-</script>
-
-<!-- ENQUIRY DETAIL MODAL -->
-<div id="enq-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;padding:20px;overflow-y:auto;" onclick="closeEnqModal(event)">
-  <div id="enq-modal" style="background:white;border-radius:16px;max-width:600px;margin:40px auto;padding:0;overflow:hidden;">
-    <div style="background:var(--navy);padding:20px 24px;display:flex;justify-content:space-between;align-items:center;">
-      <div style="color:white;font-size:16px;font-weight:600;" id="enq-modal-subject">Enquiry</div>
-      <button onclick="document.getElementById('enq-modal-overlay').style.display='none'" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:1.3rem;cursor:pointer;">✕</button>
-    </div>
-    <div style="padding:24px;">
-      <!-- Sender info -->
-      <div style="background:var(--bg);border-radius:10px;padding:16px;margin-bottom:20px;">
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);margin-bottom:10px;">From</div>
-        <div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:8px;">
-          <div>
-            <div style="font-weight:600;color:var(--navy);" id="enq-modal-sender-name">—</div>
-            <div style="font-size:13px;color:var(--muted);" id="enq-modal-sender-role">—</div>
-            <div style="font-size:13px;color:var(--muted);margin-top:4px;" id="enq-modal-sender-email">—</div>
-          </div>
-          <div style="text-align:right;">
-            <div style="font-size:12px;color:var(--muted);" id="enq-modal-date">—</div>
-            <div id="enq-modal-contact-pref" style="margin-top:6px;font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px;display:inline-block;"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Message -->
-      <div style="margin-bottom:20px;">
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);margin-bottom:8px;">Message</div>
-        <div id="enq-modal-message" style="font-size:14px;color:var(--text);line-height:1.7;background:var(--bg);border-radius:10px;padding:16px;"></div>
-      </div>
-
-      <!-- Action buttons -->
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;">
-        <a id="enq-modal-reply-btn" href="#" style="background:var(--teal);color:white;padding:10px 18px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;">
-          📧 Reply by email
-        </a>
-        <button id="enq-modal-read-btn" onclick="markEnqRead()" style="background:none;border:1.5px solid var(--border);color:var(--text);padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">
-          ✓ Mark as read
-        </button>
-      </div>
-
-      <!-- Internal notes -->
-      <div style="border-top:1px solid var(--border);padding-top:20px;">
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);margin-bottom:12px;">Internal notes <span style="font-weight:400;text-transform:none;font-size:11px;">(only your team can see this)</span></div>
-        <div id="enq-modal-notes-list" style="margin-bottom:12px;"></div>
-        <div style="display:flex;gap:8px;">
-          <input type="text" id="enq-note-input" placeholder="Add a note for your team..." style="flex:1;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;" onkeydown="if(event.key==='Enter')saveEnqNote()"/>
-          <button onclick="saveEnqNote()" style="background:var(--navy);color:white;border:none;padding:9px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">Add</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<script>
 let currentEnqId = null;
 let currentEnqToEmail = null;
 
@@ -680,7 +623,60 @@ function closeEnqModal(e) {
     document.getElementById('enq-modal-overlay').style.display = 'none';
   }
 }
+
 </script>
 
+<!-- ENQUIRY DETAIL MODAL -->
+<div id="enq-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;padding:20px;overflow-y:auto;" onclick="closeEnqModal(event)">
+  <div id="enq-modal" style="background:white;border-radius:16px;max-width:600px;margin:40px auto;padding:0;overflow:hidden;">
+    <div style="background:var(--navy);padding:20px 24px;display:flex;justify-content:space-between;align-items:center;">
+      <div style="color:white;font-size:16px;font-weight:600;" id="enq-modal-subject">Enquiry</div>
+      <button onclick="document.getElementById('enq-modal-overlay').style.display='none'" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:1.3rem;cursor:pointer;">✕</button>
+    </div>
+    <div style="padding:24px;">
+      <!-- Sender info -->
+      <div style="background:var(--bg);border-radius:10px;padding:16px;margin-bottom:20px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);margin-bottom:10px;">From</div>
+        <div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:8px;">
+          <div>
+            <div style="font-weight:600;color:var(--navy);" id="enq-modal-sender-name">—</div>
+            <div style="font-size:13px;color:var(--muted);" id="enq-modal-sender-role">—</div>
+            <div style="font-size:13px;color:var(--muted);margin-top:4px;" id="enq-modal-sender-email">—</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:12px;color:var(--muted);" id="enq-modal-date">—</div>
+            <div id="enq-modal-contact-pref" style="margin-top:6px;font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px;display:inline-block;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Message -->
+      <div style="margin-bottom:20px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);margin-bottom:8px;">Message</div>
+        <div id="enq-modal-message" style="font-size:14px;color:var(--text);line-height:1.7;background:var(--bg);border-radius:10px;padding:16px;"></div>
+      </div>
+
+      <!-- Action buttons -->
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;">
+        <a id="enq-modal-reply-btn" href="#" style="background:var(--teal);color:white;padding:10px 18px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;">
+          📧 Reply by email
+        </a>
+        <button id="enq-modal-read-btn" onclick="markEnqRead()" style="background:none;border:1.5px solid var(--border);color:var(--text);padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">
+          ✓ Mark as read
+        </button>
+      </div>
+
+      <!-- Internal notes -->
+      <div style="border-top:1px solid var(--border);padding-top:20px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);margin-bottom:12px;">Internal notes <span style="font-weight:400;text-transform:none;font-size:11px;">(only your team can see this)</span></div>
+        <div id="enq-modal-notes-list" style="margin-bottom:12px;"></div>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="enq-note-input" placeholder="Add a note for your team..." style="flex:1;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;" onkeydown="if(event.key==='Enter')saveEnqNote()"/>
+          <button onclick="saveEnqNote()" style="background:var(--navy);color:white;border:none;padding:9px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">Add</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
