@@ -84,7 +84,7 @@ body{display:flex;min-height:100vh;}
 .modal p{font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.6;}
 .modal-actions{display:flex;gap:10px;justify-content:flex-end;}
 
-@media(max-width:900px){.sidenav{position:fixed;left:-240px;top:0;height:100vh;z-index:50;transition:left 0.25s;}.sidenav.open{left:0;}.main{margin-left:0;}.stats-row{grid-template-columns:repeat(2,1fr);}#admin-hamburger{display:block !important;}}
+@media(max-width:900px){.sidenav{display:none;}.main{margin-left:0;}.stats-row{grid-template-columns:repeat(2,1fr);}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase.js"></script>
@@ -129,7 +129,6 @@ body{display:flex;min-height:100vh;}
 
 <div class="main">
   <div class="topbar">
-    <button onclick="toggleAdminSidebar()" style="display:none;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--navy);padding:4px 8px;margin-right:8px;" id="admin-hamburger">☰</button>
     <span class="topbar-title" id="panel-title">Verification Queue</span>
     <div style="display:flex;gap:10px;align-items:center;">
       <span style="font-size:12px;color:var(--muted);" id="last-refresh"></span>
@@ -207,26 +206,22 @@ body{display:flex;min-height:100vh;}
     <!-- REVENUE PANEL -->
     <div class="panel" id="panel-revenue">
       <h3 style="margin-bottom:20px;">Revenue Overview</h3>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
-        <div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:20px;">
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);margin-bottom:8px;">MRR</div>
-          <div style="font-size:28px;font-weight:700;color:var(--navy);" id="r-mrr">—</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:4px;">Monthly recurring</div>
+      <div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:24px;">
+        <p style="color:var(--muted);font-size:14px;">Revenue dashboard will show Stripe subscription data once payments are connected in Sprint 3.</p>
+        <div style="margin-top:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+          <div style="background:var(--bg);border-radius:var(--radius-sm);padding:16px;">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:5px;">MRR</div>
+            <div style="font-size:22px;font-weight:700;color:var(--navy);">$0</div>
+          </div>
+          <div style="background:var(--bg);border-radius:var(--radius-sm);padding:16px;">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:5px;">Featured subs</div>
+            <div style="font-size:22px;font-weight:700;color:var(--navy);">0</div>
+          </div>
+          <div style="background:var(--bg);border-radius:var(--radius-sm);padding:16px;">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:5px;">Premium subs</div>
+            <div style="font-size:22px;font-weight:700;color:var(--navy);">0</div>
+          </div>
         </div>
-        <div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:20px;">
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);margin-bottom:8px;">Featured subs</div>
-          <div style="font-size:28px;font-weight:700;color:var(--navy);" id="r-featured">—</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:4px;">@ $49/mo</div>
-        </div>
-        <div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:20px;">
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);margin-bottom:8px;">Premium subs</div>
-          <div style="font-size:28px;font-weight:700;color:var(--navy);" id="r-premium">—</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:4px;">@ $99/mo</div>
-        </div>
-      </div>
-      <div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:20px;">
-        <div style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:16px;">Paying subscribers</div>
-        <div id="r-subscribers-list" style="font-size:13px;color:var(--muted);">Loading...</div>
       </div>
     </div>
 
@@ -234,7 +229,7 @@ body{display:flex;min-height:100vh;}
     <div class="panel" id="panel-listings">
       <h3 style="margin-bottom:20px;">All Listings</h3>
       <div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:24px;">
-        <div id="listings-list" style="font-size:13px;color:var(--muted);">Loading...</div>
+        <p style="color:var(--muted);font-size:14px;">Active listings will appear here once Sprint 2 (posting system) is built.</p>
       </div>
     </div>
 
@@ -401,10 +396,18 @@ async function approveProvider(userId) {
     }).eq('user_id', userId)
   ]);
 
-  // TODO: Send approval email via Resend (Sprint 3)
+  // Send approval email
+  try {
+    await fetch('/api/notify-approval', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, action: 'approved' })
+    });
+  } catch(e) { console.error('Email error:', e); }
+
   await loadQueue();
   await loadStats();
-  showToast('Provider approved and profile is now live ✓');
+  showToast('Provider approved — confirmation email sent ✓');
 }
 
 // ── REJECT ──
@@ -434,6 +437,15 @@ async function confirmReject() {
       notes: reason
     }).eq('user_id', rejectingUserId)
   ]);
+
+  // Send rejection email
+  try {
+    await fetch('/api/notify-approval', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: rejectingUserId, action: 'rejected', reason })
+    });
+  } catch(e) { console.error('Email error:', e); }
 
   closeModal();
   await loadQueue();
@@ -498,8 +510,6 @@ function viewUser(userId) {
 
 // ── UI HELPERS ──
 function switchPanel(btn, panel) {
-  if (panel === 'revenue') loadRevenueData();
-  if (panel === 'listings') loadListingsData();
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   btn.classList.add('active');
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
@@ -529,68 +539,6 @@ async function signOut() {
   window.location.href = '../pages/login.html';
   window.location.href = '../index.html';
 }
-
-async function loadRevenueData() {
-  const { data: profiles } = await CV.db
-    .from('profiles')
-    .select('tier, full_name, org_name, email, tier_updated_at')
-    .in('tier', ['featured', 'premium'])
-    .eq('status', 'active');
-
-  const featured = (profiles || []).filter(p => p.tier === 'featured');
-  const premium  = (profiles || []).filter(p => p.tier === 'premium');
-  const mrr = (featured.length * 49) + (premium.length * 99);
-
-  document.getElementById('r-mrr').textContent = '$' + mrr.toLocaleString();
-  document.getElementById('r-featured').textContent = featured.length;
-  document.getElementById('r-premium').textContent = premium.length;
-
-  const all = [...featured, ...premium];
-  if (all.length === 0) {
-    document.getElementById('r-subscribers-list').textContent = 'No paying subscribers yet.';
-    return;
-  }
-
-  document.getElementById('r-subscribers-list').innerHTML = all.map(p => `
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
-      <div>
-        <div style="font-weight:600;color:var(--navy);">${p.org_name || p.full_name || 'Unknown'}</div>
-        <div style="font-size:12px;color:var(--muted);">${p.email || ''}</div>
-      </div>
-      <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:${p.tier === 'premium' ? '#ede9fe' : '#dcfce7'};color:${p.tier === 'premium' ? '#5b21b6' : '#166534'};">${p.tier === 'premium' ? '💎 Premium' : '⭐ Featured'}</span>
-    </div>
-  `).join('');
-}
-
-async function loadListingsData() {
-  const { data: posts } = await CV.db
-    .from('posts')
-    .select('*, profiles(org_name, full_name)')
-    .eq('is_active', true)
-    .order('created_at', { ascending: false });
-
-  if (!posts || posts.length === 0) {
-    document.getElementById('listings-list').textContent = 'No active listings yet.';
-    return;
-  }
-
-  document.getElementById('listings-list').innerHTML = posts.map(p => `
-    <div style="padding:12px 0;border-bottom:1px solid var(--border);">
-      <div style="display:flex;justify-content:space-between;align-items:start;gap:12px;">
-        <div>
-          <div style="font-weight:600;color:var(--navy);margin-bottom:2px;">${p.title}</div>
-          <div style="font-size:12px;color:var(--muted);">${p.profiles?.org_name || p.profiles?.full_name || 'Unknown'} · ${p.category} · ${p.suburb || ''} ${p.state || ''}</div>
-        </div>
-        <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap;background:${p.type === 'offering' ? '#dcfce7' : '#dbeafe'};color:${p.type === 'offering' ? '#166534' : '#1e40af'};">${p.type}</span>
-      </div>
-    </div>
-  `).join('');
-}
-
-function toggleAdminSidebar() {
-  document.querySelector('.sidenav').classList.toggle('open');
-}
-
 </script>
 </body>
 </html>

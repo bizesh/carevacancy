@@ -46,19 +46,13 @@
 .cc-title{font-size:16px;font-weight:600;color:var(--navy);margin-bottom:16px;}
 .cc-tier{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--bg);border-radius:8px;margin-bottom:16px;font-size:13px;font-weight:500;color:var(--navy);}
 .enquiry-form{display:flex;flex-direction:column;gap:12px;}
-.enquiry-form select,
-.enquiry-form textarea{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;background:white;}
-.enquiry-form select:focus,
+.enquiry-form textarea{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;resize:vertical;min-height:100px;outline:none;}
 .enquiry-form textarea:focus{border-color:var(--teal);}
-.enquiry-form textarea{resize:vertical;min-height:100px;}
-.contact-pref-label{font-size:12px;font-weight:600;color:var(--navy);margin-bottom:4px;}
-.contact-pref-options{display:flex;gap:8px;flex-wrap:wrap;}
-.contact-pref-btn{flex:1;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;background:white;color:var(--text);transition:all 0.15s;text-align:center;white-space:nowrap;}
-.contact-pref-btn.active{border-color:var(--teal);background:var(--teal-light);color:var(--teal-dark);}
 .enquiry-btn{background:var(--teal);color:white;border:none;padding:12px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;width:100%;}
 .enquiry-btn:hover{background:var(--teal-dark);}
 .locked-msg{background:var(--bg);border:1px dashed var(--border);border-radius:8px;padding:16px;text-align:center;}
 .locked-msg p{font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.6;}
+.upgrade-link{display:block;text-align:center;font-size:12px;color:var(--teal);text-decoration:none;margin-top:8px;}
 
 .save-btn{width:100%;background:none;border:1.5px solid var(--border);color:var(--text);padding:10px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:6px;}
 .save-btn:hover{border-color:var(--teal);color:var(--teal);}
@@ -92,10 +86,8 @@
 </div>
 </div>
 
-<script src="../js/nav.js"></script>
 <script>
 let profileData = null;
-let selectedContactPref = 'either';
 
 document.addEventListener('DOMContentLoaded', async () => {
   document.body.style.visibility = 'visible';
@@ -103,6 +95,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const id = params.get('id');
   if (!id) { window.location.href = 'search.html'; return; }
   await loadProfile(id);
+  // Track view
   const user = await CV.getCurrentUser();
   await CV.db.from('profile_views').insert({ profile_id: id, viewer_id: user?.id || null });
 });
@@ -110,13 +103,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function loadProfile(id) {
   try {
     const { data: p, error } = await CV.db.from('profiles').select('*').eq('id', id).eq('status','active').single();
-    if (error || !p) {
-      document.getElementById('profile-page').innerHTML = '<div class="loading-profile"><div style="font-size:48px;">🔍</div><div style="font-size:16px;color:var(--navy);font-weight:500;margin-top:12px;">Provider not found</div><a href="search.html" style="color:var(--teal);">Back to search</a></div>';
-      return;
-    }
+    if (error || !p) { document.getElementById('profile-page').innerHTML = '<div class="loading-profile"><div style="font-size:48px;">🔍</div><div style="font-size:16px;color:var(--navy);font-weight:500;margin-top:12px;">Provider not found</div><a href="search.html" style="color:var(--teal);">Back to search</a></div>'; return; }
+
     profileData = p;
     document.title = `${p.org_name || p.full_name} — CareVacancy`;
+
+    // Load their posts/vacancies
     const { data: posts } = await CV.db.from('posts').select('*').eq('user_id', id).eq('is_active', true).order('created_at', { ascending: false });
+
     renderProfile(p, posts || []);
   } catch(e) {
     console.error(e);
@@ -129,11 +123,14 @@ function renderProfile(p, posts) {
   const roleLabels = { org:'SIL/SDA Organisation', sc:'Support Coordinator', pm:'Plan Manager', allied:'Allied Health Professional' };
   const location = [p.suburb, p.state].filter(Boolean).join(', ') || 'Location not specified';
   const canReceiveEnquiries = ['featured','premium'].includes(p.tier);
+
   const vacancyPosts = posts.filter(post => post.type === 'offering');
   const seekingPosts = posts.filter(post => post.type === 'seeking');
 
   document.getElementById('profile-page').innerHTML = `
+  <!-- LEFT COLUMN -->
   <div>
+    <!-- HEADER -->
     <div class="profile-header">
       <div class="ph-top">
         <div class="ph-avatar">${initials}</div>
@@ -148,30 +145,36 @@ function renderProfile(p, posts) {
       </div>
       <div class="ph-meta">
         <div class="ph-meta-item">📍 ${location}</div>
-        ${p.website ? `<div class="ph-meta-item">🌐 <a href="${p.website}" target="_blank" style="color:var(--teal);">${p.website.replace('https://','').replace('http://','')}</a></div>` : ''}
-        ${p.ndis_registration ? `<div class="ph-meta-item">✓ NDIS Registered</div>` : ''}
-        ${p.ahpra_number ? `<div class="ph-meta-item">✓ AHPRA Registered</div>` : ''}
+        ${p.phone ? `<div class="ph-meta-item">📞 ${canReceiveEnquiries ? p.phone : 'Available on enquiry'}</div>` : ''}
+        ${p.website ? `<div class="ph-meta-item">🌐 <a href="${p.website}" target="_blank" style="color:var(--teal);">${p.website.replace('https://','')}</a></div>` : ''}
+        ${p.abn ? `<div class="ph-meta-item">🏢 ABN: ${p.abn}</div>` : ''}
+        ${p.ndis_registration ? `<div class="ph-meta-item">✓ NDIS Reg: ${p.ndis_registration}</div>` : ''}
+        ${p.ahpra_number ? `<div class="ph-meta-item">✓ AHPRA: ${p.ahpra_number}</div>` : ''}
       </div>
     </div>
 
+    <!-- ABOUT -->
     ${p.bio ? `
     <div class="profile-section">
       <div class="ps-title">About</div>
       <div class="ps-body">${p.bio}</div>
     </div>` : ''}
 
+    <!-- SERVICES -->
     ${p.services?.length > 0 ? `
     <div class="profile-section">
       <div class="ps-title">Services offered</div>
       <div class="tag-cloud">${p.services.map(s => `<span class="tag">${s}</span>`).join('')}</div>
     </div>` : ''}
 
+    <!-- DISABILITY TYPES -->
     ${p.disability_types?.length > 0 ? `
     <div class="profile-section">
       <div class="ps-title">Disability types supported</div>
       <div class="tag-cloud">${p.disability_types.map(d => `<span class="tag">${d}</span>`).join('')}</div>
     </div>` : ''}
 
+    <!-- VACANCIES / OFFERINGS -->
     ${vacancyPosts.length > 0 ? `
     <div class="profile-section">
       <div class="ps-title">Current vacancies &amp; offerings (${vacancyPosts.length})</div>
@@ -193,6 +196,7 @@ function renderProfile(p, posts) {
       </div>`).join('')}
     </div>` : ''}
 
+    <!-- SEEKING POSTS -->
     ${seekingPosts.length > 0 ? `
     <div class="profile-section">
       <div class="ps-title">Currently seeking (${seekingPosts.length})</div>
@@ -211,6 +215,7 @@ function renderProfile(p, posts) {
     </div>` : ''}
   </div>
 
+  <!-- RIGHT SIDEBAR -->
   <div>
     <div class="contact-card">
       <div class="cc-title">Contact ${name.split(' ')[0]}</div>
@@ -218,7 +223,7 @@ function renderProfile(p, posts) {
 
       ${canReceiveEnquiries ? `
       <div class="enquiry-form" id="enquiry-form">
-        <select id="enq-subject">
+        <select style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;" id="enq-subject">
           <option value="">What is your enquiry about?</option>
           <option>SIL vacancy availability</option>
           <option>Service availability</option>
@@ -227,16 +232,10 @@ function renderProfile(p, posts) {
           <option>Other</option>
         </select>
         <textarea id="enq-message" placeholder="Hi, I'm enquiring about..."></textarea>
-        <div>
-          <div class="contact-pref-label">How would you like to be contacted back?</div>
-          <div class="contact-pref-options">
-            <button class="contact-pref-btn" onclick="setContactPref('email', this)">📧 Email</button>
-            <button class="contact-pref-btn" onclick="setContactPref('phone', this)">📞 Phone</button>
-            <button class="contact-pref-btn active" onclick="setContactPref('either', this)">✓ Either</button>
-          </div>
-        </div>
-        <button class="enquiry-btn" onclick="sendEnquiry('${p.id}')">Send enquiry</button>
-        <div style="font-size:11px;color:var(--muted);text-align:center;">Your message goes directly to this provider via CareVacancy</div>
+        <button class="enquiry-btn" onclick="sendEnquiry('${p.id}')">
+          Send enquiry
+        </button>
+        <div style="font-size:11px;color:var(--muted);text-align:center;">Your message goes directly to this provider</div>
       </div>
       <div id="enquiry-sent" style="display:none;text-align:center;padding:16px;background:#f0fdf4;border-radius:8px;">
         <div style="font-size:24px;margin-bottom:8px;">✓</div>
@@ -245,8 +244,8 @@ function renderProfile(p, posts) {
       </div>
       ` : `
       <div class="locked-msg">
-        <p>This provider is on the Basic plan and cannot receive direct enquiries. They may be reachable via their website.</p>
-        ${p.website ? `<a href="${p.website}" target="_blank" style="color:var(--teal);font-size:13px;display:block;margin-top:8px;">Visit their website →</a>` : ''}
+        <p>This provider is on the Basic plan. Upgrade to Featured or Premium to receive and send direct enquiries.</p>
+        ${p.website ? `<a href="${p.website}" target="_blank" style="color:var(--teal);font-size:13px;">Visit their website →</a>` : ''}
       </div>
       `}
 
@@ -254,12 +253,6 @@ function renderProfile(p, posts) {
       <a href="search.html" style="display:block;text-align:center;font-size:12px;color:var(--muted);margin-top:12px;text-decoration:none;">← Back to search results</a>
     </div>
   </div>`;
-}
-
-function setContactPref(pref, btn) {
-  selectedContactPref = pref;
-  document.querySelectorAll('.contact-pref-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
 }
 
 async function sendEnquiry(toId) {
@@ -271,17 +264,28 @@ async function sendEnquiry(toId) {
 
   const subject = document.getElementById('enq-subject').value;
   const message = document.getElementById('enq-message').value.trim();
+
   if (!message) { alert('Please enter a message.'); return; }
 
   try {
-    await CV.db.from('enquiries').insert({
+    const { data: enqData, error: enqError } = await CV.db.from('enquiries').insert({
       from_user_id: user.id,
       to_user_id: toId,
       subject: subject || 'General enquiry',
       message: CV.sanitise(message),
       contact_preference: selectedContactPref,
       status: 'sent'
-    });
+    }).select().single();
+
+    if (enqError) throw enqError;
+
+    // Notify provider by email (fire and forget)
+    fetch('/api/notify-enquiry', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ enquiryId: enqData.id })
+    }).catch(e => console.error('Email notify error:', e));
+
     document.getElementById('enquiry-form').style.display = 'none';
     document.getElementById('enquiry-sent').style.display = 'block';
   } catch(e) {
