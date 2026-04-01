@@ -388,6 +388,7 @@ function renderPosts(posts) {
     </div>
     <div class="pi-actions">
       <span class="badge ${p.availability === 'immediate' ? 'badge-green' : 'badge-amber'}">${p.availability === 'immediate' ? 'Available' : 'Waitlist'}</span>
+      <button class="btn btn-outline btn-sm" onclick="viewPost('${p.id}')">View</button>
       <button class="btn btn-outline btn-sm" onclick="openEditPost('${p.id}')">Edit</button>
       <button class="btn btn-outline btn-sm" onclick="deletePost('${p.id}')">Remove</button>
     </div>
@@ -592,6 +593,69 @@ function closeEditModal(e) {
   if (e.target === document.getElementById('edit-post-overlay')) {
     document.getElementById('edit-post-overlay').style.display = 'none';
   }
+}
+
+
+async function viewPost(postId) {
+  document.getElementById('view-post-overlay').style.display = 'block';
+  document.getElementById('view-post-body').innerHTML = '<div style="text-align:center;padding:32px;color:var(--muted);">Loading...</div>';
+
+  const { data: p } = await CV.db.from('posts').select('*').eq('id', postId).single();
+  if (!p) return;
+
+  document.getElementById('view-post-title').textContent = p.title;
+
+  const availMap = { immediate: '✓ Available now', date: 'From a specific date', waitlist: 'Waitlist only' };
+  const supportMap = { any: 'Any / Not specified', low: 'Low', moderate: 'Moderate', high: 'High', complex: 'Complex' };
+
+  const row = (label, value) => value ? `
+    <div style="display:flex;gap:16px;padding:10px 0;border-bottom:1px solid var(--border);">
+      <div style="font-size:13px;font-weight:600;color:var(--navy);min-width:140px;flex-shrink:0;">${label}</div>
+      <div style="font-size:13px;color:var(--text);">${value}</div>
+    </div>` : '';
+
+  const tags = (items) => items?.length > 0
+    ? items.map(i => `<span style="display:inline-block;font-size:12px;font-weight:500;padding:3px 10px;border-radius:20px;background:var(--bg);border:1px solid var(--border);margin:2px;">${i}</span>`).join('')
+    : '<span style="color:var(--muted);font-size:13px;">Not specified</span>';
+
+  document.getElementById('view-post-body').innerHTML = `
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;">
+      <span style="font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;background:${p.type === 'offering' ? '#dcfce7' : '#dbeafe'};color:${p.type === 'offering' ? '#166534' : '#1e40af'};">${p.type === 'offering' ? '✅ Offering' : '🔎 Seeking'}</span>
+      <span style="font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;background:var(--bg);border:1px solid var(--border);color:var(--navy);">${p.category?.toUpperCase()}</span>
+      <span style="font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;background:${p.availability === 'immediate' ? '#dcfce7' : '#fef3c7'};color:${p.availability === 'immediate' ? '#166534' : '#92400e'};">${availMap[p.availability] || p.availability}</span>
+    </div>
+
+    ${p.description ? `
+    <div style="margin-bottom:20px;">
+      <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:8px;">Description</div>
+      <div style="font-size:13px;color:var(--text);line-height:1.7;background:var(--bg);border-radius:8px;padding:14px;">${p.description}</div>
+    </div>` : ''}
+
+    <div style="margin-bottom:20px;">
+      ${row('Location', [p.suburb, p.state].filter(Boolean).join(', ') || 'Not specified')}
+      ${row('Support level', supportMap[p.support_level] || p.support_level)}
+      ${row('Vacancy count', p.vacancy_count > 0 ? p.vacancy_count + ' spot' + (p.vacancy_count > 1 ? 's' : '') : null)}
+      ${row('Gender preference', p.gender_preference && p.gender_preference !== 'any' ? p.gender_preference.charAt(0).toUpperCase() + p.gender_preference.slice(1) + ' preferred' : null)}
+      ${row('Available from', p.available_from ? new Date(p.available_from).toLocaleDateString('en-AU', { day:'numeric', month:'long', year:'numeric' }) : null)}
+      ${row('Posted', new Date(p.created_at).toLocaleDateString('en-AU', { day:'numeric', month:'long', year:'numeric' }))}
+      ${p.updated_at ? row('Last edited', new Date(p.updated_at).toLocaleDateString('en-AU', { day:'numeric', month:'long', year:'numeric' })) : ''}
+    </div>
+
+    <div style="margin-bottom:20px;">
+      <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:8px;">Disability types</div>
+      <div>${tags(p.disability_types)}</div>
+    </div>
+
+    <div style="margin-bottom:20px;">
+      <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:8px;">Funding types accepted</div>
+      <div>${tags(p.funding_types)}</div>
+    </div>
+
+    <div style="display:flex;gap:10px;justify-content:flex-end;padding-top:16px;border-top:1px solid var(--border);">
+      <button onclick="document.getElementById('view-post-overlay').style.display='none';openEditPost('${p.id}')" style="background:var(--teal);color:white;border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">✏️ Edit this post</button>
+      <button onclick="document.getElementById('view-post-overlay').style.display='none'" style="background:none;border:1.5px solid var(--border);color:var(--text);padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">Close</button>
+    </div>
+  `;
 }
 
 let currentEnqId = null;
@@ -840,6 +904,17 @@ function closeEnqModal(e) {
         <button onclick="saveEditPost()" id="edit-save-btn" style="background:var(--teal);color:white;border:none;padding:10px 24px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">Save changes</button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- VIEW POST MODAL -->
+<div id="view-post-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;padding:20px;overflow-y:auto;" onclick="if(event.target===this)this.style.display='none'">
+  <div style="background:white;border-radius:16px;max-width:640px;margin:40px auto;overflow:hidden;">
+    <div style="background:var(--navy);padding:20px 24px;display:flex;justify-content:space-between;align-items:center;">
+      <div style="color:white;font-size:16px;font-weight:600;" id="view-post-title">Post details</div>
+      <button onclick="document.getElementById('view-post-overlay').style.display='none'" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:1.3rem;cursor:pointer;">✕</button>
+    </div>
+    <div id="view-post-body" style="padding:24px;"></div>
   </div>
 </div>
 
