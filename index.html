@@ -269,7 +269,13 @@ section{margin:0;padding:0;display:block;}
 ══════════════════════════════════ -->
 <section class="hero" id="hero-loggedout">
   <div class="hero-inner">
-    <div>
+    <div id="hero-logged-in" style="display:none;">
+      <p style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#5eead4;margin-bottom:10px;opacity:0.7;">&#127968; NDIS Marketplace</p>
+      <h2 id="wl-greeting-hero" style="font-family:'DM Serif Display',serif;font-size:clamp(22px,3vw,36px);color:white;line-height:1.2;margin-bottom:8px;">Good evening</h2>
+      <p id="wl-sub-hero" style="font-size:14px;color:rgba(255,255,255,0.65);margin-bottom:20px;">Here's what's new on CareVacancy today</p>
+      <div id="wl-pills-hero" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+    </div>
+    <div id="hero-marketing">
       <div class="hero-badge">&#127462;&#127482; Australia&#39;s NDIS Marketplace</div>
       <h1>Find the right <span>NDIS provider</span> &#8212; fast</h1>
       <p class="hero-sub">Search verified SIL vacancies, support coordinators, allied health professionals and plan managers. Or list your service and connect with participants who need you.</p>
@@ -381,7 +387,7 @@ section{margin:0;padding:0;display:block;}
     </div>
   </div>
 </section>
-<!-- WELCOME BAR (logged-in, replaces hero) -->
+<!-- WELCOME BAR (logged-in) - now inside hero, this is just the carousel -->
 <div id="logged-in-hero" style="display:none;">
   <div class="welcome-bar">
     <div class="welcome-inner">
@@ -858,10 +864,7 @@ async function initLoggedIn(user) {
   const isProvider = PROVIDER_ROLES.includes(role);
   const dashUrl = DASH_MAP[role]||'dashboards/dashboard-participant.html';
 
-  document.getElementById('hero-loggedout').style.display = 'none';
-  document.getElementById('logged-in-hero').style.display = 'block';
-  document.getElementById('wl-greeting').textContent = 'Good '+getGreeting()+', '+name.split(' ')[0];
-  document.getElementById('wl-sub').textContent = isProvider ? 'Your dashboard is ready. Here\'s what\'s new.' : 'Browse the latest vacancies matched to your needs.';
+  // Hero stays visible — marketing text swapped for greeting inside hero
 
   let pills = '<a href="'+dashUrl+'" class="wpill wpill-teal">&#127968; Dashboard</a>';
   if (isProvider) {
@@ -872,7 +875,8 @@ async function initLoggedIn(user) {
     pills += '<a href="pages/search.html" class="wpill wpill-white">&#128269; Search</a>';
     pills += '<a href="pages/post.html" class="wpill wpill-white">&#43; Post request</a>';
   }
-  document.getElementById('wl-pills').innerHTML = pills;
+  const pillsEl = document.getElementById('wl-pills-hero') || document.getElementById('wl-pills');
+  if(pillsEl) pillsEl.innerHTML = pills;
 
   if (isProvider) {
     CV.db.from('enquiries').select('id',{count:'exact'}).eq('to_user_id',user.id).eq('status','sent').then(({count}) => {
