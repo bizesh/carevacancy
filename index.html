@@ -10,19 +10,19 @@
 /* ══════════════════════════════════════
    AD CAROUSEL
 ══════════════════════════════════════ */
-.ad-carousel{position:relative;overflow:hidden;background:#0f2942;height:200px;}
+.ad-carousel{position:relative;overflow:hidden;background:#0f2942;height:260px;}
 .ad-track{display:flex;height:100%;transition:transform 0.6s cubic-bezier(0.4,0,0.2,1);}
 .ad-slide{min-width:100%;height:100%;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;}
 .ad-slide-bg{position:absolute;inset:0;background-size:cover;background-position:center;}
 .ad-slide-overlay{position:absolute;inset:0;}
-.ad-slide-content{position:relative;z-index:2;max-width:1100px;width:100%;padding:0 5%;display:flex;align-items:center;justify-content:space-between;gap:24px;}
+.ad-slide-content{position:relative;z-index:2;max-width:1100px;width:100%;padding:0 5%;display:flex;align-items:center;justify-content:space-between;gap:32px;}
 .ad-slide-left{}
 .ad-slide-eyebrow{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.6);margin-bottom:6px;}
-.ad-slide-title{font-family:'DM Serif Display',serif;font-size:clamp(18px,2.5vw,28px);color:white;line-height:1.2;margin-bottom:6px;}
+.ad-slide-title{font-family:'DM Serif Display',serif;font-size:clamp(20px,2.8vw,32px);color:white;line-height:1.2;margin-bottom:8px;}
 .ad-slide-sub{font-size:13px;color:rgba(255,255,255,0.7);max-width:420px;}
 .ad-slide-cta{background:var(--teal);color:white;border:none;padding:10px 22px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background 0.2s;}
 .ad-slide-cta:hover{background:var(--teal-dark);}
-.ad-badge{position:absolute;top:10px;right:12px;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);padding:3px 8px;border-radius:4px;z-index:3;}
+.ad-badge{position:absolute;top:14px;right:16px;font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;background:rgba(0,0,0,0.35);color:rgba(255,255,255,0.85);padding:4px 10px;border-radius:5px;z-index:3;border:1px solid rgba(255,255,255,0.15);backdrop-filter:blur(4px);}
 .ad-dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:4;}
 .ad-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.35);cursor:pointer;transition:all 0.2s;}
 .ad-dot.active{background:white;width:18px;border-radius:3px;}
@@ -298,61 +298,6 @@ footer{background:var(--navy);padding:36px 5% 22px;}
   <button class="nav-hamburger" onclick="toggleMobileMenu()">&#9776;</button>
 </nav>
 
-<!-- AD CAROUSEL (always visible) -->
-<div class="ad-carousel" id="ad-carousel">
-  <div class="ad-track" id="ad-track">
-
-    <!-- SLIDE 1 -->
-    <div class="ad-slide">
-      <div class="ad-slide-bg" style="background:linear-gradient(135deg,#0f2942 0%,#1e4d6b 50%,#0d6e5a 100%);"></div>
-      <div class="ad-slide-overlay" style="background:rgba(0,0,0,0.25);"></div>
-      <div class="ad-slide-content">
-        <div class="ad-slide-left">
-          <div class="ad-slide-eyebrow">&#128142; Premium Provider &middot; Melbourne VIC</div>
-          <div class="ad-slide-title">SIL vacancies available now<br>across metropolitan Melbourne</div>
-          <div class="ad-slide-sub">Specialising in ABI, physical disability, and complex support needs. Immediate availability in 3 locations.</div>
-        </div>
-        <button class="ad-slide-cta" onclick="gateAction('enquire')">View vacancies &#8594;</button>
-      </div>
-      <div class="ad-badge">Sponsored</div>
-    </div>
-
-    <!-- SLIDE 2 -->
-    <div class="ad-slide">
-      <div class="ad-slide-bg" style="background:linear-gradient(135deg,#1a1a4e 0%,#2d1b69 50%,#0d9488 100%);"></div>
-      <div class="ad-slide-overlay" style="background:rgba(0,0,0,0.2);"></div>
-      <div class="ad-slide-content">
-        <div class="ad-slide-left">
-          <div class="ad-slide-eyebrow">&#11088; Featured Provider &middot; Sydney NSW</div>
-          <div class="ad-slide-title">Experienced Support Coordinators<br>ready to take on new clients</div>
-          <div class="ad-slide-sub">NDIS registered, specialising in mental health, autism, and complex psychosocial disability across Greater Sydney.</div>
-        </div>
-        <button class="ad-slide-cta" onclick="gateAction('enquire')">Get in touch &#8594;</button>
-      </div>
-      <div class="ad-badge">Sponsored</div>
-    </div>
-
-    <!-- SLIDE 3 -->
-    <div class="ad-slide">
-      <div class="ad-slide-bg" style="background:linear-gradient(135deg,#064e3b 0%,#065f46 50%,#0f2942 100%);"></div>
-      <div class="ad-slide-overlay" style="background:rgba(0,0,0,0.2);"></div>
-      <div class="ad-slide-content">
-        <div class="ad-slide-left">
-          <div class="ad-slide-eyebrow">&#128142; Premium Provider &middot; Brisbane QLD</div>
-          <div class="ad-slide-title">Allied Health team with<br>NDIS experience across Queensland</div>
-          <div class="ad-slide-sub">OT, physiotherapy, speech therapy and behaviour support. Telehealth and in-home available statewide.</div>
-        </div>
-        <button class="ad-slide-cta" onclick="gateAction('enquire')">Learn more &#8594;</button>
-      </div>
-      <div class="ad-badge">Sponsored</div>
-    </div>
-
-  </div>
-  <button class="ad-arrow prev" onclick="slideAd(-1)">&#8592;</button>
-  <button class="ad-arrow next" onclick="slideAd(1)">&#8594;</button>
-  <div class="ad-dots" id="ad-dots"></div>
-</div>
-
 <!-- HERO (logged-out) -->
 <section class="hero" id="hero-loggedout">
   <div class="hero-inner">
@@ -425,6 +370,67 @@ footer{background:var(--navy);padding:36px 5% 22px;}
       <div class="welcome-pills" id="wl-pills"></div>
     </div>
   </div>
+</div>
+
+<!-- AD CAROUSEL (always visible) -->
+<div style="background:var(--bg);padding:10px 5% 0;border-top:1px solid var(--border);">
+  <div style="max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding-bottom:10px;">
+    <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);">&#128225; Sponsored listings</div>
+    <div style="font-size:11px;color:var(--muted);">Want your listing here? <a href="pages/signup.html" style="color:var(--teal);text-decoration:none;font-weight:600;">Contact us</a></div>
+  </div>
+</div>
+<div class="ad-carousel" id="ad-carousel">
+  <div class="ad-track" id="ad-track">
+
+    <!-- SLIDE 1 -->
+    <div class="ad-slide">
+      <div class="ad-slide-bg" style="background:linear-gradient(135deg,#0f2942 0%,#1e4d6b 50%,#0d6e5a 100%);"></div>
+      <div class="ad-slide-overlay" style="background:rgba(0,0,0,0.25);"></div>
+      <div class="ad-slide-content">
+        <div class="ad-slide-left">
+          <div class="ad-slide-eyebrow">&#128142; Premium Provider &middot; Melbourne VIC</div>
+          <div class="ad-slide-title">SIL vacancies available now<br>across metropolitan Melbourne</div>
+          <div class="ad-slide-sub">Specialising in ABI, physical disability, and complex support needs. Immediate availability in 3 locations.</div>
+        </div>
+        <button class="ad-slide-cta" onclick="gateAction('enquire')">View vacancies &#8594;</button>
+      </div>
+      <div class="ad-badge">Sponsored</div>
+    </div>
+
+    <!-- SLIDE 2 -->
+    <div class="ad-slide">
+      <div class="ad-slide-bg" style="background:linear-gradient(135deg,#1a1a4e 0%,#2d1b69 50%,#0d9488 100%);"></div>
+      <div class="ad-slide-overlay" style="background:rgba(0,0,0,0.2);"></div>
+      <div class="ad-slide-content">
+        <div class="ad-slide-left">
+          <div class="ad-slide-eyebrow">&#11088; Featured Provider &middot; Sydney NSW</div>
+          <div class="ad-slide-title">Experienced Support Coordinators<br>ready to take on new clients</div>
+          <div class="ad-slide-sub">NDIS registered, specialising in mental health, autism, and complex psychosocial disability across Greater Sydney.</div>
+        </div>
+        <button class="ad-slide-cta" onclick="gateAction('enquire')">Get in touch &#8594;</button>
+      </div>
+      <div class="ad-badge">Sponsored</div>
+    </div>
+
+    <!-- SLIDE 3 -->
+    <div class="ad-slide">
+      <div class="ad-slide-bg" style="background:linear-gradient(135deg,#064e3b 0%,#065f46 50%,#0f2942 100%);"></div>
+      <div class="ad-slide-overlay" style="background:rgba(0,0,0,0.2);"></div>
+      <div class="ad-slide-content">
+        <div class="ad-slide-left">
+          <div class="ad-slide-eyebrow">&#128142; Premium Provider &middot; Brisbane QLD</div>
+          <div class="ad-slide-title">Allied Health team with<br>NDIS experience across Queensland</div>
+          <div class="ad-slide-sub">OT, physiotherapy, speech therapy and behaviour support. Telehealth and in-home available statewide.</div>
+        </div>
+        <button class="ad-slide-cta" onclick="gateAction('enquire')">Learn more &#8594;</button>
+      </div>
+      <div class="ad-badge">Sponsored</div>
+    </div>
+
+  </div>
+  <button class="ad-arrow prev" onclick="slideAd(-1)">&#8592;</button>
+  <button class="ad-arrow next" onclick="slideAd(1)">&#8594;</button>
+  <div class="ad-dots" id="ad-dots"></div>
 </div>
 
 <!-- MAIN FEED (always visible) -->
@@ -627,11 +633,11 @@ footer{background:var(--navy);padding:36px 5% 22px;}
   <div class="modal-box" style="position:relative;">
     <button class="modal-close" onclick="closeModal('modal-login')">&#215;</button>
     <div class="modal-icon">&#128274;</div>
-    <h3>Login to view details</h3>
-    <p>Create a free account or log in to view full provider details, contact information, and send enquiries.</p>
-    <a href="pages/login.html" class="modal-btn-primary">Log in to my account</a>
-    <div class="modal-divider">or</div>
-    <a href="pages/signup.html" class="modal-btn-secondary">Create a free account &#8594;</a>
+    <h3>Log in or sign up to view</h3>
+    <p>Join free to view full provider details, contact information, suburb and vacancy availability — then enquire directly.</p>
+    <a href="pages/signup.html" class="modal-btn-primary">&#128640; Create free account</a>
+    <div class="modal-divider">already have an account?</div>
+    <a href="pages/login.html" class="modal-btn-secondary">Log in &#8594;</a>
   </div>
 </div>
 
@@ -804,7 +810,8 @@ function renderPostCard(post, type) {
   // Provider name — blurred if no access
   const nameHtml = hasAccess
     ? '<span class="pc-provider-name">' + provName + '</span>'
-    : '<span class="pc-provider-name blurred">Hidden Provider Name</span>';
+    : '<span class="pc-provider-name blurred">Provider Name Hidden</span>';
+  // Always show location — even in tease
 
   const tierBadge = provTier === 'premium'
     ? '<span class="pc-provider-badge premium">&#128142; Premium</span>'
@@ -815,7 +822,7 @@ function renderPostCard(post, type) {
   const actionLabel = type === 'seeking' ? 'View request' : 'View &amp; enquire';
   const actionBtn = hasAccess
     ? '<button class="pc-action-btn" onclick="event.stopPropagation();gateAction(\'enquire\',\'' + post.id + '\')">&#128172; ' + actionLabel + '</button>'
-    : '<button class="pc-action-btn locked" onclick="event.stopPropagation();gateAction(\'view\')">&#128274; Login to view</button>';
+    : '<button class="pc-action-btn locked" onclick="event.stopPropagation();gateAction(\'view\')">&#128274; Log in / Sign up to view</button>';
 
   const tags = [];
   if (post.availability === 'immediate') tags.push('<span class="pc-tag immediate">Immediate</span>');
