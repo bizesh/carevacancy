@@ -8,9 +8,9 @@
 <link rel="stylesheet" href="css/nav.css"/>
 <style>
 /* ══ HERO ══ */
-.hero{background:linear-gradient(135deg,#0f2942 0%,#1e3a5f 60%,#0d9488 100%);padding:60px 5% 0;position:relative;overflow:hidden;}
+.hero{background:linear-gradient(135deg,#0f2942 0%,#1e3a5f 60%,#0d9488 100%);padding:60px 5% 0;position:relative;}
 .hero::before{content:'';position:absolute;top:-40%;right:-10%;width:600px;height:600px;border-radius:50%;background:rgba(13,148,136,0.08);pointer-events:none;}
-.hero-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;padding-bottom:48px;}
+.hero-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;padding-bottom:36px;}
 .hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(13,148,136,0.2);border:1px solid rgba(13,148,136,0.4);color:#5eead4;font-size:12px;font-weight:600;padding:5px 14px;border-radius:20px;margin-bottom:20px;}
 .hero h1{font-family:'DM Serif Display',serif;font-size:clamp(28px,3.5vw,48px);color:white;line-height:1.15;margin-bottom:16px;letter-spacing:-0.5px;}
 .hero h1 span{color:#5eead4;}
@@ -34,24 +34,24 @@
 .search-link:hover{color:var(--teal);}
 
 /* ══ AD CAROUSEL (lives at bottom of hero, full bleed) ══ */
-.hero-carousel-wrap{margin:0 -5%;border-top:1px solid rgba(94,234,212,0.2);}
-.ad-carousel{position:relative;overflow:hidden;height:240px;}
+.hero-carousel-wrap{margin:0 -5%;position:relative;}
+.ad-carousel{position:relative;overflow:hidden;height:280px;}
 .ad-track{display:flex;height:100%;transition:transform 0.65s cubic-bezier(0.4,0,0.2,1);}
 .ad-slide{min-width:100%;height:100%;position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer;}
 .ad-slide-bg{position:absolute;inset:0;background-size:cover;background-position:center;}
 .ad-slide-overlay{position:absolute;inset:0;}
-.ad-slide-content{position:relative;z-index:2;max-width:1100px;width:100%;padding:0 5%;display:flex;align-items:center;justify-content:space-between;gap:32px;}
-.ad-slide-eyebrow{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#5eead4;margin-bottom:6px;}
-.ad-slide-title{font-family:'DM Serif Display',serif;font-size:clamp(17px,2.2vw,26px);color:white;line-height:1.25;margin-bottom:8px;}
-.ad-slide-sub{font-size:12px;color:rgba(255,255,255,0.65);max-width:460px;line-height:1.5;}
+.ad-slide-content{position:relative;z-index:4;max-width:1100px;width:100%;padding:0 5%;display:flex;align-items:center;justify-content:space-between;gap:32px;}
+.ad-slide-eyebrow{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#5eead4;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.ad-slide-title{font-family:'DM Serif Display',serif;font-size:clamp(20px,2.5vw,30px);color:white;line-height:1.2;margin-bottom:10px;text-shadow:0 2px 20px rgba(0,0,0,0.3);}
+.ad-slide-sub{font-size:13px;color:rgba(255,255,255,0.7);max-width:480px;line-height:1.55;}
 .ad-cta{background:var(--teal);color:white;border:none;padding:11px 24px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all 0.2s;box-shadow:0 0 20px rgba(13,148,136,0.4);}
 .ad-cta:hover{background:var(--teal-dark);}
-.ad-sponsored{position:absolute;top:10px;right:14px;z-index:5;font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;background:rgba(0,0,0,0.4);color:rgba(255,255,255,0.7);padding:3px 9px;border-radius:4px;border:1px solid rgba(255,255,255,0.12);}
+.ad-sponsored{position:absolute;top:14px;right:16px;z-index:6;font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;background:rgba(0,0,0,0.4);color:rgba(255,255,255,0.7);padding:3px 9px;border-radius:4px;border:1px solid rgba(255,255,255,0.12);}
 .ad-dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:4;}
-.ad-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.3);cursor:pointer;transition:all 0.2s;}
-.ad-dot.active{background:white;width:18px;border-radius:3px;}
-.ad-arrow{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.12);border:none;color:white;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;z-index:4;transition:background 0.2s;}
-.ad-arrow:hover{background:rgba(255,255,255,0.25);}
+.ad-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.25);cursor:pointer;transition:all 0.25s;}
+.ad-dot.active{background:#5eead4;width:22px;border-radius:3px;}
+.ad-arrow{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;z-index:5;transition:all 0.2s;backdrop-filter:blur(4px);}
+.ad-arrow:hover{background:rgba(255,255,255,0.2);border-color:rgba(255,255,255,0.4);}
 .ad-arrow.prev{left:14px;}
 .ad-arrow.next{right:14px;}
 
@@ -328,10 +328,11 @@ footer{background:var(--navy);padding:36px 5% 22px;}
   <div class="hero-carousel-wrap">
     <div class="ad-carousel" id="ad-carousel">
       <div class="ad-track" id="ad-track">
+      <div style="position:absolute;top:0;left:0;right:0;height:60px;background:linear-gradient(to bottom,#1e3a5f,transparent);z-index:3;pointer-events:none;"></div>
 
         <div class="ad-slide">
-          <div class="ad-slide-bg" style="background:transparent;"></div>
-          <div class="ad-slide-overlay" style="background:rgba(0,0,0,0.15);"></div>
+          <div class="ad-slide-bg" style="background:linear-gradient(135deg,rgba(13,61,92,0.95) 0%,rgba(10,74,58,0.9) 100%);"></div>
+          <div class="ad-slide-overlay" style="background:rgba(0,0,0,0.1);"></div>
           <div class="ad-slide-content">
             <div>
               <div class="ad-slide-eyebrow">&#128142; Premium Provider &middot; Melbourne VIC</div>
@@ -344,8 +345,8 @@ footer{background:var(--navy);padding:36px 5% 22px;}
         </div>
 
         <div class="ad-slide">
-          <div class="ad-slide-bg" style="background:transparent;"></div>
-          <div class="ad-slide-overlay" style="background:rgba(0,0,0,0.1);"></div>
+          <div class="ad-slide-bg" style="background:linear-gradient(135deg,rgba(26,26,78,0.95) 0%,rgba(13,74,92,0.9) 100%);"></div>
+          <div class="ad-slide-overlay" style="background:rgba(0,0,0,0.08);"></div>
           <div class="ad-slide-content">
             <div>
               <div class="ad-slide-eyebrow">&#11088; Featured Provider &middot; Sydney NSW</div>
@@ -358,8 +359,8 @@ footer{background:var(--navy);padding:36px 5% 22px;}
         </div>
 
         <div class="ad-slide">
-          <div class="ad-slide-bg" style="background:transparent;"></div>
-          <div class="ad-slide-overlay" style="background:rgba(0,0,0,0.1);"></div>
+          <div class="ad-slide-bg" style="background:linear-gradient(135deg,rgba(26,26,78,0.95) 0%,rgba(13,74,92,0.9) 100%);"></div>
+          <div class="ad-slide-overlay" style="background:rgba(0,0,0,0.08);"></div>
           <div class="ad-slide-content">
             <div>
               <div class="ad-slide-eyebrow">&#128142; Premium Provider &middot; Brisbane QLD</div>
@@ -394,9 +395,10 @@ footer{background:var(--navy);padding:36px 5% 22px;}
   <div style="background:#0a1e33;">
     <div class="ad-carousel" id="ad-carousel-li">
       <div class="ad-track" id="ad-track-li">
+      <div style="position:absolute;top:0;left:0;right:0;height:60px;background:linear-gradient(to bottom,#1e3a5f,transparent);z-index:3;pointer-events:none;"></div>
         <div class="ad-slide">
-          <div class="ad-slide-bg" style="background:transparent;"></div>
-          <div class="ad-slide-overlay" style="background:rgba(0,0,0,0.15);"></div>
+          <div class="ad-slide-bg" style="background:linear-gradient(135deg,rgba(13,61,92,0.95) 0%,rgba(10,74,58,0.9) 100%);"></div>
+          <div class="ad-slide-overlay" style="background:rgba(0,0,0,0.1);"></div>
           <div class="ad-slide-content">
             <div>
               <div class="ad-slide-eyebrow">&#128142; Premium Provider &middot; Melbourne VIC</div>
