@@ -322,7 +322,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Set sidebar name immediately
    const p = currentUser.profile;
   const nameEl = document.getElementById('ds-name');
-  if (nameEl) nameEl.textContent = p.org_name || p.full_name || p.full_name || 'My Account';
+  const displayName = p.org_name || p.full_name || (currentUser.email ? currentUser.email.split('@')[0] : 'My Account');
+  if (nameEl) nameEl.textContent = displayName;
 
   const status = currentUser.profile?.status;
   if (status && status !== 'active') {
@@ -330,13 +331,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
- 
   if (p?.role !== 'sc') {
     CV.redirectToDashboard(p?.role);
     return;
   }
-
-  document.getElementById('ds-name').textContent = p.org_name || p.full_name || 'My Organisation';
   const tierEl = document.getElementById('ds-tier');
   tierEl.textContent = (p.tier || 'basic').charAt(0).toUpperCase() + (p.tier || 'basic').slice(1);
   tierEl.className = `ds-tier tier-${p.tier || 'basic'}`;
@@ -964,7 +962,7 @@ async function loadBilling() {
     .select('stripe_customer_id, stripe_subscription_id, tier_updated_at')
     .eq('id', currentUser.id).single();
 
-  const hasStripe = !!profile?.stripe_subscription_id;
+  const hasStripe = tier !== 'basic';  // Show portal button for any paid tier
   const tierUpdated = profile?.tier_updated_at ? new Date(profile.tier_updated_at) : null;
 
   // Estimate next billing date (30 days from tier_updated_at or today)
