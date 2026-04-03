@@ -207,6 +207,25 @@
       </div>
     </div>
 
+    <!-- MATCHES PANEL (Premium only) -->
+    <div class="dash-panel" id="panel-matches">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div>
+          <h3 style="margin:0;">Auto-matches <span style="font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;background:#ede9fe;color:#5b21b6;margin-left:8px;">💎 Premium</span></h3>
+          <p style="font-size:13px;color:var(--muted);margin:4px 0 0;">Seeking posts that match your service — respond before others do.</p>
+        </div>
+      </div>
+      <div class="dash-card">
+        <div id="matches-list">
+          <div class="empty-dash">
+            <div class="empty-dash-icon">💎</div>
+            <div class="empty-dash-title">No matches yet</div>
+            <div class="empty-dash-sub">When someone posts seeking your service in your area, it will appear here automatically.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- PROFILE -->
     <div class="dash-panel" id="panel-profile">
       <h3 style="margin-bottom:16px;">My profile</h3>
@@ -325,6 +344,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const banner = document.getElementById('upgrade-banner');
     if (banner) banner.style.display = 'flex';
   }
+
+  // Load matches for Premium providers
+  loadMatches(p.tier || 'basic');
 
   document.getElementById('s-plan').textContent = (p.tier || 'Basic').charAt(0).toUpperCase() + (p.tier || 'basic').slice(1);
 
@@ -456,11 +478,12 @@ function upgradePlan(tier) {
 }
 
 function switchPanel(btn, panel) {
+  if (panel === 'matches') loadMatches(currentUser?.profile?.tier);
   document.querySelectorAll('.ds-item').forEach(i => i.classList.remove('active'));
   if (btn) btn.classList.add('active');
   document.querySelectorAll('.dash-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('panel-' + panel).classList.add('active');
-  const titles = { overview:'Overview', vacancies:'My vacancies', enquiries:'Enquiries', seeking:'Seeking posts', profile:'My profile', billing:'Billing' };
+  const titles = { overview:'Overview', vacancies:'My vacancies', enquiries:'Enquiries', seeking:'Seeking posts', matches:'Auto-matches', profile:'My profile', billing:'Billing' };
   document.getElementById('panel-title').textContent = titles[panel] || panel;
 }
 
@@ -656,6 +679,118 @@ async function viewPost(postId) {
       <button onclick="document.getElementById('view-post-overlay').style.display='none'" style="background:none;border:1.5px solid var(--border);color:var(--text);padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">Close</button>
     </div>
   `;
+}
+
+
+async function loadMatches(tier) {
+  if (tier !== 'premium') return;
+
+  // Show matches nav item
+  const navItem = document.getElementById('matches-nav-item');
+  if (navItem) navItem.style.display = 'flex';
+
+  const profile = currentUser.profile;
+
+  // Find seeking posts that match this provider's category/state
+  // Get provider's own offering posts to determine their categories
+  const { data: myPosts } = await CV.db
+    .from('posts')
+    .select('category, state, disability_types')
+    .eq('user_id', currentUser.id)
+    .eq('type', 'offering')
+    .eq('is_active', true);
+
+  if (!myPosts || myPosts.length === 0) {
+    document.getElementById('matches-list').innerHTML = `
+      <div class="empty-dash">
+        <div class="empty-dash-icon">📋</div>
+        <div class="empty-dash-title">Post your services first</div>
+        <div class="empty-dash-sub">Create an offering post so we can match you with people looking for your service.</div>
+        <a href="../pages/post.html" class="btn btn-primary btn-sm">Create a post</a>
+      </div>`;
+    return;
+  }
+
+  // Get unique categories and states from provider's posts
+  const myCategories = [...new Set(myPosts.map(p => p.category))];
+  const myStates = [...new Set(myPosts.map(p => p.state).filter(Boolean))];
+
+  // Find seeking posts matching provider's categories
+  let query = CV.db
+    .from('posts')
+    .select('*, profiles!posts_user_id_fkey(full_name, org_name, role)')
+    .eq('type', 'seeking')
+    .eq('is_active', true)
+    .in('category', myCategories)
+    .order('created_at', { ascending: false })
+    .limit(20);
+
+  const { data: matches } = await query;
+
+  if (!matches || matches.length === 0) {
+    return; // Keep empty state
+  }
+
+  // Score and filter
+  const scored = matches.map(m => {
+    let score = 1;
+    // State match bonus
+    if (m.state && myStates.includes(m.state)) score += 2;
+    // Disability overlap bonus
+    const myDisabilities = myPosts.flatMap(p => p.disability_types || []);
+    const seekDisabilities = m.disability_types || [];
+    if (seekDisabilities.includes('Any') || myDisabilities.includes('Any')) score += 2;
+    else score += seekDisabilities.filter(d => myDisabilities.includes(d)).length;
+    return { ...m, score };
+  }).sort((a, b) => b.score - a.score);
+
+  // Update badge
+  const badge = document.getElementById('matches-badge');
+  if (badge && scored.length > 0) {
+    badge.textContent = scored.length;
+    badge.style.display = 'inline-block';
+  }
+
+  const categoryLabels = {
+    sil:'SIL', sda:'SDA', sc:'Support Coordination', pm:'Plan Management',
+    allied:'Allied Health', 'personal-care':'Personal Care', respite:'Respite', other:'Other'
+  };
+  const roleLabels = {
+    org:'Organisation', sc:'Support Coordinator', pm:'Plan Manager',
+    allied:'Allied Health', participant:'Participant', family:'Family/Carer'
+  };
+
+  document.getElementById('matches-list').innerHTML = scored.map(m => {
+    const poster = m.profiles;
+    const posterName = poster?.org_name || poster?.full_name || 'Anonymous';
+    const daysAgo = Math.floor((Date.now() - new Date(m.created_at)) / 86400000);
+    const timeLabel = daysAgo === 0 ? 'Today' : daysAgo === 1 ? 'Yesterday' : daysAgo + ' days ago';
+
+    return `
+    <div style="padding:16px;border:1px solid var(--border);border-radius:10px;margin-bottom:12px;background:white;">
+      <div style="display:flex;justify-content:space-between;align-items:start;gap:12px;margin-bottom:10px;">
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:4px;">${m.title}</div>
+          <div style="font-size:12px;color:var(--muted);">
+            By ${posterName} · ${roleLabels[poster?.role] || ''} · ${timeLabel}
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0;">
+          <span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;background:#dbeafe;color:#1e40af;">${categoryLabels[m.category] || m.category}</span>
+          ${m.state ? `<span style="font-size:11px;padding:2px 8px;border-radius:20px;background:#f1f5f9;color:#475569;">📍 ${m.state}</span>` : ''}
+        </div>
+      </div>
+      ${m.description ? `<div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:10px;">${m.description}</div>` : ''}
+      ${(m.disability_types||[]).length > 0 ? `
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+        ${m.disability_types.map(d => `<span style="font-size:11px;padding:2px 8px;border-radius:20px;background:#f0fdf4;color:#166534;">${d}</span>`).join('')}
+      </div>` : ''}
+      <div style="display:flex;gap:8px;margin-top:4px;">
+        <a href="../pages/provider-profile.html?id=${currentUser.id}" style="background:var(--teal);color:white;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600;">View my profile →</a>
+        <span style="font-size:11px;color:var(--muted);align-self:center;">Your profile will be visible to them in search</span>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 let currentEnqId = null;
