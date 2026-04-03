@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="css/global.css"/>
 <link rel="stylesheet" href="css/nav.css"/>
 <style>
-/* HERO */
+/* ── HERO ── */
 .hero{background:linear-gradient(135deg,#0f2942 0%,#1e3a5f 60%,#0d9488 100%);padding:72px 5% 80px;position:relative;overflow:hidden;}
 .hero::before{content:'';position:absolute;top:-40%;right:-10%;width:600px;height:600px;border-radius:50%;background:rgba(13,148,136,0.08);pointer-events:none;}
 .hero-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;}
@@ -20,7 +20,7 @@
 .hero-stat-num{font-family:'DM Serif Display',serif;font-size:26px;color:#5eead4;font-weight:400;line-height:1;}
 .hero-stat-label{font-size:11px;color:rgba(255,255,255,0.5);margin-top:3px;}
 
-/* SEARCH BOX */
+/* ── SEARCH BOX ── */
 .search-box{background:white;border-radius:16px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,0.3);}
 .search-box-title{font-size:15px;font-weight:600;color:var(--navy);margin-bottom:16px;}
 .search-tabs{display:flex;gap:4px;background:var(--bg);border-radius:8px;padding:3px;margin-bottom:16px;}
@@ -28,7 +28,7 @@
 .stab.active{background:white;color:var(--navy);box-shadow:0 1px 4px rgba(0,0,0,0.08);}
 .search-fields{display:flex;flex-direction:column;gap:10px;}
 .search-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.search-input{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border 0.2s;}
+.search-input{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border 0.2s;box-sizing:border-box;}
 .search-input:focus{border-color:var(--teal);}
 .search-btn{width:100%;background:var(--teal);color:white;border:none;padding:12px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;margin-top:4px;transition:background 0.2s;}
 .search-btn:hover{background:var(--teal-dark);}
@@ -36,7 +36,109 @@
 .search-link{font-size:12px;color:var(--muted);cursor:pointer;text-decoration:none;}
 .search-link:hover{color:var(--teal);}
 
-/* HOW IT WORKS */
+/* ── LOGGED-IN WELCOME BAR ── */
+#logged-in-feed{display:none;}
+.welcome-bar{background:linear-gradient(135deg,#0f2942 0%,#1a3a5c 100%);padding:0;}
+.welcome-inner{max-width:1100px;margin:0 auto;padding:28px 5%;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+.welcome-left h2{font-family:'DM Serif Display',serif;font-size:22px;color:white;margin-bottom:4px;}
+.welcome-left p{font-size:13px;color:rgba(255,255,255,0.6);}
+.welcome-pills{display:flex;gap:8px;flex-wrap:wrap;}
+.wpill{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;transition:all 0.15s;border:none;font-family:'DM Sans',sans-serif;}
+.wpill-teal{background:rgba(13,148,136,0.25);color:#5eead4;border:1px solid rgba(13,148,136,0.4);}
+.wpill-teal:hover{background:rgba(13,148,136,0.4);}
+.wpill-white{background:rgba(255,255,255,0.12);color:white;border:1px solid rgba(255,255,255,0.2);}
+.wpill-white:hover{background:rgba(255,255,255,0.2);}
+.wpill-alert{background:rgba(239,68,68,0.2);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);}
+.wpill-badge{background:#ef4444;color:white;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:2px;}
+
+/* ── FEED LAYOUT ── */
+.feed-section{padding:48px 5%;background:var(--bg);}
+.feed-inner{max-width:1100px;margin:0 auto;}
+.feed-grid{display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start;}
+.feed-main{}
+.feed-side{}
+
+.feed-block{background:white;border:1px solid var(--border);border-radius:16px;margin-bottom:20px;overflow:hidden;}
+.feed-block-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.feed-block-title{font-size:14px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:8px;}
+.feed-block-link{font-size:12px;color:var(--teal);font-weight:500;text-decoration:none;}
+.feed-block-link:hover{text-decoration:underline;}
+.feed-block-body{padding:16px 20px;}
+
+/* ── VACANCY FEED CARDS ── */
+.vac-card{display:flex;align-items:flex-start;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s;}
+.vac-card:last-child{border-bottom:none;padding-bottom:0;}
+.vac-card:first-child{padding-top:0;}
+.vac-card:hover .vac-title{color:var(--teal);}
+.vac-avatar{width:44px;height:44px;border-radius:10px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:16px;color:var(--teal-dark);flex-shrink:0;font-weight:700;}
+.vac-avatar.premium{background:#ede9fe;color:#5b21b6;}
+.vac-avatar.org{background:#dbeafe;color:#1e40af;}
+.vac-info{flex:1;min-width:0;}
+.vac-title{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:3px;transition:color 0.15s;}
+.vac-meta{font-size:11px;color:var(--muted);margin-bottom:5px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.vac-dot{width:3px;height:3px;border-radius:50%;background:var(--border);display:inline-block;}
+.vac-tags{display:flex;gap:4px;flex-wrap:wrap;}
+.vac-tag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;background:#f1f5f9;color:#475569;}
+.vac-tag.immediate{background:#dcfce7;color:#15803d;}
+.vac-tag.premium{background:#ede9fe;color:#5b21b6;}
+.vac-tag.sil{background:#dbeafe;color:#1e40af;}
+.vac-time{font-size:10px;color:var(--muted);white-space:nowrap;flex-shrink:0;margin-top:2px;}
+
+/* ── SEEKING CARDS (for providers) ── */
+.seek-card{padding:14px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+.seek-card:last-child{border-bottom:none;padding-bottom:0;}
+.seek-card:first-child{padding-top:0;}
+.seek-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.seek-title{font-size:13px;font-weight:600;color:var(--navy);}
+.seek-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;}
+.seek-body{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.seek-meta{font-size:11px;color:var(--muted);display:flex;gap:10px;}
+
+/* ── UPGRADE NUDGE ── */
+.upgrade-nudge{background:linear-gradient(135deg,#0f2942,#1e3a5f);border-radius:14px;padding:20px;margin-bottom:20px;text-align:center;}
+.upgrade-nudge h4{font-size:14px;font-weight:700;color:white;margin-bottom:6px;}
+.upgrade-nudge p{font-size:12px;color:rgba(255,255,255,0.65);margin-bottom:14px;line-height:1.5;}
+.upgrade-nudge-btn{background:var(--teal);color:white;border:none;padding:9px 20px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;transition:background 0.2s;}
+.upgrade-nudge-btn:hover{background:var(--teal-dark);}
+
+/* ── STAT PILLS (side panel) ── */
+.stat-pill-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+.stat-pill{background:white;border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;}
+.stat-pill-num{font-family:'DM Serif Display',serif;font-size:22px;color:var(--navy);}
+.stat-pill-label{font-size:11px;color:var(--muted);margin-top:2px;}
+.stat-pill-num.teal{color:var(--teal);}
+.stat-pill-num.purple{color:#7c3aed;}
+
+/* ── ACTIVITY TICKER ── */
+.ticker-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);opacity:0;transform:translateY(6px);animation:fadeUp 0.4s forwards;}
+.ticker-item:last-child{border-bottom:none;padding-bottom:0;}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0);}}
+.ticker-dot{width:8px;height:8px;border-radius:50%;background:var(--teal);flex-shrink:0;margin-top:4px;}
+.ticker-dot.purple{background:#7c3aed;}
+.ticker-dot.blue{background:#3b82f6;}
+.ticker-text{font-size:12px;color:var(--muted);line-height:1.5;}
+.ticker-text strong{color:var(--navy);}
+.ticker-time{font-size:10px;color:var(--muted);white-space:nowrap;flex-shrink:0;}
+
+/* ── QUICK ACTIONS ── */
+.quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;}
+.qa-btn{background:white;border:1.5px solid var(--border);border-radius:10px;padding:14px 12px;text-align:center;cursor:pointer;text-decoration:none;transition:all 0.15s;display:block;}
+.qa-btn:hover{border-color:var(--teal);background:#f0fdfa;}
+.qa-icon{font-size:20px;margin-bottom:5px;}
+.qa-label{font-size:11px;font-weight:600;color:var(--navy);}
+
+/* ── PROVIDER SPOTLIGHT (logged-in version) ── */
+.spot-card{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s;}
+.spot-card:last-child{border-bottom:none;padding-bottom:0;}
+.spot-card:first-child{padding-top:0;}
+.spot-avatar{width:40px;height:40px;border-radius:10px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:14px;color:var(--teal-dark);flex-shrink:0;}
+.spot-avatar.premium{background:#ede9fe;color:#5b21b6;}
+.spot-info{flex:1;min-width:0;}
+.spot-name{font-size:13px;font-weight:600;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.spot-sub{font-size:11px;color:var(--muted);}
+.spot-tier{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;}
+
+/* ── HOW IT WORKS ── */
 .how{padding:64px 5%;background:white;}
 .how-inner{max-width:1100px;margin:0 auto;}
 .section-badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--teal-dark);background:var(--teal-light);padding:4px 12px;border-radius:20px;margin-bottom:12px;}
@@ -48,7 +150,7 @@
 .how-card h3{font-size:15px;font-weight:600;color:var(--navy);margin-bottom:6px;}
 .how-card p{font-size:13px;color:var(--muted);line-height:1.6;}
 
-/* CATEGORIES */
+/* ── CATEGORIES ── */
 .cats{padding:48px 5%;background:var(--bg);}
 .cats-inner{max-width:1100px;margin:0 auto;}
 .cats h2{font-family:'DM Serif Display',serif;font-size:28px;color:var(--navy);margin-bottom:24px;}
@@ -59,7 +161,7 @@
 .cat-name{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:3px;}
 .cat-count{font-size:12px;color:var(--muted);}
 
-/* FEATURED SLIDER */
+/* ── FEATURED PROVIDERS ── */
 .featured{padding:56px 5%;background:white;}
 .featured-inner{max-width:1100px;margin:0 auto;}
 .featured-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
@@ -87,7 +189,7 @@
 .pc-save:hover{border-color:var(--teal);}
 .pc-tier-ribbon{position:absolute;top:14px;right:14px;}
 
-/* CTA BANNER */
+/* ── CTA BANNER ── */
 .cta-banner{background:linear-gradient(135deg,#0f2942,#1e3a5f);padding:56px 5%;text-align:center;}
 .cta-banner h2{font-family:'DM Serif Display',serif;font-size:32px;color:white;margin-bottom:12px;}
 .cta-banner p{font-size:15px;color:rgba(255,255,255,0.7);margin-bottom:28px;max-width:480px;margin-left:auto;margin-right:auto;}
@@ -96,7 +198,7 @@
 .cta-btn-primary:hover{background:var(--teal-dark);}
 .cta-btn-outline{background:none;border:1.5px solid rgba(255,255,255,0.3);color:white;padding:13px 28px;border-radius:8px;font-weight:600;font-size:14px;text-decoration:none;}
 
-/* FOOTER */
+/* ── FOOTER ── */
 footer{background:var(--navy);padding:40px 5% 24px;}
 .footer-inner{max-width:1100px;margin:0 auto;}
 .footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;margin-bottom:32px;}
@@ -110,8 +212,22 @@ footer{background:var(--navy);padding:40px 5% 24px;}
 .footer-copy{font-size:12px;color:rgba(255,255,255,0.3);}
 .footer-aus{font-size:12px;color:rgba(255,255,255,0.3);}
 
+/* ── EMPTY STATES ── */
+.empty-feed{text-align:center;padding:32px 20px;color:var(--muted);}
+.empty-feed-icon{font-size:28px;margin-bottom:8px;}
+.empty-feed p{font-size:13px;}
+
+/* ── SKELETON LOADER ── */
+.skel{background:linear-gradient(90deg,#f1f5f9 25%,#e2e8f0 50%,#f1f5f9 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px;height:12px;margin-bottom:6px;}
+@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+.skel-avatar{width:44px;height:44px;border-radius:10px;}
+.skel-line{width:100%;}
+.skel-short{width:60%;}
+
 @media(max-width:900px){
   .hero-inner{grid-template-columns:1fr;}
+  .feed-grid{grid-template-columns:1fr;}
+  .feed-side{display:none;}
   .how-grid{grid-template-columns:1fr;}
   .cat-grid{grid-template-columns:repeat(2,1fr);}
   .provider-grid{grid-template-columns:1fr;}
@@ -120,6 +236,9 @@ footer{background:var(--navy);padding:40px 5% 24px;}
 @media(max-width:600px){
   .cat-grid{grid-template-columns:1fr 1fr;}
   .search-row{grid-template-columns:1fr;}
+  .welcome-inner{flex-direction:column;align-items:flex-start;}
+  .stat-pill-row{grid-template-columns:1fr 1fr;}
+  .quick-actions{grid-template-columns:1fr 1fr;}
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -144,13 +263,13 @@ footer{background:var(--navy);padding:40px 5% 24px;}
   <button class="nav-hamburger" onclick="toggleMobileMenu()">☰</button>
 </nav>
 
-<!-- HERO -->
-<section class="hero">
+<!-- HERO (always shown) -->
+<section class="hero" id="hero-section">
   <div class="hero-inner">
     <div>
       <div class="hero-badge">🇦🇺 Australia's NDIS Marketplace</div>
-      <h1>Find the right <span>NDIS provider</span> — fast</h1>
-      <p class="hero-sub">Search verified SIL vacancies, support coordinators, allied health professionals and plan managers. Or list your service and connect with participants who need you.</p>
+      <h1 id="hero-title">Find the right <span>NDIS provider</span> — fast</h1>
+      <p class="hero-sub" id="hero-sub">Search verified SIL vacancies, support coordinators, allied health professionals and plan managers. Or list your service and connect with participants who need you.</p>
       <div class="hero-stats">
         <div class="hero-stat">
           <div class="hero-stat-num" id="stat-providers">—</div>
@@ -207,17 +326,151 @@ footer{background:var(--navy);padding:40px 5% 24px;}
   </div>
 </section>
 
-<!-- HOW IT WORKS -->
-<section class="how">
+<!-- ═══════════════════════════════════════════════
+     LOGGED-IN PERSONALISED FEED (hidden until auth)
+═══════════════════════════════════════════════ -->
+<div id="logged-in-feed">
+
+  <!-- WELCOME BAR -->
+  <div class="welcome-bar">
+    <div class="welcome-inner">
+      <div class="welcome-left">
+        <h2 id="wl-greeting">Welcome back</h2>
+        <p id="wl-sub">Here's what's happening on CareVacancy today</p>
+      </div>
+      <div class="welcome-pills" id="wl-pills">
+        <!-- Injected by JS based on role -->
+      </div>
+    </div>
+  </div>
+
+  <!-- FEED BODY -->
+  <div class="feed-section">
+    <div class="feed-inner">
+      <div class="feed-grid">
+
+        <!-- MAIN COLUMN -->
+        <div class="feed-main">
+
+          <!-- PROVIDER: enquiry + vacancy feed -->
+          <div id="provider-feed" style="display:none;">
+
+            <!-- Recent enquiries snapshot -->
+            <div class="feed-block" id="block-enquiries">
+              <div class="feed-block-header">
+                <div class="feed-block-title">💬 Recent enquiries</div>
+                <a class="feed-block-link" id="link-enquiries" href="#">View all in dashboard →</a>
+              </div>
+              <div class="feed-block-body" id="body-enquiries">
+                <div class="skel skel-line"></div><div class="skel skel-short"></div>
+              </div>
+            </div>
+
+            <!-- Seeking posts near you -->
+            <div class="feed-block" id="block-seeking">
+              <div class="feed-block-header">
+                <div class="feed-block-title">🔍 Participants seeking in your area</div>
+                <a class="feed-block-link" href="pages/search.html?view=seeking">Browse all →</a>
+              </div>
+              <div class="feed-block-body" id="body-seeking">
+                <div class="skel skel-line"></div><div class="skel skel-short"></div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- SEEKER: vacancy feed -->
+          <div id="seeker-feed" style="display:none;">
+            <div class="feed-block">
+              <div class="feed-block-header">
+                <div class="feed-block-title">🏠 Latest vacancies near you</div>
+                <a class="feed-block-link" href="pages/search.html">Browse all →</a>
+              </div>
+              <div class="feed-block-body" id="body-vacancies">
+                <div class="skel skel-line"></div><div class="skel skel-short"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FEATURED PROVIDERS (all roles) -->
+          <div class="feed-block">
+            <div class="feed-block-header">
+              <div class="feed-block-title">⭐ Featured providers</div>
+              <a class="feed-block-link" href="pages/search.html">View all →</a>
+            </div>
+            <div class="feed-block-body" id="body-spotlight">
+              <div class="skel skel-line"></div><div class="skel skel-short"></div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- SIDE COLUMN -->
+        <div class="feed-side">
+
+          <!-- My stats (providers) -->
+          <div id="side-stats" style="display:none;">
+            <div class="stat-pill-row">
+              <div class="stat-pill">
+                <div class="stat-pill-num teal" id="side-vacancies">—</div>
+                <div class="stat-pill-label">My vacancies</div>
+              </div>
+              <div class="stat-pill">
+                <div class="stat-pill-num" id="side-enquiries">—</div>
+                <div class="stat-pill-label">Enquiries</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick actions -->
+          <div class="feed-block" style="margin-bottom:20px;">
+            <div class="feed-block-header">
+              <div class="feed-block-title">Quick actions</div>
+            </div>
+            <div class="feed-block-body" style="padding:12px;">
+              <div class="quick-actions" id="quick-actions">
+                <!-- Injected by role -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Upgrade nudge (basic providers only) -->
+          <div id="side-upgrade" style="display:none;">
+            <div class="upgrade-nudge">
+              <h4>🚀 Get seen by more participants</h4>
+              <p>Upgrade to Featured to post vacancies, appear at the top of search results, and receive direct enquiries.</p>
+              <button class="upgrade-nudge-btn" onclick="window.location='pages/upgrade.html'">Upgrade to Featured — $49/mo →</button>
+            </div>
+          </div>
+
+          <!-- Activity ticker -->
+          <div class="feed-block">
+            <div class="feed-block-header">
+              <div class="feed-block-title">📡 Platform activity</div>
+            </div>
+            <div class="feed-block-body" id="body-ticker">
+              <div class="skel skel-line"></div><div class="skel skel-short"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- END LOGGED-IN FEED -->
+
+<!-- HOW IT WORKS (hidden for logged-in users) -->
+<section class="how" id="section-how">
   <div class="how-inner">
     <div class="section-badge">How it works</div>
     <h2>The easiest way to navigate the NDIS</h2>
-    <p class="how-sub">Whether you're a family searching for care, a coordinator placing a client, or a provider growing your business.</p>
+    <p class="how-sub">Whether you&#39;re a family searching for care, a coordinator placing a client, or a provider growing your business.</p>
     <div class="how-grid">
       <div class="how-card">
         <div class="how-num">1</div>
         <h3>Search or post</h3>
-        <p>Search for verified providers by location, disability type, and availability. Or post what you're offering — or what you need.</p>
+        <p>Search for verified providers by location, disability type, and availability. Or post what you&#39;re offering — or what you need.</p>
       </div>
       <div class="how-card">
         <div class="how-num">2</div>
@@ -262,26 +515,25 @@ footer{background:var(--navy);padding:40px 5% 24px;}
   </div>
 </section>
 
-<!-- FEATURED PROVIDERS -->
-<section class="featured">
+<!-- FEATURED PROVIDERS (logged-out only) -->
+<section class="featured" id="section-featured">
   <div class="featured-inner">
     <div class="featured-header">
       <h2>Featured providers</h2>
       <a class="featured-link" href="pages/search.html">View all →</a>
     </div>
     <div class="provider-grid" id="featured-grid">
-      <!-- Loaded by JS -->
       <div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--muted);font-size:14px;">Loading providers...</div>
     </div>
   </div>
 </section>
 
-<!-- CTA -->
-<section class="cta-banner">
-  <h2>Are you an NDIS provider?</h2>
-  <p>Join thousands of verified providers connecting with participants, support coordinators and families across Australia.</p>
-  <div class="cta-btns">
-    <a href="pages/signup.html" class="cta-btn-primary">List your service — it's free</a>
+<!-- CTA BANNER -->
+<section class="cta-banner" id="cta-section">
+  <h2 id="cta-title">Are you an NDIS provider?</h2>
+  <p id="cta-body">Join thousands of verified providers connecting with participants, support coordinators and families across Australia.</p>
+  <div class="cta-btns" id="cta-btns">
+    <a href="pages/signup.html" class="cta-btn-primary">List your service — it&#39;s free</a>
     <a href="pages/search.html" class="cta-btn-outline">Browse the platform first</a>
   </div>
 </section>
@@ -292,7 +544,7 @@ footer{background:var(--navy);padding:40px 5% 24px;}
     <div class="footer-top">
       <div>
         <div class="footer-logo">Care<span>Vacancy</span></div>
-        <div class="footer-tagline">Australia's verified NDIS provider marketplace. Connecting participants, families, and providers since 2024.</div>
+        <div class="footer-tagline">Australia&#39;s verified NDIS provider marketplace. Connecting participants, families, and providers since 2024.</div>
       </div>
       <div class="footer-col">
         <h4>Find</h4>
@@ -305,7 +557,7 @@ footer{background:var(--navy);padding:40px 5% 24px;}
       <div class="footer-col">
         <h4>Providers</h4>
         <a href="pages/signup.html">List your service</a>
-        <a href="pages/signup.html">Pricing</a>
+        <a href="pages/upgrade.html">Pricing</a>
         <a href="pages/signup.html">How it works</a>
       </div>
       <div class="footer-col">
@@ -317,22 +569,20 @@ footer{background:var(--navy);padding:40px 5% 24px;}
       </div>
     </div>
     <div class="footer-bottom">
-      <div class="footer-copy">© 2024 CareVacancy. All rights reserved.</div>
-      <div class="footer-aus">🇦🇺 Australian owned · Data hosted in Sydney</div>
+      <div class="footer-copy">&#169; 2024 CareVacancy. All rights reserved.</div>
+      <div class="footer-aus">🇦🇺 Australian owned &middot; Data hosted in Sydney</div>
     </div>
   </div>
 </footer>
 
-<script src="js/nav.js"></script>
 <script>
+// ── SEARCH ──
 let activeTab = 'sil';
-
 function setTab(btn, type) {
   activeTab = type;
   document.querySelectorAll('.stab').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 }
-
 function doSearch() {
   const suburb = document.getElementById('search-suburb').value;
   const state = document.getElementById('search-state').value;
@@ -346,53 +596,68 @@ function doSearch() {
   if (availability) params.set('availability', availability);
   window.location.href = 'pages/search.html?' + params.toString();
 }
+document.addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
 
-// Allow Enter key to search
-document.addEventListener('keydown', e => {
-  if (e.key === 'Enter') doSearch();
-});
+// ── TIME HELPER ──
+function timeAgo(dateStr) {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 2) return 'Just now';
+  if (m < 60) return m + 'm ago';
+  const h = Math.floor(m / 60);
+  if (h < 24) return h + 'h ago';
+  return Math.floor(h / 24) + 'd ago';
+}
 
+// ── STATS (always load) ──
 async function loadStats() {
   try {
     const [providers, vacancies] = await Promise.all([
       CV.db.from('profiles').select('id', {count:'exact'}).eq('status','active').in('role',['org','sc','pm','allied']),
-      CV.db.from('posts').select('id', {count:'exact'}).eq('type','offering').eq('is_active',true).eq('category','sil'),
+      CV.db.from('posts').select('id', {count:'exact'}).eq('type','offering').eq('is_active',true),
     ]);
-    document.getElementById('stat-providers').textContent = (providers.count || 0) + '+';
-    document.getElementById('stat-vacancies').textContent = (vacancies.count || 0) + '+';
+    animateCount('stat-providers', providers.count || 0, '+');
+    animateCount('stat-vacancies', vacancies.count || 0, '+');
 
-    // Category counts
     const cats = ['sil','sc','allied','pm'];
+    const roleMap = { sil: 'org', sc: 'sc', allied: 'allied', pm: 'pm' };
+    const labels = { sil:'SIL/SDA providers', sc:'support coordinators', allied:'allied health professionals', pm:'plan managers' };
     for (const cat of cats) {
-      const { count } = await CV.db.from('profiles').select('id',{count:'exact'}).eq('status','active').contains('services',[cat]);
-      const labels = { sil:'SIL/SDA vacancies', sc:'support coordinators', allied:'allied health professionals', pm:'plan managers' };
+      const { count } = await CV.db.from('profiles').select('id',{count:'exact'}).eq('status','active').eq('role', roleMap[cat]);
       const el = document.getElementById('cat-' + cat);
-      if (el) el.textContent = (count || 0) + ' ' + (labels[cat] || 'providers');
+      if (el) el.textContent = (count || 0) + ' ' + labels[cat];
     }
   } catch(e) { console.log(e); }
 }
 
+function animateCount(id, target, suffix) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (target === 0) { el.textContent = '0' + (suffix||''); return; }
+  let current = 0;
+  const step = Math.ceil(target / 30);
+  const timer = setInterval(() => {
+    current = Math.min(current + step, target);
+    el.textContent = current + (suffix||'');
+    if (current >= target) clearInterval(timer);
+  }, 40);
+}
+
+// ── FEATURED PROVIDERS (logged-out) ──
 async function loadFeaturedProviders() {
   try {
     const { data } = await CV.db.from('profiles')
-      .select('*')
-      .eq('status', 'active')
-      .in('role', ['org','sc','pm','allied'])
-      .in('tier', ['featured','premium'])
+      .select('*').eq('status','active')
+      .in('role',['org','sc','pm','allied'])
+      .in('tier',['featured','premium'])
       .order('tier', { ascending: false })
       .limit(6);
 
     const grid = document.getElementById('featured-grid');
     if (!data || data.length === 0) {
-      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);">
-        <div style="font-size:32px;margin-bottom:12px;">🏥</div>
-        <div style="font-size:15px;font-weight:500;color:var(--navy);">Providers coming soon</div>
-        <div style="font-size:13px;margin-top:6px;">Be the first to list your service</div>
-        <a href="pages/signup.html" style="display:inline-block;margin-top:16px;background:var(--teal);color:white;padding:10px 24px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;">List your service →</a>
-      </div>`;
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);"><div style="font-size:32px;margin-bottom:12px;">🏥</div><div style="font-size:15px;font-weight:500;color:var(--navy);">Providers coming soon</div><div style="font-size:13px;margin-top:6px;">Be the first to list your service</div><a href="pages/signup.html" style="display:inline-block;margin-top:16px;background:var(--teal);color:white;padding:10px 24px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;">List your service &#8594;</a></div>';
       return;
     }
-
     grid.innerHTML = data.map(p => providerCard(p)).join('');
   } catch(e) { console.log(e); }
 }
@@ -404,35 +669,378 @@ function providerCard(p) {
   const location = [p.suburb, p.state].filter(Boolean).join(', ') || 'Location not specified';
   const services = (p.services || []).join(' · ') || 'Services listed on profile';
   const disabilityTypes = (p.disability_types || []).slice(0,3).join(', ');
-
-  return `
-  <div class="provider-card" onclick="window.location='pages/provider-profile.html?id=${p.id}'">
-    <div class="pc-tier-ribbon">
-      ${p.tier === 'premium' ? '<span class="pc-badge pb-premium">💎 Premium</span>' : p.tier === 'featured' ? '<span class="pc-badge pb-featured">⭐ Featured</span>' : ''}
-    </div>
-    <div class="pc-top">
-      <div class="pc-avatar">${initials}</div>
-      <div class="pc-info">
-        <div class="pc-name">${name}</div>
-        <div class="pc-type">${roleLabels[p.role] || p.role}</div>
-      </div>
-    </div>
-    <div class="pc-badges">
-      <span class="pc-badge pb-verified">✓ Verified</span>
-      ${disabilityTypes ? `<span class="pc-badge" style="background:#f1f5f9;color:#475569;">${disabilityTypes}</span>` : ''}
-    </div>
-    <div class="pc-location">📍 ${location}</div>
-    <div class="pc-services">${services}</div>
-    <div class="pc-footer">
-      <button class="pc-enquire" onclick="event.stopPropagation();window.location='pages/provider-profile.html?id=${p.id}'">View profile</button>
-      <button class="pc-save" onclick="event.stopPropagation();" title="Save provider">♡</button>
-    </div>
-  </div>`;
+  return '<div class="provider-card" onclick="window.location=\'pages/provider-profile.html?id=' + p.id + '\'">'
+    + '<div class="pc-tier-ribbon">'
+    + (p.tier === 'premium' ? '<span class="pc-badge pb-premium">&#128142; Premium</span>' : p.tier === 'featured' ? '<span class="pc-badge pb-featured">&#11088; Featured</span>' : '')
+    + '</div>'
+    + '<div class="pc-top"><div class="pc-avatar">' + initials + '</div>'
+    + '<div class="pc-info"><div class="pc-name">' + name + '</div><div class="pc-type">' + (roleLabels[p.role]||p.role) + '</div></div></div>'
+    + '<div class="pc-badges"><span class="pc-badge pb-verified">&#10003; Verified</span>'
+    + (disabilityTypes ? '<span class="pc-badge" style="background:#f1f5f9;color:#475569;">' + disabilityTypes + '</span>' : '')
+    + '</div>'
+    + '<div class="pc-location">&#128205; ' + location + '</div>'
+    + '<div class="pc-services">' + services + '</div>'
+    + '<div class="pc-footer">'
+    + '<button class="pc-enquire" onclick="event.stopPropagation();window.location=\'pages/provider-profile.html?id=' + p.id + '\'">View profile</button>'
+    + '<button class="pc-save" onclick="event.stopPropagation();" title="Save provider">&#9825;</button>'
+    + '</div></div>';
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+// ── PERSONALISED FEED ──
+const PROVIDER_ROLES = ['org','sc','pm','allied'];
+const SEEKER_ROLES   = ['participant','family'];
+const DASH_MAP = { org:'dashboards/dashboard-org.html', sc:'dashboards/dashboard-sc.html', pm:'dashboards/dashboard-pm.html', allied:'dashboards/dashboard-allied.html', participant:'dashboards/dashboard-participant.html', family:'dashboards/dashboard-participant.html', admin:'dashboards/dashboard-admin.html' };
+
+async function initPersonalisedFeed(user) {
+  const p = user.profile;
+  const role = p.role;
+  const tier = p.tier || 'basic';
+  const name = p.org_name || p.full_name || user.email.split('@')[0];
+  const isProvider = PROVIDER_ROLES.includes(role);
+  const isSeeker = SEEKER_ROLES.includes(role) || role === 'sc';
+  const dashUrl = DASH_MAP[role] || 'dashboards/dashboard-participant.html';
+
+  // Show logged-in feed, hide how-it-works + featured section
+  document.getElementById('logged-in-feed').style.display = 'block';
+  document.getElementById('section-how').style.display = 'none';
+  document.getElementById('section-featured').style.display = 'none';
+
+  // Personalise hero
+  document.getElementById('hero-title').innerHTML = 'Welcome back, <span>' + name.split(' ')[0] + '</span>';
+  document.getElementById('hero-sub').textContent = isProvider
+    ? 'Your dashboard is ready. Here\'s what\'s happening with your listings today.'
+    : 'Browse the latest vacancies and providers matched to your needs.';
+
+  // Personalise CTA banner
+  personaliseCTA(role, tier, dashUrl);
+
+  // Welcome bar
+  document.getElementById('wl-greeting').textContent = 'Good ' + getTimeOfDay() + ', ' + name.split(' ')[0];
+  document.getElementById('wl-sub').textContent = isProvider
+    ? 'Your provider dashboard — see enquiries, vacancies, and activity'
+    : 'Browse vacancies and providers matched to your location';
+  buildWelcomePills(role, tier, dashUrl, user.id);
+
+  // Quick actions
+  buildQuickActions(role, tier, dashUrl);
+
+  // Show correct feed
+  if (isProvider) {
+    document.getElementById('provider-feed').style.display = 'block';
+    document.getElementById('side-stats').style.display = 'block';
+    document.getElementById('link-enquiries').href = dashUrl + '#enquiries';
+    if (tier === 'basic') document.getElementById('side-upgrade').style.display = 'block';
+    await Promise.all([
+      loadProviderEnquiries(user.id, dashUrl),
+      loadSeekingPosts(p.state, p.role),
+      loadProviderStats(user.id),
+    ]);
+  }
+
+  if (isSeeker || role === 'participant' || role === 'family') {
+    document.getElementById('seeker-feed').style.display = 'block';
+    await loadVacancyFeed(p.state);
+  }
+
+  // Always load
+  await Promise.all([
+    loadSpotlight(),
+    loadActivityTicker(),
+  ]);
+}
+
+function getTimeOfDay() {
+  const h = new Date().getHours();
+  if (h < 12) return 'morning';
+  if (h < 17) return 'afternoon';
+  return 'evening';
+}
+
+function buildWelcomePills(role, tier, dashUrl, userId) {
+  const container = document.getElementById('wl-pills');
+  let html = '';
+  html += '<a href="' + dashUrl + '" class="wpill wpill-teal">&#127968; My dashboard</a>';
+  if (PROVIDER_ROLES.includes(role)) {
+    html += '<a href="' + dashUrl + '" class="wpill wpill-white" id="pill-enquiries">&#128172; Enquiries</a>';
+    if (tier !== 'basic') {
+      html += '<a href="pages/post.html" class="wpill wpill-white">&#43; Post vacancy</a>';
+    }
+    if (tier === 'basic') {
+      html += '<a href="pages/upgrade.html" class="wpill wpill-teal">&#11088; Upgrade plan</a>';
+    }
+  } else {
+    html += '<a href="pages/search.html" class="wpill wpill-white">&#128269; Search providers</a>';
+    html += '<a href="pages/post.html" class="wpill wpill-white">&#43; Post seeking request</a>';
+  }
+  container.innerHTML = html;
+
+  // Load unread count for providers
+  if (PROVIDER_ROLES.includes(role)) {
+    CV.db.from('enquiries').select('id',{count:'exact'}).eq('to_user_id', userId).eq('status','sent')
+      .then(({count}) => {
+        if (count && count > 0) {
+          const pill = document.getElementById('pill-enquiries');
+          if (pill) pill.innerHTML = '&#128172; Enquiries <span class="wpill-badge">' + count + '</span>';
+          pill.className = 'wpill wpill-alert';
+        }
+      });
+  }
+}
+
+function buildQuickActions(role, tier, dashUrl) {
+  const container = document.getElementById('quick-actions');
+  let actions = [];
+  if (PROVIDER_ROLES.includes(role)) {
+    actions.push({ icon:'&#128172;', label:'Enquiries', href: dashUrl });
+    actions.push({ icon:'&#128205;', label:'My profile', href: dashUrl });
+    if (tier !== 'basic') {
+      actions.push({ icon:'&#43;', label:'New vacancy', href: 'pages/post.html' });
+      actions.push({ icon:'&#128202;', label:'Analytics', href: dashUrl });
+    } else {
+      actions.push({ icon:'&#11088;', label:'Upgrade', href: 'pages/upgrade.html' });
+      actions.push({ icon:'&#128269;', label:'Search', href: 'pages/search.html' });
+    }
+  } else {
+    actions.push({ icon:'&#128269;', label:'Find provider', href: 'pages/search.html' });
+    actions.push({ icon:'&#43;', label:'Post request', href: 'pages/post.html' });
+    actions.push({ icon:'&#127968;', label:'Dashboard', href: dashUrl });
+    actions.push({ icon:'&#128100;', label:'My profile', href: dashUrl });
+  }
+  container.innerHTML = actions.map(a =>
+    '<a href="' + a.href + '" class="qa-btn"><div class="qa-icon">' + a.icon + '</div><div class="qa-label">' + a.label + '</div></a>'
+  ).join('');
+}
+
+function personaliseCTA(role, tier, dashUrl) {
+  const title = document.getElementById('cta-title');
+  const body  = document.getElementById('cta-body');
+  const btns  = document.getElementById('cta-btns');
+  if (PROVIDER_ROLES.includes(role) && tier === 'basic') {
+    title.textContent = 'Ready to grow your client base?';
+    body.textContent = 'Upgrade to Featured for $49/month and appear at the top of search results, post vacancies, and receive direct enquiries from participants and coordinators.';
+    btns.innerHTML = '<a href="pages/upgrade.html" class="cta-btn-primary">Upgrade to Featured &#8594;</a><a href="' + dashUrl + '" class="cta-btn-outline">Back to my dashboard</a>';
+  } else if (PROVIDER_ROLES.includes(role) && tier === 'featured') {
+    title.textContent = 'Go further with Premium';
+    body.textContent = 'Unlock auto-matching, advanced analytics, and a matches panel that pushes your profile to participants the moment they post a seeking request.';
+    btns.innerHTML = '<a href="pages/upgrade.html" class="cta-btn-primary">Upgrade to Premium &#8594;</a><a href="' + dashUrl + '" class="cta-btn-outline">Back to my dashboard</a>';
+  } else if (PROVIDER_ROLES.includes(role) && tier === 'premium') {
+    title.textContent = 'You\'re on Premium &#128142;';
+    body.textContent = 'You have full access to auto-matching, advanced analytics, and priority search placement. Keep your profile up to date for best results.';
+    btns.innerHTML = '<a href="' + dashUrl + '" class="cta-btn-primary">Go to my dashboard &#8594;</a><a href="pages/search.html" class="cta-btn-outline">Browse platform</a>';
+  } else {
+    // Seekers / participants
+    title.textContent = 'Can\'t find what you need?';
+    body.textContent = 'Post a seeking request and let verified NDIS providers come to you. It\'s free and takes less than 2 minutes.';
+    btns.innerHTML = '<a href="pages/post.html" class="cta-btn-primary">Post a seeking request &#8594;</a><a href="pages/search.html" class="cta-btn-outline">Keep browsing</a>';
+  }
+}
+
+// ── PROVIDER ENQUIRIES SNAPSHOT ──
+async function loadProviderEnquiries(userId, dashUrl) {
+  try {
+    const { data } = await CV.db.from('enquiries')
+      .select('*, profiles!enquiries_from_user_id_fkey(full_name, org_name, role)')
+      .eq('to_user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(4);
+
+    const container = document.getElementById('body-enquiries');
+    if (!data || data.length === 0) {
+      container.innerHTML = '<div class="empty-feed"><div class="empty-feed-icon">&#128172;</div><p>No enquiries yet. Complete your profile to start receiving them.</p></div>';
+      return;
+    }
+    container.innerHTML = data.map(e => {
+      const sender = e.profiles;
+      const senderName = sender ? (sender.org_name || sender.full_name || 'Someone') : 'Someone';
+      const isUnread = e.status === 'sent';
+      return '<div class="vac-card" onclick="window.location=\'' + dashUrl + '\'">'
+        + '<div class="vac-avatar ' + (isUnread ? 'premium' : '') + '">' + senderName.slice(0,2).toUpperCase() + '</div>'
+        + '<div class="vac-info">'
+        + '<div class="vac-title">' + (isUnread ? '&#128308; ' : '') + senderName + ' sent you an enquiry</div>'
+        + '<div class="vac-meta"><span>' + (e.message || '').slice(0,80) + (e.message && e.message.length > 80 ? '...' : '') + '</span></div>'
+        + '<div class="vac-tags">'
+        + (isUnread ? '<span class="vac-tag immediate">Unread</span>' : '<span class="vac-tag">Read</span>')
+        + '</div></div>'
+        + '<div class="vac-time">' + timeAgo(e.created_at) + '</div>'
+        + '</div>';
+    }).join('');
+  } catch(e) { console.log(e); document.getElementById('body-enquiries').innerHTML = '<div class="empty-feed"><p>Could not load enquiries.</p></div>'; }
+}
+
+// ── SEEKING POSTS NEAR PROVIDER ──
+async function loadSeekingPosts(state, role) {
+  try {
+    let query = CV.db.from('posts').select('*, profiles!posts_user_id_fkey(full_name, role)')
+      .eq('type','seeking').eq('is_active',true)
+      .order('created_at', { ascending: false }).limit(4);
+    if (state) query = query.eq('state', state);
+
+    const { data } = await query;
+    const container = document.getElementById('body-seeking');
+    if (!data || data.length === 0) {
+      container.innerHTML = '<div class="empty-feed"><div class="empty-feed-icon">&#128269;</div><p>No seeking posts in your area yet.</p></div>';
+      return;
+    }
+    const categoryLabels = { sil:'SIL / SDA', sc:'Support Coordinator', allied:'Allied Health', pm:'Plan Manager' };
+    container.innerHTML = data.map(post => {
+      const poster = post.profiles;
+      const posterName = poster ? (poster.full_name || 'Anonymous') : 'Anonymous';
+      const disabilities = (post.disability_types || []).slice(0,2).join(', ');
+      return '<div class="seek-card" onclick="window.location=\'pages/search.html?view=seeking\'">'
+        + '<div class="seek-header">'
+        + '<div class="seek-title">' + (post.title || 'Seeking ' + (categoryLabels[post.category]||post.category||'provider')) + '</div>'
+        + '<span class="seek-badge" style="background:#dbeafe;color:#1e40af;">' + (categoryLabels[post.category]||post.category||'General') + '</span>'
+        + '</div>'
+        + '<div class="seek-body">' + (post.description || 'Looking for an NDIS provider in ' + (post.suburb||post.state||'Australia')) + '</div>'
+        + '<div class="seek-meta"><span>&#128205; ' + [post.suburb, post.state].filter(Boolean).join(', ') + '</span>'
+        + (disabilities ? '<span>&#9679; ' + disabilities + '</span>' : '')
+        + '<span>' + timeAgo(post.created_at) + '</span></div>'
+        + '</div>';
+    }).join('');
+  } catch(e) { console.log(e); }
+}
+
+// ── VACANCY FEED (seekers) ──
+async function loadVacancyFeed(state) {
+  try {
+    let query = CV.db.from('posts')
+      .select('*, profiles!posts_user_id_fkey(full_name, org_name, tier, role)')
+      .eq('type','offering').eq('is_active',true)
+      .order('created_at', { ascending: false }).limit(6);
+    if (state) query = query.eq('state', state);
+
+    const { data } = await query;
+    const container = document.getElementById('body-vacancies');
+    if (!data || data.length === 0) {
+      container.innerHTML = '<div class="empty-feed"><div class="empty-feed-icon">&#127968;</div><p>No vacancies in your state yet. <a href="pages/search.html" style="color:var(--teal);">Browse all</a></p></div>';
+      return;
+    }
+    const catLabels = { sil:'SIL / SDA', sc:'Support Coordinator', allied:'Allied Health', pm:'Plan Manager' };
+    container.innerHTML = data.map(post => {
+      const prov = post.profiles || {};
+      const provName = prov.org_name || prov.full_name || 'Provider';
+      const initials = provName.slice(0,2).toUpperCase();
+      const isPremium = prov.tier === 'premium';
+      const disabilities = (post.disability_types || []).slice(0,2).join(', ');
+      return '<div class="vac-card" onclick="window.location=\'pages/search.html\'">'
+        + '<div class="vac-avatar ' + (isPremium ? 'premium' : 'org') + '">' + initials + '</div>'
+        + '<div class="vac-info">'
+        + '<div class="vac-title">' + (post.title || 'Vacancy — ' + (catLabels[post.category]||'Provider')) + '</div>'
+        + '<div class="vac-meta"><span>' + provName + '</span><span class="vac-dot"></span><span>&#128205; ' + [post.suburb, post.state].filter(Boolean).join(', ') + '</span></div>'
+        + '<div class="vac-tags">'
+        + (post.availability === 'immediate' ? '<span class="vac-tag immediate">Immediate</span>' : '')
+        + (isPremium ? '<span class="vac-tag premium">&#128142; Premium provider</span>' : '')
+        + (post.category === 'sil' ? '<span class="vac-tag sil">SIL</span>' : '')
+        + (disabilities ? '<span class="vac-tag">' + disabilities + '</span>' : '')
+        + '</div></div>'
+        + '<div class="vac-time">' + timeAgo(post.created_at) + '</div>'
+        + '</div>';
+    }).join('');
+  } catch(e) { console.log(e); }
+}
+
+// ── PROVIDER STATS ──
+async function loadProviderStats(userId) {
+  try {
+    const [posts, enquiries] = await Promise.all([
+      CV.db.from('posts').select('id',{count:'exact'}).eq('user_id',userId).eq('is_active',true),
+      CV.db.from('enquiries').select('id',{count:'exact'}).eq('to_user_id',userId),
+    ]);
+    const vacEl = document.getElementById('side-vacancies');
+    const enqEl = document.getElementById('side-enquiries');
+    if (vacEl) vacEl.textContent = posts.count || 0;
+    if (enqEl) enqEl.textContent = enquiries.count || 0;
+  } catch(e) { console.log(e); }
+}
+
+// ── PROVIDER SPOTLIGHT (logged-in version) ──
+async function loadSpotlight() {
+  try {
+    const { data } = await CV.db.from('profiles').select('*')
+      .eq('status','active').in('role',['org','sc','pm','allied'])
+      .in('tier',['featured','premium']).order('tier',{ascending:false}).limit(5);
+
+    const container = document.getElementById('body-spotlight');
+    if (!data || data.length === 0) {
+      container.innerHTML = '<div class="empty-feed"><p>No featured providers yet.</p></div>';
+      return;
+    }
+    const roleLabels = { org:'SIL / SDA', sc:'Support Coord.', pm:'Plan Manager', allied:'Allied Health' };
+    container.innerHTML = data.map(p => {
+      const name = p.org_name || p.full_name || 'Provider';
+      const initials = name.slice(0,2).toUpperCase();
+      const location = [p.suburb, p.state].filter(Boolean).join(', ') || 'Australia';
+      return '<div class="spot-card" onclick="window.location=\'pages/provider-profile.html?id=' + p.id + '\'">'
+        + '<div class="spot-avatar ' + (p.tier === 'premium' ? 'premium' : '') + '">' + initials + '</div>'
+        + '<div class="spot-info"><div class="spot-name">' + name + '</div>'
+        + '<div class="spot-sub">&#128205; ' + location + ' &middot; ' + (roleLabels[p.role]||p.role) + '</div></div>'
+        + (p.tier === 'premium'
+          ? '<span class="spot-tier" style="background:#ede9fe;color:#5b21b6;">&#128142; Premium</span>'
+          : '<span class="spot-tier" style="background:#E1F5EE;color:#085041;">&#11088; Featured</span>')
+        + '</div>';
+    }).join('');
+  } catch(e) { console.log(e); }
+}
+
+// ── ACTIVITY TICKER ──
+async function loadActivityTicker() {
+  try {
+    // Pull recent enquiries + posts as activity signals
+    const [recentEnq, recentPosts] = await Promise.all([
+      CV.db.from('enquiries').select('created_at, profiles!enquiries_to_user_id_fkey(role, state)').order('created_at',{ascending:false}).limit(4),
+      CV.db.from('posts').select('created_at, type, category, state').eq('is_active',true).order('created_at',{ascending:false}).limit(4),
+    ]);
+
+    const items = [];
+    const roleNames = { org:'an organisation', sc:'a support coordinator', pm:'a plan manager', allied:'an allied health provider' };
+    const catNames  = { sil:'SIL vacancy', sc:'support coordinator listing', allied:'allied health listing', pm:'plan manager listing' };
+
+    (recentEnq.data||[]).forEach((e,i) => {
+      const role = e.profiles ? e.profiles.role : 'provider';
+      const state = e.profiles ? e.profiles.state : '';
+      items.push({ text: 'A coordinator sent an enquiry to <strong>' + (roleNames[role]||'a provider') + '</strong>' + (state ? ' in ' + state : ''), time: timeAgo(e.created_at), color: 'teal', delay: i * 150 });
+    });
+
+    (recentPosts.data||[]).forEach((p,i) => {
+      const label = p.type === 'seeking' ? 'posted a seeking request' : 'listed a new <strong>' + (catNames[p.category]||'vacancy') + '</strong>';
+      items.push({ text: 'A provider in <strong>' + (p.state||'Australia') + '</strong> ' + label, time: timeAgo(p.created_at), color: p.type === 'seeking' ? 'blue' : 'purple', delay: (i + 4) * 150 });
+    });
+
+    // Sort by recency feel
+    items.sort(() => Math.random() - 0.3);
+
+    const container = document.getElementById('body-ticker');
+    if (items.length === 0) {
+      container.innerHTML = '<div class="empty-feed"><p>Activity will appear here as the platform grows.</p></div>';
+      return;
+    }
+    container.innerHTML = items.slice(0,6).map(item =>
+      '<div class="ticker-item" style="animation-delay:' + item.delay + 'ms;">'
+      + '<div class="ticker-dot ' + item.color + '"></div>'
+      + '<div class="ticker-text">' + item.text + '</div>'
+      + '<div class="ticker-time">' + item.time + '</div>'
+      + '</div>'
+    ).join('');
+  } catch(e) { console.log(e); }
+}
+
+// ── MAIN INIT ──
+document.addEventListener('DOMContentLoaded', async () => {
+  // Always load public stats + featured
   loadStats();
-  loadFeaturedProviders();
+
+  // Check auth — non-blocking
+  try {
+    const user = await CV.getCurrentUser();
+    if (user && user.profile && user.profile.status === 'active') {
+      await initPersonalisedFeed(user);
+    } else {
+      // Logged out — load public featured providers
+      loadFeaturedProviders();
+    }
+  } catch(e) {
+    loadFeaturedProviders();
+  }
 });
 </script>
 </body>
