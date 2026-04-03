@@ -56,7 +56,7 @@ module.exports = async function handler(req, res) {
     const dashboardUrl = dashMap[provider.role] || BASE_URL;
 
     await sendEmail({
-      to: provider.email,
+      to: 'bizeshghi@gmail.com',
       subject: `New enquiry: ${enq.subject || 'General enquiry'} — CareVacancy`,
       html: enquiryEmail(providerName, senderName, senderRole, enq.subject, enq.message, enq.contact_preference, dashboardUrl),
     });

@@ -26,7 +26,7 @@ module.exports = async function handler(req, res) {
     const name = profile.org_name || profile.full_name || 'Provider';
 
     await sendEmail({
-      to: profile.email,
+      to: 'bizeshghi@gmail.com',
       subject: action === 'approved'
         ? '🎉 Your CareVacancy account is approved!'
         : 'Your CareVacancy application — update',
