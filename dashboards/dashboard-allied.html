@@ -493,6 +493,10 @@ function switchPanel(btn, panel) {
   document.getElementById('panel-' + panel).classList.add('active');
   const titles = { overview:'Overview', vacancies:'My vacancies', enquiries:'Enquiries', seeking:'Seeking posts', matches:'Auto-matches', profile:'My profile', billing:'Billing' };
   document.getElementById('panel-title').textContent = titles[panel] || panel;
+  if (panel === 'matches') {
+  localStorage.setItem('matches-last-viewed', new Date().toISOString());
+  const badge = document.getElementById('matches-badge');
+  if (badge) badge.style.display = 'none';
 }
 
 function showToast(msg) {
