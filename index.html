@@ -864,7 +864,14 @@ async function initLoggedIn(user) {
   const isProvider = PROVIDER_ROLES.includes(role);
   const dashUrl = DASH_MAP[role]||'dashboards/dashboard-participant.html';
 
-  // Hero stays visible — marketing text swapped for greeting inside hero
+  // Swap marketing text for personalised greeting
+  document.getElementById('hero-marketing').style.display = 'none';
+  const heroLI = document.getElementById('hero-logged-in');
+  if (heroLI) heroLI.style.display = 'block';
+  const greet = document.getElementById('wl-greeting-hero');
+  const sub   = document.getElementById('wl-sub-hero');
+  if (greet) greet.textContent = 'Good '+getGreeting()+', '+name.split(' ')[0];
+  if (sub)   sub.textContent   = isProvider ? 'Your dashboard is ready. Here\'s what\'s new.' : 'Browse the latest vacancies matched to your needs.';
 
   let pills = '<a href="'+dashUrl+'" class="wpill wpill-teal">&#127968; Dashboard</a>';
   if (isProvider) {
