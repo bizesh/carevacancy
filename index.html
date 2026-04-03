@@ -3,46 +3,20 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>CareVacancy — Australia's NDIS Provider Marketplace</title>
+<title>CareVacancy &#8212; Australia's NDIS Provider Marketplace</title>
 <link rel="stylesheet" href="css/global.css"/>
 <link rel="stylesheet" href="css/nav.css"/>
 <style>
-/* ══════════════════════════════════════
-   AD CAROUSEL
-══════════════════════════════════════ */
-.ad-carousel{position:relative;overflow:hidden;background:#0f2942;height:260px;}
-.ad-track{display:flex;height:100%;transition:transform 0.6s cubic-bezier(0.4,0,0.2,1);}
-.ad-slide{min-width:100%;height:100%;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;}
-.ad-slide-bg{position:absolute;inset:0;background-size:cover;background-position:center;}
-.ad-slide-overlay{position:absolute;inset:0;}
-.ad-slide-content{position:relative;z-index:2;max-width:1100px;width:100%;padding:0 5%;display:flex;align-items:center;justify-content:space-between;gap:32px;}
-.ad-slide-left{}
-.ad-slide-eyebrow{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.6);margin-bottom:6px;}
-.ad-slide-title{font-family:'DM Serif Display',serif;font-size:clamp(20px,2.8vw,32px);color:white;line-height:1.2;margin-bottom:8px;}
-.ad-slide-sub{font-size:13px;color:rgba(255,255,255,0.7);max-width:420px;}
-.ad-slide-cta{background:var(--teal);color:white;border:none;padding:10px 22px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background 0.2s;}
-.ad-slide-cta:hover{background:var(--teal-dark);}
-.ad-badge{position:absolute;top:14px;right:16px;font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;background:rgba(0,0,0,0.35);color:rgba(255,255,255,0.85);padding:4px 10px;border-radius:5px;z-index:3;border:1px solid rgba(255,255,255,0.15);backdrop-filter:blur(4px);}
-.ad-dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:4;}
-.ad-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.35);cursor:pointer;transition:all 0.2s;}
-.ad-dot.active{background:white;width:18px;border-radius:3px;}
-.ad-arrow{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.15);border:none;color:white;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;z-index:4;transition:background 0.2s;}
-.ad-arrow:hover{background:rgba(255,255,255,0.3);}
-.ad-arrow.prev{left:12px;}
-.ad-arrow.next{right:12px;}
-
-/* ══════════════════════════════════════
-   HERO
-══════════════════════════════════════ */
-.hero{background:linear-gradient(135deg,#0f2942 0%,#1e3a5f 60%,#0d9488 100%);padding:60px 5% 68px;position:relative;overflow:hidden;}
+/* ══ HERO ══ */
+.hero{background:linear-gradient(135deg,#0f2942 0%,#1e3a5f 60%,#0d9488 100%);padding:60px 5% 0;position:relative;overflow:hidden;}
 .hero::before{content:'';position:absolute;top:-40%;right:-10%;width:600px;height:600px;border-radius:50%;background:rgba(13,148,136,0.08);pointer-events:none;}
-.hero-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;}
+.hero-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;padding-bottom:48px;}
 .hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(13,148,136,0.2);border:1px solid rgba(13,148,136,0.4);color:#5eead4;font-size:12px;font-weight:600;padding:5px 14px;border-radius:20px;margin-bottom:20px;}
 .hero h1{font-family:'DM Serif Display',serif;font-size:clamp(28px,3.5vw,48px);color:white;line-height:1.15;margin-bottom:16px;letter-spacing:-0.5px;}
 .hero h1 span{color:#5eead4;}
 .hero-sub{font-size:15px;color:rgba(255,255,255,0.7);line-height:1.7;margin-bottom:28px;}
 .hero-stats{display:flex;gap:28px;flex-wrap:wrap;}
-.hero-stat-num{font-family:'DM Serif Display',serif;font-size:24px;color:#5eead4;font-weight:400;line-height:1;}
+.hero-stat-num{font-family:'DM Serif Display',serif;font-size:24px;color:#5eead4;line-height:1;}
 .hero-stat-label{font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;}
 .search-box{background:white;border-radius:16px;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,0.3);}
 .search-box-title{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:14px;}
@@ -53,15 +27,35 @@
 .search-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
 .search-input{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border 0.2s;box-sizing:border-box;}
 .search-input:focus{border-color:var(--teal);}
-.search-btn{width:100%;background:var(--teal);color:white;border:none;padding:11px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;margin-top:3px;transition:background 0.2s;}
+.search-btn{width:100%;background:var(--teal);color:white;border:none;padding:11px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;margin-top:3px;transition:background 0.2s;}
 .search-btn:hover{background:var(--teal-dark);}
 .search-links{display:flex;gap:12px;margin-top:9px;flex-wrap:wrap;}
-.search-link{font-size:12px;color:var(--muted);cursor:pointer;text-decoration:none;}
+.search-link{font-size:12px;color:var(--muted);text-decoration:none;}
 .search-link:hover{color:var(--teal);}
 
-/* ══════════════════════════════════════
-   LOGGED-IN WELCOME BAR
-══════════════════════════════════════ */
+/* ══ AD CAROUSEL (lives at bottom of hero, full bleed) ══ */
+.hero-carousel-wrap{margin:0 -5%;background:rgba(0,0,0,0.35);border-top:1px solid rgba(255,255,255,0.07);}
+.ad-carousel{position:relative;overflow:hidden;height:220px;}
+.ad-track{display:flex;height:100%;transition:transform 0.65s cubic-bezier(0.4,0,0.2,1);}
+.ad-slide{min-width:100%;height:100%;position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.ad-slide-bg{position:absolute;inset:0;background-size:cover;background-position:center;}
+.ad-slide-overlay{position:absolute;inset:0;}
+.ad-slide-content{position:relative;z-index:2;max-width:1100px;width:100%;padding:0 5%;display:flex;align-items:center;justify-content:space-between;gap:32px;}
+.ad-slide-eyebrow{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-bottom:6px;}
+.ad-slide-title{font-family:'DM Serif Display',serif;font-size:clamp(18px,2.5vw,28px);color:white;line-height:1.25;margin-bottom:6px;}
+.ad-slide-sub{font-size:12px;color:rgba(255,255,255,0.65);max-width:460px;line-height:1.5;}
+.ad-cta{background:var(--teal);color:white;border:none;padding:10px 22px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background 0.2s;}
+.ad-cta:hover{background:var(--teal-dark);}
+.ad-sponsored{position:absolute;top:10px;right:14px;z-index:5;font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;background:rgba(0,0,0,0.4);color:rgba(255,255,255,0.7);padding:3px 9px;border-radius:4px;border:1px solid rgba(255,255,255,0.12);}
+.ad-dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:4;}
+.ad-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.3);cursor:pointer;transition:all 0.2s;}
+.ad-dot.active{background:white;width:18px;border-radius:3px;}
+.ad-arrow{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.12);border:none;color:white;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;z-index:4;transition:background 0.2s;}
+.ad-arrow:hover{background:rgba(255,255,255,0.25);}
+.ad-arrow.prev{left:14px;}
+.ad-arrow.next{right:14px;}
+
+/* ══ LOGGED-IN WELCOME BAR ══ */
 #logged-in-hero{display:none;}
 .welcome-bar{background:linear-gradient(135deg,#0a1f35,#1a3a5c);padding:22px 5%;border-bottom:1px solid rgba(255,255,255,0.06);}
 .welcome-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;}
@@ -76,41 +70,38 @@
 .wpill-alert{background:rgba(239,68,68,0.2);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);}
 .wpill-badge{background:#ef4444;color:white;font-size:10px;font-weight:700;padding:1px 5px;border-radius:10px;margin-left:2px;}
 
-/* ══════════════════════════════════════
-   MAIN FEED
-══════════════════════════════════════ */
+/* ══ MAIN FEED ══ */
 .main-feed{padding:36px 5% 52px;background:var(--bg);}
 .feed-inner{max-width:1100px;margin:0 auto;}
 .feed-layout{display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start;}
-
-/* Feed tabs */
 .feed-tabs{display:flex;gap:4px;background:white;border:1px solid var(--border);border-radius:10px;padding:4px;margin-bottom:20px;}
 .ftab{flex:1;padding:9px 8px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;color:var(--muted);transition:all 0.15s;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px;}
 .ftab.active{background:var(--navy);color:white;}
-.ftab-count{background:rgba(255,255,255,0.2);font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;}
+.ftab-count{font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;}
+.ftab.active .ftab-count{background:rgba(255,255,255,0.2);color:white;}
 .ftab:not(.active) .ftab-count{background:var(--bg);color:var(--muted);}
 
-/* Feed cards */
-.post-card{background:white;border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:12px;cursor:pointer;transition:all 0.18s;position:relative;overflow:hidden;}
+/* Post cards */
+.post-card{background:white;border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:12px;cursor:pointer;transition:all 0.18s;position:relative;}
 .post-card:hover{box-shadow:0 6px 24px rgba(0,0,0,0.08);transform:translateY(-1px);}
-.post-card:last-child{margin-bottom:0;}
 .pc-row{display:flex;align-items:flex-start;gap:14px;}
 .pc-icon{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
-.pc-icon.sil{background:#dbeafe;}
+.pc-icon.sil,.pc-icon.vacancies{background:#dbeafe;}
 .pc-icon.sc{background:#dcfce7;}
 .pc-icon.allied{background:#fce7f3;}
 .pc-icon.pm{background:#fef9c3;}
 .pc-icon.seeking{background:#f3e8ff;}
-.pc-icon.offering{background:#e0f2fe;}
+.pc-icon.offerings{background:#e0f2fe;}
 .pc-body{flex:1;min-width:0;}
 .pc-top-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:5px;}
 .pc-title{font-size:14px;font-weight:700;color:var(--navy);line-height:1.3;}
 .pc-time{font-size:11px;color:var(--muted);white-space:nowrap;flex-shrink:0;}
-.pc-provider-row{display:flex;align-items:center;gap:6px;margin-bottom:7px;}
+.pc-provider-row{display:flex;align-items:center;gap:6px;margin-bottom:4px;flex-wrap:wrap;}
 .pc-provider-name{font-size:12px;font-weight:600;color:var(--teal-dark);}
-.pc-provider-name.blurred{filter:blur(5px);user-select:none;pointer-events:none;color:var(--muted);}
+.pc-provider-name.blurred{filter:blur(5px);user-select:none;pointer-events:none;color:#ccc;background:#f1f5f9;border-radius:4px;padding:0 4px;}
 .pc-provider-badge{font-size:10px;font-weight:600;padding:1px 7px;border-radius:10px;background:#E1F5EE;color:#085041;}
 .pc-provider-badge.premium{background:#ede9fe;color:#5b21b6;}
+.pc-location{font-size:11px;color:var(--muted);margin-bottom:6px;display:flex;align-items:center;gap:4px;}
 .pc-desc{font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:9px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
 .pc-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;}
 .pc-tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;background:#f1f5f9;color:#475569;}
@@ -118,42 +109,34 @@
 .pc-tag.premium{background:#ede9fe;color:#5b21b6;}
 .pc-tag.sil{background:#dbeafe;color:#1e40af;}
 .pc-footer-row{display:flex;align-items:center;justify-content:space-between;}
-.pc-location{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:4px;}
 .pc-action-btn{background:var(--teal);color:white;border:none;padding:7px 16px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.15s;}
 .pc-action-btn:hover{background:var(--teal-dark);}
-.pc-action-btn.locked{background:var(--border);color:var(--muted);cursor:pointer;}
-.pc-action-btn.locked:hover{background:#e2e8f0;}
+.pc-action-btn.locked{background:#f1f5f9;color:var(--muted);border:1.5px solid var(--border);}
+.pc-action-btn.locked:hover{border-color:var(--teal);color:var(--teal);background:white;}
+.load-more-btn{width:100%;background:white;border:1.5px solid var(--border);color:var(--navy);padding:11px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;margin-top:12px;transition:all 0.15s;}
+.load-more-btn:hover{border-color:var(--teal);color:var(--teal);}
 
-/* Gate overlay on card */
-.pc-gate{position:absolute;bottom:0;left:0;right:0;height:60px;background:linear-gradient(to top, white 60%, transparent);display:flex;align-items:flex-end;justify-content:center;padding-bottom:10px;}
-
-/* ══════════════════════════════════════
-   SIDE PANEL
-══════════════════════════════════════ */
+/* Side panel */
 .side-panel{}
 .side-block{background:white;border:1px solid var(--border);border-radius:14px;margin-bottom:16px;overflow:hidden;}
-.side-block-header{padding:14px 16px;border-bottom:1px solid var(--border);}
+.side-block-header{padding:13px 16px;border-bottom:1px solid var(--border);}
 .side-block-title{font-size:13px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:7px;}
 .side-block-body{padding:14px 16px;}
-
 .stat-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
 .stat-box{background:var(--bg);border-radius:10px;padding:12px;text-align:center;}
 .stat-box-num{font-family:'DM Serif Display',serif;font-size:20px;color:var(--navy);}
 .stat-box-num.teal{color:var(--teal);}
 .stat-box-label{font-size:10px;color:var(--muted);margin-top:2px;}
-
 .quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
 .qa-btn{background:var(--bg);border:1.5px solid var(--border);border-radius:9px;padding:12px 8px;text-align:center;cursor:pointer;text-decoration:none;transition:all 0.15s;display:block;}
 .qa-btn:hover{border-color:var(--teal);background:#f0fdfa;}
 .qa-icon{font-size:18px;margin-bottom:4px;}
 .qa-label{font-size:11px;font-weight:600;color:var(--navy);}
-
 .upgrade-box{background:linear-gradient(135deg,#0f2942,#1a3358);border-radius:12px;padding:18px;text-align:center;margin-bottom:14px;}
 .upgrade-box h4{font-size:13px;font-weight:700;color:white;margin-bottom:5px;}
 .upgrade-box p{font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:12px;line-height:1.5;}
 .upgrade-box-btn{background:var(--teal);color:white;border:none;padding:9px 16px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;transition:background 0.2s;}
 .upgrade-box-btn:hover{background:var(--teal-dark);}
-
 .ticker-item{display:flex;align-items:flex-start;gap:9px;padding:9px 0;border-bottom:1px solid var(--border);opacity:0;transform:translateY(5px);animation:fadeUp 0.4s forwards;}
 .ticker-item:last-child{border-bottom:none;padding-bottom:0;}
 @keyframes fadeUp{to{opacity:1;transform:translateY(0);}}
@@ -163,7 +146,6 @@
 .ticker-text{font-size:11px;color:var(--muted);line-height:1.5;flex:1;}
 .ticker-text strong{color:var(--navy);}
 .ticker-time{font-size:10px;color:var(--muted);white-space:nowrap;}
-
 .spot-card{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:opacity 0.15s;}
 .spot-card:hover{opacity:0.75;}
 .spot-card:last-child{border-bottom:none;padding-bottom:0;}
@@ -173,11 +155,8 @@
 .spot-info{flex:1;min-width:0;}
 .spot-name{font-size:12px;font-weight:600;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .spot-sub{font-size:10px;color:var(--muted);}
-.spot-tier{font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;}
 
-/* ══════════════════════════════════════
-   CATEGORIES
-══════════════════════════════════════ */
+/* ══ CATEGORIES ══ */
 .cats{padding:40px 5%;background:white;}
 .cats-inner{max-width:1100px;margin:0 auto;}
 .cats h2{font-family:'DM Serif Display',serif;font-size:26px;color:var(--navy);margin-bottom:20px;}
@@ -188,9 +167,7 @@
 .cat-name{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:2px;}
 .cat-count{font-size:11px;color:var(--muted);}
 
-/* ══════════════════════════════════════
-   HOW IT WORKS
-══════════════════════════════════════ */
+/* ══ HOW IT WORKS ══ */
 .how{padding:56px 5%;background:var(--bg);}
 .how-inner{max-width:1100px;margin:0 auto;}
 .section-badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--teal-dark);background:var(--teal-light);padding:4px 12px;border-radius:20px;margin-bottom:10px;}
@@ -202,9 +179,7 @@
 .how-card h3{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:5px;}
 .how-card p{font-size:12px;color:var(--muted);line-height:1.6;}
 
-/* ══════════════════════════════════════
-   CTA BANNER
-══════════════════════════════════════ */
+/* ══ CTA ══ */
 .cta-banner{background:linear-gradient(135deg,#0f2942,#1e3a5f);padding:52px 5%;text-align:center;}
 .cta-banner h2{font-family:'DM Serif Display',serif;font-size:30px;color:white;margin-bottom:10px;}
 .cta-banner p{font-size:14px;color:rgba(255,255,255,0.7);margin-bottom:24px;max-width:460px;margin-left:auto;margin-right:auto;}
@@ -213,9 +188,7 @@
 .cta-btn-primary:hover{background:var(--teal-dark);}
 .cta-btn-outline{background:none;border:1.5px solid rgba(255,255,255,0.3);color:white;padding:12px 26px;border-radius:8px;font-weight:600;font-size:13px;text-decoration:none;}
 
-/* ══════════════════════════════════════
-   FOOTER
-══════════════════════════════════════ */
+/* ══ FOOTER ══ */
 footer{background:var(--navy);padding:36px 5% 22px;}
 .footer-inner{max-width:1100px;margin:0 auto;}
 .footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:28px;margin-bottom:28px;}
@@ -226,16 +199,13 @@ footer{background:var(--navy);padding:36px 5% 22px;}
 .footer-col a{display:block;font-size:12px;color:rgba(255,255,255,0.55);text-decoration:none;padding:3px 0;transition:color 0.15s;}
 .footer-col a:hover{color:white;}
 .footer-bottom{border-top:1px solid rgba(255,255,255,0.07);padding-top:18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
-.footer-copy{font-size:11px;color:rgba(255,255,255,0.25);}
-.footer-aus{font-size:11px;color:rgba(255,255,255,0.25);}
+.footer-copy,.footer-aus{font-size:11px;color:rgba(255,255,255,0.25);}
 
-/* ══════════════════════════════════════
-   GATE MODALS
-══════════════════════════════════════ */
-.modal-overlay{position:fixed;inset:0;background:rgba(15,41,66,0.7);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;}
+/* ══ GATE MODALS ══ */
+.modal-overlay{position:fixed;inset:0;background:rgba(15,41,66,0.75);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;}
 .modal-overlay.open{display:flex;}
-.modal-box{background:white;border-radius:20px;padding:36px;max-width:420px;width:100%;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,0.25);animation:modalIn 0.25s ease;}
-@keyframes modalIn{from{opacity:0;transform:scale(0.94) translateY(10px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.modal-box{background:white;border-radius:20px;padding:36px;max-width:400px;width:100%;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,0.25);animation:modalIn 0.25s ease;position:relative;}
+@keyframes modalIn{from{opacity:0;transform:scale(0.94) translateY(8px);}to{opacity:1;transform:scale(1) translateY(0);}}
 .modal-icon{font-size:36px;margin-bottom:14px;}
 .modal-box h3{font-family:'DM Serif Display',serif;font-size:22px;color:var(--navy);margin-bottom:8px;}
 .modal-box p{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:22px;}
@@ -244,20 +214,15 @@ footer{background:var(--navy);padding:36px 5% 22px;}
 .modal-btn-secondary{display:block;width:100%;background:var(--bg);color:var(--navy);border:1.5px solid var(--border);padding:11px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;transition:all 0.15s;}
 .modal-btn-secondary:hover{border-color:var(--teal);}
 .modal-close{position:absolute;top:14px;right:16px;background:none;border:none;font-size:20px;color:var(--muted);cursor:pointer;line-height:1;}
-.modal-divider{display:flex;align-items:center;gap:10px;margin:12px 0;color:var(--muted);font-size:12px;}
+.modal-divider{display:flex;align-items:center;gap:10px;margin:10px 0;color:var(--muted);font-size:12px;}
 .modal-divider::before,.modal-divider::after{content:'';flex:1;height:1px;background:var(--border);}
 
-/* ══════════════════════════════════════
-   SKELETONS + EMPTY
-══════════════════════════════════════ */
-.skel{background:linear-gradient(90deg,#f1f5f9 25%,#e8edf3 50%,#f1f5f9 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px;height:12px;margin-bottom:7px;}
+/* ══ SKELETONS ══ */
+.skel{background:linear-gradient(90deg,#f1f5f9 25%,#e8edf3 50%,#f1f5f9 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px;height:11px;margin-bottom:7px;}
 @keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
-.empty-state{text-align:center;padding:36px 20px;color:var(--muted);}
-.empty-state-icon{font-size:28px;margin-bottom:8px;}
+.empty-state{text-align:center;padding:32px 20px;color:var(--muted);}
+.empty-state-icon{font-size:26px;margin-bottom:8px;}
 .empty-state p{font-size:13px;}
-
-.load-more-btn{width:100%;background:white;border:1.5px solid var(--border);color:var(--navy);padding:11px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;margin-top:12px;transition:all 0.15s;}
-.load-more-btn:hover{border-color:var(--teal);color:var(--teal);}
 
 @media(max-width:900px){
   .hero-inner{grid-template-columns:1fr;}
@@ -266,14 +231,13 @@ footer{background:var(--navy);padding:36px 5% 22px;}
   .how-grid{grid-template-columns:1fr;}
   .cat-grid{grid-template-columns:repeat(2,1fr);}
   .footer-top{grid-template-columns:1fr 1fr;}
-  .ad-slide-cta{display:none;}
+  .ad-cta{display:none;}
 }
 @media(max-width:600px){
   .cat-grid{grid-template-columns:1fr 1fr;}
   .search-row{grid-template-columns:1fr;}
   .welcome-inner{flex-direction:column;align-items:flex-start;}
-  .feed-tabs{gap:2px;}
-  .ftab{font-size:11px;padding:8px 5px;}
+  .ftab{font-size:11px;padding:8px 4px;}
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -298,14 +262,16 @@ footer{background:var(--navy);padding:36px 5% 22px;}
   <button class="nav-hamburger" onclick="toggleMobileMenu()">&#9776;</button>
 </nav>
 
-<!-- HERO (logged-out) -->
+<!-- ══════════════════════════════════
+     HERO (logged-out) — includes carousel at bottom
+══════════════════════════════════ -->
 <section class="hero" id="hero-loggedout">
   <div class="hero-inner">
     <div>
       <div class="hero-badge">&#127462;&#127482; Australia&#39;s NDIS Marketplace</div>
       <h1>Find the right <span>NDIS provider</span> &#8212; fast</h1>
       <p class="hero-sub">Search verified SIL vacancies, support coordinators, allied health professionals and plan managers. Or list your service and connect with participants who need you.</p>
-      <div class="hero-stats" style="display:flex;gap:28px;flex-wrap:wrap;">
+      <div class="hero-stats">
         <div class="hero-stat">
           <div class="hero-stat-num" id="stat-providers">&#8212;</div>
           <div class="hero-stat-label">Verified providers</div>
@@ -357,130 +323,147 @@ footer{background:var(--navy);padding:36px 5% 22px;}
       </div>
     </div>
   </div>
+
+  <!-- AD CAROUSEL — full bleed strip at hero bottom -->
+  <div class="hero-carousel-wrap">
+    <div class="ad-carousel" id="ad-carousel">
+      <div class="ad-track" id="ad-track">
+
+        <div class="ad-slide">
+          <div class="ad-slide-bg" style="background:linear-gradient(135deg,#0d3d5c 0%,#1a5c6e 50%,#0a4a3a 100%);"></div>
+          <div class="ad-slide-overlay" style="background:rgba(0,0,0,0.2);"></div>
+          <div class="ad-slide-content">
+            <div>
+              <div class="ad-slide-eyebrow">&#128142; Premium Provider &middot; Melbourne VIC</div>
+              <div class="ad-slide-title">SIL vacancies available now across metropolitan Melbourne</div>
+              <div class="ad-slide-sub">Specialising in ABI, physical disability &amp; complex support. Immediate availability in 3 locations.</div>
+            </div>
+            <button class="ad-cta" onclick="gateAction('enquire')">View vacancies &#8594;</button>
+          </div>
+          <div class="ad-sponsored">Sponsored</div>
+        </div>
+
+        <div class="ad-slide">
+          <div class="ad-slide-bg" style="background:linear-gradient(135deg,#1a1a4e 0%,#2d1b69 50%,#0d4a5c 100%);"></div>
+          <div class="ad-slide-overlay" style="background:rgba(0,0,0,0.15);"></div>
+          <div class="ad-slide-content">
+            <div>
+              <div class="ad-slide-eyebrow">&#11088; Featured Provider &middot; Sydney NSW</div>
+              <div class="ad-slide-title">Experienced Support Coordinators ready to take on new clients</div>
+              <div class="ad-slide-sub">NDIS registered, specialising in mental health, autism &amp; complex psychosocial disability across Greater Sydney.</div>
+            </div>
+            <button class="ad-cta" onclick="gateAction('enquire')">Get in touch &#8594;</button>
+          </div>
+          <div class="ad-sponsored">Sponsored</div>
+        </div>
+
+        <div class="ad-slide">
+          <div class="ad-slide-bg" style="background:linear-gradient(135deg,#064e3b 0%,#065f46 50%,#0f2942 100%);"></div>
+          <div class="ad-slide-overlay" style="background:rgba(0,0,0,0.15);"></div>
+          <div class="ad-slide-content">
+            <div>
+              <div class="ad-slide-eyebrow">&#128142; Premium Provider &middot; Brisbane QLD</div>
+              <div class="ad-slide-title">Allied Health team with NDIS experience across Queensland</div>
+              <div class="ad-slide-sub">OT, physio, speech therapy &amp; behaviour support. Telehealth and in-home available statewide.</div>
+            </div>
+            <button class="ad-cta" onclick="gateAction('enquire')">Learn more &#8594;</button>
+          </div>
+          <div class="ad-sponsored">Sponsored</div>
+        </div>
+
+      </div>
+      <button class="ad-arrow prev" onclick="slideAd(-1)">&#8592;</button>
+      <button class="ad-arrow next" onclick="slideAd(1)">&#8594;</button>
+      <div class="ad-dots" id="ad-dots"></div>
+    </div>
+  </div>
 </section>
 
-<!-- WELCOME BAR (logged-in) -->
+<!-- WELCOME BAR (logged-in, replaces hero) -->
 <div id="logged-in-hero" style="display:none;">
   <div class="welcome-bar">
     <div class="welcome-inner">
       <div class="welcome-left">
         <h2 id="wl-greeting">Welcome back</h2>
-        <p id="wl-sub">Here&#39;s what&#39;s happening on CareVacancy today</p>
+        <p id="wl-sub">Here&#39;s what&#39;s new on CareVacancy today</p>
       </div>
       <div class="welcome-pills" id="wl-pills"></div>
     </div>
   </div>
-</div>
-
-<!-- AD CAROUSEL (always visible) -->
-<div style="background:var(--bg);padding:10px 5% 0;border-top:1px solid var(--border);">
-  <div style="max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding-bottom:10px;">
-    <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);">&#128225; Sponsored listings</div>
-    <div style="font-size:11px;color:var(--muted);">Want your listing here? <a href="pages/signup.html" style="color:var(--teal);text-decoration:none;font-weight:600;">Contact us</a></div>
+  <!-- Carousel also shows when logged in -->
+  <div style="background:#0a1e33;">
+    <div class="ad-carousel" id="ad-carousel-li">
+      <div class="ad-track" id="ad-track-li">
+        <div class="ad-slide">
+          <div class="ad-slide-bg" style="background:linear-gradient(135deg,#0d3d5c 0%,#1a5c6e 50%,#0a4a3a 100%);"></div>
+          <div class="ad-slide-overlay" style="background:rgba(0,0,0,0.2);"></div>
+          <div class="ad-slide-content">
+            <div>
+              <div class="ad-slide-eyebrow">&#128142; Premium Provider &middot; Melbourne VIC</div>
+              <div class="ad-slide-title">SIL vacancies available now across metropolitan Melbourne</div>
+              <div class="ad-slide-sub">Specialising in ABI, physical disability &amp; complex support. Immediate availability in 3 locations.</div>
+            </div>
+            <button class="ad-cta" onclick="gateAction('enquire')">View vacancies &#8594;</button>
+          </div>
+          <div class="ad-sponsored">Sponsored</div>
+        </div>
+        <div class="ad-slide">
+          <div class="ad-slide-bg" style="background:linear-gradient(135deg,#1a1a4e 0%,#2d1b69 50%,#0d4a5c 100%);"></div>
+          <div class="ad-slide-overlay" style="background:rgba(0,0,0,0.15);"></div>
+          <div class="ad-slide-content">
+            <div>
+              <div class="ad-slide-eyebrow">&#11088; Featured Provider &middot; Sydney NSW</div>
+              <div class="ad-slide-title">Experienced Support Coordinators ready to take on new clients</div>
+              <div class="ad-slide-sub">NDIS registered, specialising in mental health, autism &amp; complex psychosocial disability.</div>
+            </div>
+            <button class="ad-cta" onclick="gateAction('enquire')">Get in touch &#8594;</button>
+          </div>
+          <div class="ad-sponsored">Sponsored</div>
+        </div>
+        <div class="ad-slide">
+          <div class="ad-slide-bg" style="background:linear-gradient(135deg,#064e3b 0%,#065f46 50%,#0f2942 100%);"></div>
+          <div class="ad-slide-overlay" style="background:rgba(0,0,0,0.15);"></div>
+          <div class="ad-slide-content">
+            <div>
+              <div class="ad-slide-eyebrow">&#128142; Premium Provider &middot; Brisbane QLD</div>
+              <div class="ad-slide-title">Allied Health team with NDIS experience across Queensland</div>
+              <div class="ad-slide-sub">OT, physio, speech therapy &amp; behaviour support. Telehealth and in-home available statewide.</div>
+            </div>
+            <button class="ad-cta" onclick="gateAction('enquire')">Learn more &#8594;</button>
+          </div>
+          <div class="ad-sponsored">Sponsored</div>
+        </div>
+      </div>
+      <button class="ad-arrow prev" onclick="slideAdLI(-1)">&#8592;</button>
+      <button class="ad-arrow next" onclick="slideAdLI(1)">&#8594;</button>
+      <div class="ad-dots" id="ad-dots-li"></div>
+    </div>
   </div>
 </div>
-<div class="ad-carousel" id="ad-carousel">
-  <div class="ad-track" id="ad-track">
 
-    <!-- SLIDE 1 -->
-    <div class="ad-slide">
-      <div class="ad-slide-bg" style="background:linear-gradient(135deg,#0f2942 0%,#1e4d6b 50%,#0d6e5a 100%);"></div>
-      <div class="ad-slide-overlay" style="background:rgba(0,0,0,0.25);"></div>
-      <div class="ad-slide-content">
-        <div class="ad-slide-left">
-          <div class="ad-slide-eyebrow">&#128142; Premium Provider &middot; Melbourne VIC</div>
-          <div class="ad-slide-title">SIL vacancies available now<br>across metropolitan Melbourne</div>
-          <div class="ad-slide-sub">Specialising in ABI, physical disability, and complex support needs. Immediate availability in 3 locations.</div>
-        </div>
-        <button class="ad-slide-cta" onclick="gateAction('enquire')">View vacancies &#8594;</button>
-      </div>
-      <div class="ad-badge">Sponsored</div>
-    </div>
-
-    <!-- SLIDE 2 -->
-    <div class="ad-slide">
-      <div class="ad-slide-bg" style="background:linear-gradient(135deg,#1a1a4e 0%,#2d1b69 50%,#0d9488 100%);"></div>
-      <div class="ad-slide-overlay" style="background:rgba(0,0,0,0.2);"></div>
-      <div class="ad-slide-content">
-        <div class="ad-slide-left">
-          <div class="ad-slide-eyebrow">&#11088; Featured Provider &middot; Sydney NSW</div>
-          <div class="ad-slide-title">Experienced Support Coordinators<br>ready to take on new clients</div>
-          <div class="ad-slide-sub">NDIS registered, specialising in mental health, autism, and complex psychosocial disability across Greater Sydney.</div>
-        </div>
-        <button class="ad-slide-cta" onclick="gateAction('enquire')">Get in touch &#8594;</button>
-      </div>
-      <div class="ad-badge">Sponsored</div>
-    </div>
-
-    <!-- SLIDE 3 -->
-    <div class="ad-slide">
-      <div class="ad-slide-bg" style="background:linear-gradient(135deg,#064e3b 0%,#065f46 50%,#0f2942 100%);"></div>
-      <div class="ad-slide-overlay" style="background:rgba(0,0,0,0.2);"></div>
-      <div class="ad-slide-content">
-        <div class="ad-slide-left">
-          <div class="ad-slide-eyebrow">&#128142; Premium Provider &middot; Brisbane QLD</div>
-          <div class="ad-slide-title">Allied Health team with<br>NDIS experience across Queensland</div>
-          <div class="ad-slide-sub">OT, physiotherapy, speech therapy and behaviour support. Telehealth and in-home available statewide.</div>
-        </div>
-        <button class="ad-slide-cta" onclick="gateAction('enquire')">Learn more &#8594;</button>
-      </div>
-      <div class="ad-badge">Sponsored</div>
-    </div>
-
-  </div>
-  <button class="ad-arrow prev" onclick="slideAd(-1)">&#8592;</button>
-  <button class="ad-arrow next" onclick="slideAd(1)">&#8594;</button>
-  <div class="ad-dots" id="ad-dots"></div>
-</div>
-
-<!-- MAIN FEED (always visible) -->
+<!-- MAIN FEED -->
 <div class="main-feed">
   <div class="feed-inner">
     <div class="feed-layout">
-
-      <!-- MAIN COLUMN -->
       <div>
-        <!-- Feed tabs -->
         <div class="feed-tabs">
-          <button class="ftab active" onclick="switchFeedTab(this,'vacancies')">
-            &#127968; Vacancies <span class="ftab-count" id="tc-vacancies">0</span>
-          </button>
-          <button class="ftab" onclick="switchFeedTab(this,'seeking')">
-            &#128269; Seeking <span class="ftab-count" id="tc-seeking">0</span>
-          </button>
-          <button class="ftab" onclick="switchFeedTab(this,'offerings')">
-            &#129657; Offerings <span class="ftab-count" id="tc-offerings">0</span>
-          </button>
+          <button class="ftab active" onclick="switchFeedTab(this,'vacancies')">&#127968; Vacancies <span class="ftab-count" id="tc-vacancies">0</span></button>
+          <button class="ftab" onclick="switchFeedTab(this,'seeking')">&#128269; Seeking <span class="ftab-count" id="tc-seeking">0</span></button>
+          <button class="ftab" onclick="switchFeedTab(this,'offerings')">&#129657; Offerings <span class="ftab-count" id="tc-offerings">0</span></button>
         </div>
-
-        <!-- Feed panels -->
         <div id="feed-vacancies"></div>
         <div id="feed-seeking" style="display:none;"></div>
         <div id="feed-offerings" style="display:none;"></div>
       </div>
-
-      <!-- SIDE COLUMN -->
       <div class="side-panel">
-
-        <!-- Logged-in stats (providers) -->
         <div id="side-provider-stats" style="display:none;">
           <div class="stat-row">
-            <div class="stat-box">
-              <div class="stat-box-num teal" id="side-vac-count">&#8212;</div>
-              <div class="stat-box-label">My vacancies</div>
-            </div>
-            <div class="stat-box">
-              <div class="stat-box-num" id="side-enq-count">&#8212;</div>
-              <div class="stat-box-label">Enquiries</div>
-            </div>
+            <div class="stat-box"><div class="stat-box-num teal" id="side-vac-count">&#8212;</div><div class="stat-box-label">My vacancies</div></div>
+            <div class="stat-box"><div class="stat-box-num" id="side-enq-count">&#8212;</div><div class="stat-box-label">Enquiries</div></div>
           </div>
         </div>
-
-        <!-- Quick actions -->
         <div class="side-block">
-          <div class="side-block-header">
-            <div class="side-block-title">Quick actions</div>
-          </div>
+          <div class="side-block-header"><div class="side-block-title">Quick actions</div></div>
           <div class="side-block-body" style="padding:10px;">
             <div class="quick-grid" id="quick-actions">
               <a href="pages/search.html" class="qa-btn"><div class="qa-icon">&#128269;</div><div class="qa-label">Search</div></a>
@@ -490,8 +473,6 @@ footer{background:var(--navy);padding:36px 5% 22px;}
             </div>
           </div>
         </div>
-
-        <!-- Upgrade nudge (basic only) -->
         <div id="side-upgrade" style="display:none;">
           <div class="upgrade-box">
             <h4>&#128640; Get more visibility</h4>
@@ -499,29 +480,14 @@ footer{background:var(--navy);padding:36px 5% 22px;}
             <button class="upgrade-box-btn" onclick="window.location='pages/upgrade.html'">Upgrade &#8212; $49/mo &#8594;</button>
           </div>
         </div>
-
-        <!-- Featured providers -->
         <div class="side-block">
-          <div class="side-block-header">
-            <div class="side-block-title">&#11088; Featured providers</div>
-          </div>
-          <div class="side-block-body" id="side-spotlight">
-            <div class="skel" style="height:10px;width:80%;"></div>
-            <div class="skel" style="height:10px;width:60%;"></div>
-          </div>
+          <div class="side-block-header"><div class="side-block-title">&#11088; Featured providers</div></div>
+          <div class="side-block-body" id="side-spotlight"><div class="skel" style="height:10px;width:80%;"></div><div class="skel" style="height:10px;width:60%;"></div></div>
         </div>
-
-        <!-- Activity ticker -->
         <div class="side-block">
-          <div class="side-block-header">
-            <div class="side-block-title">&#128225; Live activity</div>
-          </div>
-          <div class="side-block-body" id="side-ticker">
-            <div class="skel" style="height:10px;width:90%;"></div>
-            <div class="skel" style="height:10px;width:65%;"></div>
-          </div>
+          <div class="side-block-header"><div class="side-block-title">&#128225; Live activity</div></div>
+          <div class="side-block-body" id="side-ticker"><div class="skel" style="height:10px;width:90%;"></div><div class="skel" style="height:10px;width:65%;"></div></div>
         </div>
-
       </div>
     </div>
   </div>
@@ -532,26 +498,10 @@ footer{background:var(--navy);padding:36px 5% 22px;}
   <div class="cats-inner">
     <h2>Browse by category</h2>
     <div class="cat-grid">
-      <a class="cat-card" href="pages/search.html?type=sil">
-        <div class="cat-icon">&#127968;</div>
-        <div class="cat-name">SIL Vacancies</div>
-        <div class="cat-count" id="cat-sil">Loading...</div>
-      </a>
-      <a class="cat-card" href="pages/search.html?type=sc">
-        <div class="cat-icon">&#129517;</div>
-        <div class="cat-name">Support Coordinators</div>
-        <div class="cat-count" id="cat-sc">Loading...</div>
-      </a>
-      <a class="cat-card" href="pages/search.html?type=allied">
-        <div class="cat-icon">&#129658;</div>
-        <div class="cat-name">Allied Health</div>
-        <div class="cat-count" id="cat-allied">Loading...</div>
-      </a>
-      <a class="cat-card" href="pages/search.html?type=pm">
-        <div class="cat-icon">&#128188;</div>
-        <div class="cat-name">Plan Managers</div>
-        <div class="cat-count" id="cat-pm">Loading...</div>
-      </a>
+      <a class="cat-card" href="pages/search.html?type=sil"><div class="cat-icon">&#127968;</div><div class="cat-name">SIL Vacancies</div><div class="cat-count" id="cat-sil">Loading...</div></a>
+      <a class="cat-card" href="pages/search.html?type=sc"><div class="cat-icon">&#129517;</div><div class="cat-name">Support Coordinators</div><div class="cat-count" id="cat-sc">Loading...</div></a>
+      <a class="cat-card" href="pages/search.html?type=allied"><div class="cat-icon">&#129658;</div><div class="cat-name">Allied Health</div><div class="cat-count" id="cat-allied">Loading...</div></a>
+      <a class="cat-card" href="pages/search.html?type=pm"><div class="cat-icon">&#128188;</div><div class="cat-name">Plan Managers</div><div class="cat-count" id="cat-pm">Loading...</div></a>
     </div>
   </div>
 </section>
@@ -563,26 +513,14 @@ footer{background:var(--navy);padding:36px 5% 22px;}
     <h2>The easiest way to navigate the NDIS</h2>
     <p class="how-sub">Whether you&#39;re searching for care, placing a client, or growing your business.</p>
     <div class="how-grid">
-      <div class="how-card">
-        <div class="how-num">1</div>
-        <h3>Search or post</h3>
-        <p>Search verified providers by location, disability type and availability. Or post vacancies and seeking requests.</p>
-      </div>
-      <div class="how-card">
-        <div class="how-num">2</div>
-        <h3>Connect directly</h3>
-        <p>Send enquiries directly to providers. No middlemen. All providers are verified before they appear.</p>
-      </div>
-      <div class="how-card">
-        <div class="how-num">3</div>
-        <h3>Get matched automatically</h3>
-        <p>Premium providers get auto-matched to participants. Set preferences once, get notified when vacancies open.</p>
-      </div>
+      <div class="how-card"><div class="how-num">1</div><h3>Search or post</h3><p>Search verified providers by location, disability type and availability. Or post vacancies and seeking requests.</p></div>
+      <div class="how-card"><div class="how-num">2</div><h3>Connect directly</h3><p>Send enquiries directly to providers. No middlemen. All providers are verified before they appear.</p></div>
+      <div class="how-card"><div class="how-num">3</div><h3>Get matched automatically</h3><p>Premium providers get auto-matched to participants. Set preferences once, get notified when vacancies open.</p></div>
     </div>
   </div>
 </section>
 
-<!-- CTA BANNER -->
+<!-- CTA -->
 <section class="cta-banner">
   <h2 id="cta-title">Are you an NDIS provider?</h2>
   <p id="cta-body">Join verified providers connecting with participants, support coordinators and families across Australia.</p>
@@ -630,11 +568,11 @@ footer{background:var(--navy);padding:36px 5% 22px;}
 
 <!-- LOGIN GATE MODAL -->
 <div class="modal-overlay" id="modal-login">
-  <div class="modal-box" style="position:relative;">
+  <div class="modal-box">
     <button class="modal-close" onclick="closeModal('modal-login')">&#215;</button>
     <div class="modal-icon">&#128274;</div>
     <h3>Log in or sign up to view</h3>
-    <p>Join free to view full provider details, contact information, suburb and vacancy availability — then enquire directly.</p>
+    <p>Join free to see full provider details, contact info, suburb and vacancy availability &#8212; then enquire directly.</p>
     <a href="pages/signup.html" class="modal-btn-primary">&#128640; Create free account</a>
     <div class="modal-divider">already have an account?</div>
     <a href="pages/login.html" class="modal-btn-secondary">Log in &#8594;</a>
@@ -643,7 +581,7 @@ footer{background:var(--navy);padding:36px 5% 22px;}
 
 <!-- UPGRADE GATE MODAL -->
 <div class="modal-overlay" id="modal-upgrade">
-  <div class="modal-box" style="position:relative;">
+  <div class="modal-box">
     <button class="modal-close" onclick="closeModal('modal-upgrade')">&#215;</button>
     <div class="modal-icon">&#11088;</div>
     <h3>Upgrade to view &amp; enquire</h3>
@@ -655,102 +593,87 @@ footer{background:var(--navy);padding:36px 5% 22px;}
 </div>
 
 <script>
-// ══════════════════════════════════════
-// STATE
-// ══════════════════════════════════════
+// ══ STATE ══
 let currentUser = null;
 let activeSearchTab = 'sil';
-let activeFeedTab = 'vacancies';
+
 const PROVIDER_ROLES = ['org','sc','pm','allied'];
 const DASH_MAP = {
   org:'dashboards/dashboard-org.html', sc:'dashboards/dashboard-sc.html',
-  pm:'dashboards/dashboard-pm.html', allied:'dashboards/dashboard-allied.html',
+  pm:'dashboards/dashboard-pm.html',   allied:'dashboards/dashboard-allied.html',
   participant:'dashboards/dashboard-participant.html',
   family:'dashboards/dashboard-participant.html',
   admin:'dashboards/dashboard-admin.html'
 };
 
-// ══════════════════════════════════════
-// AD CAROUSEL
-// ══════════════════════════════════════
-let adIndex = 0;
-let adTotal = 0;
-let adTimer = null;
+// ══ CAROUSEL ══
+function initCarousel(trackId, dotsId) {
+  const track = document.getElementById(trackId);
+  const dotsEl = document.getElementById(dotsId);
+  if (!track || !dotsEl) return { go: ()=>{} };
+  const slides = track.querySelectorAll('.ad-slide');
+  const total = slides.length;
+  let idx = 0;
+  let timer = null;
 
-function initCarousel() {
-  const slides = document.querySelectorAll('.ad-slide');
-  adTotal = slides.length;
-  const dotsEl = document.getElementById('ad-dots');
-  dotsEl.innerHTML = Array.from({length: adTotal}, (_,i) =>
-    '<div class="ad-dot' + (i===0?' active':'') + '" onclick="goToSlide(' + i + ')"></div>'
+  dotsEl.innerHTML = Array.from({length:total},(_,i)=>
+    '<div class="ad-dot'+(i===0?' active':'')+'"></div>'
   ).join('');
-  startAdTimer();
+  const dots = dotsEl.querySelectorAll('.ad-dot');
+  dots.forEach((d,i) => d.addEventListener('click', () => go(i)));
+
+  function go(n) {
+    idx = (n + total) % total;
+    track.style.transform = 'translateX(-' + idx * 100 + '%)';
+    dots.forEach((d,i) => d.classList.toggle('active', i === idx));
+    clearInterval(timer);
+    timer = setInterval(() => go(idx + 1), 5000);
+  }
+  timer = setInterval(() => go(idx + 1), 5000);
+  return { go };
 }
 
-function goToSlide(n) {
-  adIndex = (n + adTotal) % adTotal;
-  document.getElementById('ad-track').style.transform = 'translateX(-' + adIndex * 100 + '%)';
-  document.querySelectorAll('.ad-dot').forEach((d,i) => d.classList.toggle('active', i === adIndex));
-  resetAdTimer();
-}
+let carouselLO, carouselLI;
+function slideAd(dir)   { carouselLO && carouselLO.go(carouselLO._idx + dir); }
+function slideAdLI(dir) { carouselLI && carouselLI.go(carouselLI._idx + dir); }
 
-function slideAd(dir) { goToSlide(adIndex + dir); }
-function startAdTimer() { adTimer = setInterval(() => goToSlide(adIndex + 1), 5000); }
-function resetAdTimer() { clearInterval(adTimer); startAdTimer(); }
-
-// ══════════════════════════════════════
-// SEARCH
-// ══════════════════════════════════════
+// ══ SEARCH ══
 function setTab(btn, type) {
   activeSearchTab = type;
   document.querySelectorAll('.stab').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 }
 function doSearch() {
-  const suburb = document.getElementById('search-suburb').value;
-  const state  = document.getElementById('search-state').value;
-  const disability = document.getElementById('search-disability').value;
-  const availability = document.getElementById('search-availability').value;
   const p = new URLSearchParams();
   p.set('type', activeSearchTab);
+  const suburb = document.getElementById('search-suburb').value;
+  const state  = document.getElementById('search-state').value;
+  const dis    = document.getElementById('search-disability').value;
+  const avail  = document.getElementById('search-availability').value;
   if (suburb) p.set('suburb', suburb);
   if (state)  p.set('state', state);
-  if (disability) p.set('disability', disability);
-  if (availability) p.set('availability', availability);
+  if (dis)    p.set('disability', dis);
+  if (avail)  p.set('availability', avail);
   window.location.href = 'pages/search.html?' + p.toString();
 }
 document.addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
 
-// ══════════════════════════════════════
-// GATE MODALS
-// ══════════════════════════════════════
-function gateAction(action, postId) {
-  if (!currentUser) {
-    openModal('modal-login');
-    return false;
-  }
+// ══ MODALS ══
+function gateAction(action, id) {
+  if (!currentUser) { openModal('modal-login'); return false; }
   const tier = currentUser.profile ? (currentUser.profile.tier || 'basic') : 'basic';
-  if (tier === 'basic') {
-    openModal('modal-upgrade');
-    return false;
-  }
-  // Has access
-  if (action === 'enquire' && postId) {
-    window.location.href = 'pages/provider-profile.html?id=' + postId;
-  } else if (action === 'enquire') {
-    window.location.href = 'pages/search.html';
-  }
+  if (tier === 'basic') { openModal('modal-upgrade'); return false; }
+  if (id) window.location.href = 'pages/provider-profile.html?id=' + id;
+  else window.location.href = 'pages/search.html';
   return true;
 }
-function openModal(id) { document.getElementById(id).classList.add('open'); }
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 document.querySelectorAll('.modal-overlay').forEach(m => {
   m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
 });
 
-// ══════════════════════════════════════
-// HELPERS
-// ══════════════════════════════════════
+// ══ HELPERS ══
 function timeAgo(d) {
   const diff = Date.now() - new Date(d).getTime();
   const m = Math.floor(diff/60000);
@@ -760,249 +683,182 @@ function timeAgo(d) {
   if (h < 24) return h + 'h ago';
   return Math.floor(h/24) + 'd ago';
 }
-function animateCount(id, target, suffix) {
+function animateCount(id, n, sfx) {
   const el = document.getElementById(id);
   if (!el) return;
-  if (!target) { el.textContent = '0' + (suffix||''); return; }
-  let cur = 0;
-  const step = Math.ceil(target/30);
-  const t = setInterval(() => {
-    cur = Math.min(cur + step, target);
-    el.textContent = cur + (suffix||'');
-    if (cur >= target) clearInterval(t);
-  }, 40);
+  if (!n) { el.textContent = '0' + (sfx||''); return; }
+  let cur = 0; const step = Math.ceil(n/30);
+  const t = setInterval(() => { cur = Math.min(cur+step, n); el.textContent = cur+(sfx||''); if(cur>=n) clearInterval(t); }, 40);
 }
-function catIcon(cat) {
-  return {sil:'&#127968;',sc:'&#129517;',allied:'&#129658;',pm:'&#128188;',seeking:'&#128269;',offering:'&#129657;'}[cat] || '&#128205;';
-}
-function catLabel(cat) {
-  return {sil:'SIL / SDA',sc:'Support Coordinator',allied:'Allied Health',pm:'Plan Manager',seeking:'Seeking',offering:'Offering'}[cat] || cat;
-}
+function catIcon(c) { return {sil:'&#127968;',sc:'&#129517;',allied:'&#129658;',pm:'&#128188;',seeking:'&#128269;',offering:'&#129657;',offerings:'&#129657;',vacancies:'&#127968;'}[c]||'&#128205;'; }
+function catLabel(c) { return {sil:'SIL/SDA',sc:'Support Coordinator',allied:'Allied Health',pm:'Plan Manager',seeking:'Seeking',offering:'Offering'}[c]||c; }
 
-// ══════════════════════════════════════
-// FEED TABS
-// ══════════════════════════════════════
+// ══ FEED TABS ══
 function switchFeedTab(btn, tab) {
-  activeFeedTab = tab;
   document.querySelectorAll('.ftab').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   ['vacancies','seeking','offerings'].forEach(t => {
-    document.getElementById('feed-' + t).style.display = t === tab ? 'block' : 'none';
+    document.getElementById('feed-'+t).style.display = t===tab?'block':'none';
   });
 }
 
-// ══════════════════════════════════════
-// RENDER POST CARD
-// ══════════════════════════════════════
-function renderPostCard(post, type) {
-  const tier = currentUser ? (currentUser.profile ? (currentUser.profile.tier || 'basic') : 'basic') : null;
+// ══ RENDER CARD ══
+function renderCard(post, type) {
+  const tier = currentUser ? (currentUser.profile ? (currentUser.profile.tier||'basic') : 'basic') : null;
   const hasAccess = tier && tier !== 'basic';
-
   const prov = post.profiles || {};
   const provName = prov.org_name || prov.full_name || 'NDIS Provider';
   const provTier = prov.tier || 'basic';
-  const initials = provName.slice(0,2).toUpperCase();
-  const location = [post.suburb, post.state].filter(Boolean).join(', ') || 'Australia';
-  const disabilities = (post.disability_types || []).slice(0,2).join(', ');
+  const location = [post.suburb, post.state].filter(Boolean).join(', ') || 'Location not specified';
   const desc = post.description || '';
-  const catClass = post.category || type;
+  const disabilities = (post.disability_types||[]).slice(0,2).join(', ');
 
-  // Provider name — blurred if no access
   const nameHtml = hasAccess
     ? '<span class="pc-provider-name">' + provName + '</span>'
-    : '<span class="pc-provider-name blurred">Provider Name Hidden</span>';
-  // Always show location — even in tease
+    : '<span class="pc-provider-name blurred">Provider Name</span>';
 
-  const tierBadge = provTier === 'premium'
+  const tierBadge = provTier==='premium'
     ? '<span class="pc-provider-badge premium">&#128142; Premium</span>'
-    : provTier === 'featured'
+    : provTier==='featured'
       ? '<span class="pc-provider-badge">&#11088; Featured</span>'
       : '';
 
-  const actionLabel = type === 'seeking' ? 'View request' : 'View &amp; enquire';
-  const actionBtn = hasAccess
-    ? '<button class="pc-action-btn" onclick="event.stopPropagation();gateAction(\'enquire\',\'' + post.id + '\')">&#128172; ' + actionLabel + '</button>'
-    : '<button class="pc-action-btn locked" onclick="event.stopPropagation();gateAction(\'view\')">&#128274; Log in / Sign up to view</button>';
-
   const tags = [];
-  if (post.availability === 'immediate') tags.push('<span class="pc-tag immediate">Immediate</span>');
-  if (provTier === 'premium') tags.push('<span class="pc-tag premium">&#128142; Premium provider</span>');
-  if (post.category === 'sil') tags.push('<span class="pc-tag sil">SIL</span>');
+  if (post.availability==='immediate') tags.push('<span class="pc-tag immediate">Immediate</span>');
+  if (provTier==='premium') tags.push('<span class="pc-tag premium">&#128142; Premium</span>');
+  if (post.category==='sil') tags.push('<span class="pc-tag sil">SIL</span>');
   if (disabilities) tags.push('<span class="pc-tag">' + disabilities + '</span>');
+
+  const actionBtn = hasAccess
+    ? '<button class="pc-action-btn" onclick="event.stopPropagation();gateAction(\'enquire\',\'' + post.id + '\')">&#128172; ' + (type==='seeking'?'View request':'View &amp; enquire') + '</button>'
+    : '<button class="pc-action-btn locked" onclick="event.stopPropagation();gateAction(\'view\')">&#128274; Log in / Sign up</button>';
 
   return '<div class="post-card" onclick="gateAction(\'view\',\'' + post.id + '\')">'
     + '<div class="pc-row">'
-    + '<div class="pc-icon ' + catClass + '">' + catIcon(post.category||type) + '</div>'
+    + '<div class="pc-icon ' + (post.category||type) + '">' + catIcon(post.category||type) + '</div>'
     + '<div class="pc-body">'
-    + '<div class="pc-top-row">'
-    + '<div class="pc-title">' + (post.title || catLabel(post.category||type) + ' available in ' + (post.state||'Australia')) + '</div>'
-    + '<div class="pc-time">' + timeAgo(post.created_at) + '</div>'
-    + '</div>'
+    + '<div class="pc-top-row"><div class="pc-title">' + (post.title || catLabel(post.category||type) + ' in ' + (post.state||'Australia')) + '</div>'
+    + '<div class="pc-time">' + timeAgo(post.created_at) + '</div></div>'
     + '<div class="pc-provider-row">' + nameHtml + tierBadge + '</div>'
-    + '<div class="pc-desc">' + desc.slice(0,120) + (desc.length > 120 ? '...' : '') + '</div>'
-    + (tags.length ? '<div class="pc-tags">' + tags.join('') + '</div>' : '')
-    + '<div class="pc-footer-row">'
     + '<div class="pc-location">&#128205; ' + location + '</div>'
-    + actionBtn
-    + '</div>'
+    + '<div class="pc-desc">' + desc.slice(0,120) + (desc.length>120?'...':'') + '</div>'
+    + (tags.length ? '<div class="pc-tags">' + tags.join('') + '</div>' : '')
+    + '<div class="pc-footer-row"><span></span>' + actionBtn + '</div>'
     + '</div></div></div>';
 }
 
-// ══════════════════════════════════════
-// LOAD FEED DATA
-// ══════════════════════════════════════
+// ══ LOAD FEED ══
 async function loadFeed() {
   try {
-    const [vacRes, seekRes, offRes] = await Promise.all([
-      CV.db.from('posts').select('*, profiles!posts_user_id_fkey(full_name,org_name,tier,role)')
+    const [vacR, seekR, offR] = await Promise.all([
+      CV.db.from('posts').select('*,profiles!posts_user_id_fkey(full_name,org_name,tier,role)')
         .eq('type','offering').eq('is_active',true).order('created_at',{ascending:false}).limit(10),
-      CV.db.from('posts').select('*, profiles!posts_user_id_fkey(full_name,org_name,tier,role)')
+      CV.db.from('posts').select('*,profiles!posts_user_id_fkey(full_name,org_name,tier,role)')
         .eq('type','seeking').eq('is_active',true).order('created_at',{ascending:false}).limit(10),
-      CV.db.from('posts').select('*, profiles!posts_user_id_fkey(full_name,org_name,tier,role)')
+      CV.db.from('posts').select('*,profiles!posts_user_id_fkey(full_name,org_name,tier,role)')
         .eq('type','offering').eq('is_active',true).in('category',['sc','allied','pm']).order('created_at',{ascending:false}).limit(10),
     ]);
-
-    const vacs = vacRes.data || [];
-    const seeks = seekRes.data || [];
-    const offs = offRes.data || [];
-
-    // Update tab counts
+    const vacs = vacR.data||[], seeks = seekR.data||[], offs = offR.data||[];
     document.getElementById('tc-vacancies').textContent = vacs.length;
     document.getElementById('tc-seeking').textContent = seeks.length;
     document.getElementById('tc-offerings').textContent = offs.length;
 
-    // Render vacancies
-    const vacEl = document.getElementById('feed-vacancies');
-    vacEl.innerHTML = vacs.length
-      ? vacs.map(p => renderPostCard(p, 'vacancies')).join('')
-        + '<button class="load-more-btn" onclick="gateAction(\'browse\')">View all vacancies on search &#8594;</button>'
-      : '<div class="empty-state"><div class="empty-state-icon">&#127968;</div><p>No vacancies posted yet. <a href="pages/search.html" style="color:var(--teal);">Browse providers</a></p></div>';
+    const render = (items, type, emptyIcon, emptyMsg) => items.length
+      ? items.map(p => renderCard(p, type)).join('') + '<button class="load-more-btn" onclick="window.location=\'pages/search.html\'">Browse all on search &#8594;</button>'
+      : '<div class="empty-state"><div class="empty-state-icon">' + emptyIcon + '</div><p>' + emptyMsg + '</p></div>';
 
-    // Render seeking
-    const seekEl = document.getElementById('feed-seeking');
-    seekEl.innerHTML = seeks.length
-      ? seeks.map(p => renderPostCard(p, 'seeking')).join('')
-        + '<button class="load-more-btn" onclick="gateAction(\'browse\')">View all seeking posts &#8594;</button>'
-      : '<div class="empty-state"><div class="empty-state-icon">&#128269;</div><p>No seeking posts yet. <a href="pages/post.html" style="color:var(--teal);">Post one for free</a></p></div>';
-
-    // Render offerings
-    const offEl = document.getElementById('feed-offerings');
-    offEl.innerHTML = offs.length
-      ? offs.map(p => renderPostCard(p, 'offerings')).join('')
-        + '<button class="load-more-btn" onclick="gateAction(\'browse\')">Browse all offerings &#8594;</button>'
-      : '<div class="empty-state"><div class="empty-state-icon">&#129657;</div><p>No service offerings yet.</p></div>';
-
+    document.getElementById('feed-vacancies').innerHTML = render(vacs,'vacancies','&#127968;','No vacancies yet. <a href="pages/search.html" style="color:var(--teal);">Browse providers</a>');
+    document.getElementById('feed-seeking').innerHTML   = render(seeks,'seeking','&#128269;','No seeking posts yet. <a href="pages/post.html" style="color:var(--teal);">Post one free</a>');
+    document.getElementById('feed-offerings').innerHTML = render(offs,'offerings','&#129657;','No service offerings yet.');
   } catch(e) { console.log(e); }
 }
 
-// ══════════════════════════════════════
-// STATS
-// ══════════════════════════════════════
+// ══ STATS ══
 async function loadStats() {
   try {
-    const [provRes, vacRes] = await Promise.all([
+    const [pR,vR] = await Promise.all([
       CV.db.from('profiles').select('id',{count:'exact'}).eq('status','active').in('role',['org','sc','pm','allied']),
       CV.db.from('posts').select('id',{count:'exact'}).eq('type','offering').eq('is_active',true),
     ]);
-    animateCount('stat-providers', provRes.count||0, '+');
-    animateCount('stat-vacancies', vacRes.count||0, '+');
-
-    const roleMap = {sil:'org',sc:'sc',allied:'allied',pm:'pm'};
-    const labels = {sil:'SIL/SDA providers',sc:'support coordinators',allied:'allied health',pm:'plan managers'};
+    animateCount('stat-providers', pR.count||0, '+');
+    animateCount('stat-vacancies', vR.count||0, '+');
+    const rM = {sil:'org',sc:'sc',allied:'allied',pm:'pm'};
+    const lM = {sil:'SIL/SDA providers',sc:'support coordinators',allied:'allied health',pm:'plan managers'};
     for (const cat of ['sil','sc','allied','pm']) {
-      const {count} = await CV.db.from('profiles').select('id',{count:'exact'}).eq('status','active').eq('role',roleMap[cat]);
+      const {count} = await CV.db.from('profiles').select('id',{count:'exact'}).eq('status','active').eq('role',rM[cat]);
       const el = document.getElementById('cat-'+cat);
-      if (el) el.textContent = (count||0) + ' ' + labels[cat];
+      if (el) el.textContent = (count||0) + ' ' + lM[cat];
     }
   } catch(e) {}
 }
 
-// ══════════════════════════════════════
-// SIDE: SPOTLIGHT
-// ══════════════════════════════════════
+// ══ SPOTLIGHT ══
 async function loadSpotlight() {
   try {
-    const {data} = await CV.db.from('profiles').select('*')
-      .eq('status','active').in('role',['org','sc','pm','allied'])
-      .in('tier',['featured','premium']).order('tier',{ascending:false}).limit(6);
-
+    const {data} = await CV.db.from('profiles').select('*').eq('status','active')
+      .in('role',['org','sc','pm','allied']).in('tier',['featured','premium'])
+      .order('tier',{ascending:false}).limit(6);
     const el = document.getElementById('side-spotlight');
-    const roleL = {org:'SIL/SDA',sc:'Support Coord.',pm:'Plan Manager',allied:'Allied Health'};
-    if (!data || !data.length) { el.innerHTML = '<div class="empty-state" style="padding:16px 0;"><p style="font-size:12px;">No featured providers yet.</p></div>'; return; }
+    const rL = {org:'SIL/SDA',sc:'Support Coord.',pm:'Plan Manager',allied:'Allied Health'};
+    if (!data||!data.length) { el.innerHTML='<div class="empty-state" style="padding:12px 0;"><p style="font-size:12px;">No featured providers yet.</p></div>'; return; }
     el.innerHTML = data.map(p => {
       const name = p.org_name||p.full_name||'Provider';
       const loc = [p.suburb,p.state].filter(Boolean).join(', ')||'Australia';
-      return '<div class="spot-card" onclick="gateAction(\'view\',\'' + p.id + '\')">'
-        + '<div class="spot-av ' + (p.tier==='premium'?'prem':'') + '">' + name.slice(0,2).toUpperCase() + '</div>'
-        + '<div class="spot-info"><div class="spot-name">' + name + '</div>'
-        + '<div class="spot-sub">&#128205; ' + loc + ' &middot; ' + (roleL[p.role]||p.role) + '</div></div>'
-        + (p.tier==='premium'
-          ? '<span class="spot-tier" style="background:#ede9fe;color:#5b21b6;">&#128142;</span>'
-          : '<span class="spot-tier" style="background:#E1F5EE;color:#085041;">&#11088;</span>')
-        + '</div>';
+      return '<div class="spot-card" onclick="gateAction(\'view\',\''+p.id+'\')">'
+        +'<div class="spot-av '+(p.tier==='premium'?'prem':'')+'">'+ name.slice(0,2).toUpperCase()+'</div>'
+        +'<div class="spot-info"><div class="spot-name">'+name+'</div>'
+        +'<div class="spot-sub">&#128205; '+loc+' &middot; '+(rL[p.role]||p.role)+'</div></div>'
+        +(p.tier==='premium'?'<span style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;background:#ede9fe;color:#5b21b6;">&#128142;</span>'
+          :'<span style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;background:#E1F5EE;color:#085041;">&#11088;</span>')
+        +'</div>';
     }).join('');
   } catch(e) {}
 }
 
-// ══════════════════════════════════════
-// SIDE: TICKER
-// ══════════════════════════════════════
+// ══ TICKER ══
 async function loadTicker() {
   try {
-    const [enqRes, postRes] = await Promise.all([
+    const [eR,pR] = await Promise.all([
       CV.db.from('enquiries').select('created_at,profiles!enquiries_to_user_id_fkey(role,state)').order('created_at',{ascending:false}).limit(4),
       CV.db.from('posts').select('created_at,type,category,state').eq('is_active',true).order('created_at',{ascending:false}).limit(4),
     ]);
+    const rN = {org:'an organisation',sc:'a support coordinator',pm:'a plan manager',allied:'an allied health provider'};
+    const cN = {sil:'SIL vacancy',sc:'support coordinator listing',allied:'allied health listing',pm:'plan manager listing'};
     const items = [];
-    const roleN = {org:'an organisation',sc:'a support coordinator',pm:'a plan manager',allied:'an allied health provider'};
-    const catN  = {sil:'SIL vacancy',sc:'support coordinator listing',allied:'allied health listing',pm:'plan manager listing'};
-    (enqRes.data||[]).forEach((e,i) => {
+    (eR.data||[]).forEach((e,i) => {
       const role = e.profiles?e.profiles.role:'provider';
       const st = e.profiles?e.profiles.state:'';
-      items.push({text:'A coordinator enquired about <strong>'+(roleN[role]||'a provider')+'</strong>'+(st?' in '+st:''),time:timeAgo(e.created_at),color:'teal',delay:i*120});
+      items.push({text:'An enquiry was sent to <strong>'+(rN[role]||'a provider')+'</strong>'+(st?' in '+st:''),time:timeAgo(e.created_at),col:'teal',d:i*120});
     });
-    (postRes.data||[]).forEach((p,i) => {
-      const lbl = p.type==='seeking'?'posted a seeking request':'listed a new <strong>'+(catN[p.category]||'vacancy')+'</strong>';
-      items.push({text:'A provider in <strong>'+(p.state||'Australia')+'</strong> '+lbl,time:timeAgo(p.created_at),color:p.type==='seeking'?'blue':'purple',delay:(i+4)*120});
+    (pR.data||[]).forEach((p,i) => {
+      const lbl = p.type==='seeking'?'posted a seeking request':'listed a new <strong>'+(cN[p.category]||'vacancy')+'</strong>';
+      items.push({text:'A provider in <strong>'+(p.state||'Australia')+'</strong> '+lbl,time:timeAgo(p.created_at),col:p.type==='seeking'?'blue':'purple',d:(i+4)*120});
     });
     items.sort(()=>Math.random()-0.3);
     const el = document.getElementById('side-ticker');
-    el.innerHTML = items.slice(0,6).map(it =>
-      '<div class="ticker-item" style="animation-delay:'+it.delay+'ms;">'
-      +'<div class="ticker-dot '+it.color+'"></div>'
+    el.innerHTML = items.slice(0,6).map(it=>
+      '<div class="ticker-item" style="animation-delay:'+it.d+'ms;">'
+      +'<div class="ticker-dot '+it.col+'"></div>'
       +'<div class="ticker-text">'+it.text+'</div>'
       +'<div class="ticker-time">'+it.time+'</div></div>'
-    ).join('') || '<div class="empty-state" style="padding:12px 0;"><p style="font-size:12px;">Activity will appear here soon.</p></div>';
+    ).join('') || '<div class="empty-state" style="padding:12px 0;"><p style="font-size:12px;">Activity will show here soon.</p></div>';
   } catch(e) {}
 }
 
-// ══════════════════════════════════════
-// PERSONALISED (logged in)
-// ══════════════════════════════════════
-function getTimeOfDay() {
-  const h = new Date().getHours();
-  return h<12?'morning':h<17?'afternoon':'evening';
-}
+// ══ PERSONALISED ══
+function getGreeting() { const h=new Date().getHours(); return h<12?'morning':h<17?'afternoon':'evening'; }
 
-async function initLoggedInExperience(user) {
-  const p = user.profile;
-  const role = p.role;
-  const tier = p.tier || 'basic';
+async function initLoggedIn(user) {
+  const p = user.profile, role = p.role, tier = p.tier||'basic';
   const name = p.org_name||p.full_name||user.email.split('@')[0];
   const isProvider = PROVIDER_ROLES.includes(role);
   const dashUrl = DASH_MAP[role]||'dashboards/dashboard-participant.html';
 
-  // Show personalised bar, hide generic hero
   document.getElementById('hero-loggedout').style.display = 'none';
   document.getElementById('logged-in-hero').style.display = 'block';
+  document.getElementById('wl-greeting').textContent = 'Good '+getGreeting()+', '+name.split(' ')[0];
+  document.getElementById('wl-sub').textContent = isProvider ? 'Your dashboard is ready. Here\'s what\'s new.' : 'Browse the latest vacancies matched to your needs.';
 
-  // Welcome bar
-  document.getElementById('wl-greeting').textContent = 'Good '+getTimeOfDay()+', '+name.split(' ')[0];
-  document.getElementById('wl-sub').textContent = isProvider
-    ? 'Your dashboard is ready. Here\'s what\'s new.'
-    : 'Browse the latest vacancies matched to your needs.';
-
-  // Pills
   let pills = '<a href="'+dashUrl+'" class="wpill wpill-teal">&#127968; Dashboard</a>';
   if (isProvider) {
     pills += '<a href="'+dashUrl+'" class="wpill wpill-white" id="pill-enq">&#128172; Enquiries</a>';
@@ -1014,7 +870,6 @@ async function initLoggedInExperience(user) {
   }
   document.getElementById('wl-pills').innerHTML = pills;
 
-  // Unread badge
   if (isProvider) {
     CV.db.from('enquiries').select('id',{count:'exact'}).eq('to_user_id',user.id).eq('status','sent').then(({count}) => {
       if (count>0) {
@@ -1022,9 +877,16 @@ async function initLoggedInExperience(user) {
         if (pill) { pill.innerHTML='&#128172; Enquiries <span class="wpill-badge">'+count+'</span>'; pill.className='wpill wpill-alert'; }
       }
     });
+    document.getElementById('side-provider-stats').style.display = 'block';
+    const [pR2,eR2] = await Promise.all([
+      CV.db.from('posts').select('id',{count:'exact'}).eq('user_id',user.id).eq('is_active',true),
+      CV.db.from('enquiries').select('id',{count:'exact'}).eq('to_user_id',user.id),
+    ]);
+    document.getElementById('side-vac-count').textContent = pR2.count||0;
+    document.getElementById('side-enq-count').textContent = eR2.count||0;
+    if (tier==='basic') document.getElementById('side-upgrade').style.display = 'block';
   }
 
-  // Quick actions (side)
   let qa = '';
   if (isProvider) {
     qa += '<a href="'+dashUrl+'" class="qa-btn"><div class="qa-icon">&#128172;</div><div class="qa-label">Enquiries</div></a>';
@@ -1044,48 +906,19 @@ async function initLoggedInExperience(user) {
   }
   document.getElementById('quick-actions').innerHTML = qa;
 
-  // Provider stats sidebar
-  if (isProvider) {
-    document.getElementById('side-provider-stats').style.display = 'block';
-    const [postsRes,enqRes] = await Promise.all([
-      CV.db.from('posts').select('id',{count:'exact'}).eq('user_id',user.id).eq('is_active',true),
-      CV.db.from('enquiries').select('id',{count:'exact'}).eq('to_user_id',user.id),
-    ]);
-    document.getElementById('side-vac-count').textContent = postsRes.count||0;
-    document.getElementById('side-enq-count').textContent = enqRes.count||0;
-  }
-
-  // Upgrade nudge
-  if (isProvider && tier==='basic') document.getElementById('side-upgrade').style.display = 'block';
-
-  // Personalise CTA
-  const ctaTitle = document.getElementById('cta-title');
-  const ctaBody  = document.getElementById('cta-body');
-  const ctaBtns  = document.getElementById('cta-btns');
-  if (isProvider && tier==='basic') {
-    ctaTitle.textContent = 'Ready to grow your client base?';
-    ctaBody.textContent = 'Upgrade to Featured for $49/month — appear at the top of search, post vacancies, and receive direct enquiries.';
-    ctaBtns.innerHTML = '<a href="pages/upgrade.html" class="cta-btn-primary">Upgrade to Featured &#8594;</a><a href="'+dashUrl+'" class="cta-btn-outline">My dashboard</a>';
-  } else if (isProvider && tier==='featured') {
-    ctaTitle.textContent = 'Go further with Premium';
-    ctaBody.textContent = 'Unlock auto-matching, advanced analytics, and a dedicated matches panel for $99/month.';
-    ctaBtns.innerHTML = '<a href="pages/upgrade.html" class="cta-btn-primary">Upgrade to Premium &#8594;</a><a href="'+dashUrl+'" class="cta-btn-outline">My dashboard</a>';
-  } else if (isProvider && tier==='premium') {
-    ctaTitle.innerHTML = 'You&#39;re on Premium &#128142;';
-    ctaBody.textContent = 'You have full access to auto-matching, advanced analytics, and priority placement. Keep your profile current for best results.';
-    ctaBtns.innerHTML = '<a href="'+dashUrl+'" class="cta-btn-primary">Go to my dashboard &#8594;</a><a href="pages/search.html" class="cta-btn-outline">Browse platform</a>';
-  } else {
-    ctaTitle.innerHTML = 'Can&#39;t find what you need?';
-    ctaBody.textContent = 'Post a seeking request and let NDIS providers come to you. Free, takes 2 minutes.';
-    ctaBtns.innerHTML = '<a href="pages/post.html" class="cta-btn-primary">Post a seeking request &#8594;</a><a href="pages/search.html" class="cta-btn-outline">Keep browsing</a>';
-  }
+  const ctaT=document.getElementById('cta-title'), ctaB=document.getElementById('cta-body'), ctaBs=document.getElementById('cta-btns');
+  if (isProvider && tier==='basic') { ctaT.textContent='Ready to grow your client base?'; ctaB.textContent='Upgrade to Featured for $49/month &#8212; appear at top of search, post vacancies, receive direct enquiries.'; ctaBs.innerHTML='<a href="pages/upgrade.html" class="cta-btn-primary">Upgrade to Featured &#8594;</a><a href="'+dashUrl+'" class="cta-btn-outline">My dashboard</a>'; }
+  else if (isProvider && tier==='featured') { ctaT.textContent='Go further with Premium'; ctaB.textContent='Unlock auto-matching, advanced analytics, and a matches panel for $99/month.'; ctaBs.innerHTML='<a href="pages/upgrade.html" class="cta-btn-primary">Upgrade to Premium &#8594;</a><a href="'+dashUrl+'" class="cta-btn-outline">My dashboard</a>'; }
+  else if (isProvider && tier==='premium') { ctaT.innerHTML='You\'re on Premium &#128142;'; ctaB.textContent='Full access to auto-matching, advanced analytics, and priority placement. Keep your profile current.'; ctaBs.innerHTML='<a href="'+dashUrl+'" class="cta-btn-primary">My dashboard &#8594;</a><a href="pages/search.html" class="cta-btn-outline">Browse platform</a>'; }
+  else { ctaT.innerHTML='Can\'t find what you need?'; ctaB.textContent='Post a seeking request and let NDIS providers come to you. Free, takes 2 minutes.'; ctaBs.innerHTML='<a href="pages/post.html" class="cta-btn-primary">Post a seeking request &#8594;</a><a href="pages/search.html" class="cta-btn-outline">Keep browsing</a>'; }
 }
 
-// ══════════════════════════════════════
-// MAIN INIT
-// ══════════════════════════════════════
+// ══ INIT ══
 document.addEventListener('DOMContentLoaded', async () => {
-  initCarousel();
+  // Init both carousels
+  carouselLO = initCarousel('ad-track', 'ad-dots');
+  carouselLI = initCarousel('ad-track-li', 'ad-dots-li');
+
   loadStats();
   loadSpotlight();
   loadTicker();
@@ -1094,12 +927,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const user = await CV.getCurrentUser();
     if (user && user.profile && user.profile.status === 'active') {
       currentUser = user;
-      await initLoggedInExperience(user);
+      await initLoggedIn(user);
     }
   } catch(e) {}
 
-  // Load feed AFTER currentUser is set (so gate renders correctly)
-  loadFeed();
+  loadFeed(); // after currentUser set so gate renders correctly
 });
 </script>
 </body>
