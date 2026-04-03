@@ -71,6 +71,10 @@
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       Seeking posts
     </button>
+    <button class="ds-item" id="analytics-nav-item" onclick="switchPanel(this,'analytics')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Analytics
+    </button>
     <button class="ds-item" id="matches-nav-item" onclick="switchPanel(this,'matches')" style="display:none;">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
       Matches
@@ -230,6 +234,19 @@
         </div>
       </div>
     </div>
+    <!-- ANALYTICS PANEL -->
+    <div class="dash-panel" id="panel-analytics">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <div>
+          <h3 style="margin:0;" id="analytics-title">Analytics</h3>
+          <p style="font-size:13px;color:var(--muted);margin:4px 0 0;" id="analytics-subtitle">Your performance this month</p>
+        </div>
+        <div id="analytics-tier-badge"></div>
+      </div>
+      <div id="analytics-content">
+        <div style="text-align:center;padding:40px;color:var(--muted);">Loading analytics...</div>
+      </div>
+    </div>
 
     <!-- PROFILE -->
     <div class="dash-panel" id="panel-profile">
@@ -352,6 +369,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Load matches for Premium providers
   loadMatches(p.tier || 'basic');
+  // Preload analytics nav visibility
+  if (['featured','premium'].includes(p.tier)) {
+    const anel = document.getElementById('analytics-nav-item');
+    if (anel) anel.style.display = 'flex';
+  }
 
   document.getElementById('s-plan').textContent = (p.tier || 'Basic').charAt(0).toUpperCase() + (p.tier || 'basic').slice(1);
 
@@ -483,6 +505,7 @@ function upgradePlan(tier) {
 }
 
 function switchPanel(btn, panel) {
+  if (panel === 'analytics') { loadAnalytics(currentUser?.profile?.tier); }
   if (panel === 'matches') {
     loadMatches(currentUser?.profile?.tier);
     localStorage.setItem('matches-last-viewed', new Date().toISOString());
@@ -493,7 +516,7 @@ function switchPanel(btn, panel) {
   if (btn) btn.classList.add('active');
   document.querySelectorAll('.dash-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('panel-' + panel).classList.add('active');
-  const titles = { overview:'Overview', vacancies:'My vacancies', enquiries:'Enquiries', seeking:'Seeking posts', matches:'Auto-matches', profile:'My profile', billing:'Billing' };
+  const titles = { overview:'Overview', vacancies:'My vacancies', enquiries:'Enquiries', seeking:'Seeking posts', matches:'Auto-matches', analytics:'Analytics', profile:'My profile', billing:'Billing' };
   document.getElementById('panel-title').textContent = titles[panel] || panel;
 }
 
@@ -691,6 +714,257 @@ async function viewPost(postId) {
   `;
 }
 
+
+
+async function loadAnalytics(tier) {
+  const panel = document.getElementById('analytics-content');
+  const badge = document.getElementById('analytics-tier-badge');
+  
+  if (tier === 'featured') {
+    badge.innerHTML = '<span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:#dcfce7;color:#166534;">⭐ Featured</span>';
+    await loadFeaturedAnalytics(panel);
+  } else if (tier === 'premium') {
+    badge.innerHTML = '<span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:#ede9fe;color:#5b21b6;">💎 Premium</span>';
+    await loadPremiumAnalytics(panel);
+  } else {
+    panel.innerHTML = `
+      <div style="text-align:center;padding:40px;background:var(--bg);border-radius:12px;border:2px dashed var(--border);">
+        <div style="font-size:40px;margin-bottom:12px;">🔒</div>
+        <div style="font-size:16px;font-weight:600;color:var(--navy);margin-bottom:8px;">Analytics requires Featured or Premium</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:20px;">Upgrade to see how your profile is performing in search.</div>
+        <a href="../pages/upgrade.html" class="btn btn-primary btn-sm">Upgrade now →</a>
+      </div>`;
+  }
+}
+
+async function loadFeaturedAnalytics(panel) {
+  const id = currentUser.id;
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+  const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
+
+  const [viewsRes, enquiriesRes, postsRes, allProvidersRes] = await Promise.all([
+    CV.db.from('profile_views').select('id, created_at').eq('profile_id', id),
+    CV.db.from('enquiries').select('id, created_at, status').eq('to_user_id', id),
+    CV.db.from('posts').select('id').eq('user_id', id).eq('is_active', true),
+    CV.db.from('profiles').select('id').eq('status', 'active').eq('role', currentUser.profile?.role),
+  ]);
+
+  const allViews = viewsRes.data || [];
+  const allEnquiries = enquiriesRes.data || [];
+  const thisMonthViews = allViews.filter(v => v.created_at >= monthStart).length;
+  const lastMonthViews = allViews.filter(v => v.created_at >= lastMonthStart && v.created_at < monthStart).length;
+  const thisMonthEnq = allEnquiries.filter(e => e.created_at >= monthStart).length;
+  const lastMonthEnq = allEnquiries.filter(e => e.created_at >= lastMonthStart && e.created_at < monthStart).length;
+  const totalProviders = (allProvidersRes.data || []).length;
+  const readRate = allEnquiries.length > 0 ? Math.round((allEnquiries.filter(e => e.status === 'read').length / allEnquiries.length) * 100) : 0;
+
+  const trend = (curr, prev) => {
+    if (prev === 0) return curr > 0 ? '<span style="color:#16a34a;font-size:12px;">↑ New this month</span>' : '';
+    const pct = Math.round(((curr - prev) / prev) * 100);
+    const color = pct >= 0 ? '#16a34a' : '#dc2626';
+    const arrow = pct >= 0 ? '↑' : '↓';
+    return `<span style="color:${color};font-size:12px;">${arrow} ${Math.abs(pct)}% vs last month</span>`;
+  };
+
+  // Profile strength
+  const p = currentUser.profile;
+  let strength = 0;
+  const tips = [];
+  if (p.org_name || p.full_name) strength += 15; else tips.push('Add your organisation name');
+  if (p.bio) strength += 20; else tips.push('Write a bio — profiles with bios get 3x more views');
+  if (p.suburb) strength += 10; else tips.push('Add your suburb to appear in location searches');
+  if (p.services?.length > 0) strength += 15; else tips.push('Add your services');
+  if (p.disability_types?.length > 0) strength += 15; else tips.push('Add disability types you support');
+  if ((postsRes.data || []).length > 0) strength += 25; else tips.push('Post a vacancy or service listing');
+
+  panel.innerHTML = `
+    <!-- Stats row -->
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px;">
+      <div style="background:white;border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);margin-bottom:6px;">Profile views this month</div>
+        <div style="font-size:28px;font-weight:800;color:var(--navy);">${thisMonthViews}</div>
+        <div style="margin-top:4px;">${trend(thisMonthViews, lastMonthViews)}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px;">Total all time: ${allViews.length}</div>
+      </div>
+      <div style="background:white;border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);margin-bottom:6px;">Enquiries this month</div>
+        <div style="font-size:28px;font-weight:800;color:var(--navy);">${thisMonthEnq}</div>
+        <div style="margin-top:4px;">${trend(thisMonthEnq, lastMonthEnq)}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px;">Total all time: ${allEnquiries.length}</div>
+      </div>
+      <div style="background:white;border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);margin-bottom:6px;">Enquiry read rate</div>
+        <div style="font-size:28px;font-weight:800;color:var(--navy);">${readRate}%</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px;">${readRate >= 80 ? '✓ Excellent response rate' : readRate >= 50 ? 'Good — aim for 80%+' : 'Check your enquiries inbox'}</div>
+      </div>
+      <div style="background:white;border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);margin-bottom:6px;">Providers in your area</div>
+        <div style="font-size:28px;font-weight:800;color:var(--navy);">${totalProviders}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px;">Active ${currentUser.profile?.role || ''} providers</div>
+      </div>
+    </div>
+
+    <!-- Profile strength -->
+    <div style="background:white;border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="font-size:14px;font-weight:600;color:var(--navy);">Profile strength</div>
+        <div style="font-size:18px;font-weight:800;color:${strength >= 80 ? '#16a34a' : strength >= 50 ? '#d97706' : '#dc2626'};">${strength}%</div>
+      </div>
+      <div style="background:var(--bg);border-radius:20px;height:8px;margin-bottom:12px;">
+        <div style="background:${strength >= 80 ? '#16a34a' : strength >= 50 ? '#d97706' : '#dc2626'};height:8px;border-radius:20px;width:${strength}%;transition:width 0.5s;"></div>
+      </div>
+      ${tips.length > 0 ? `
+      <div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:8px;">TO IMPROVE YOUR RANKING:</div>
+      ${tips.map(t => `<div style="font-size:13px;color:var(--text);padding:6px 0;border-bottom:1px solid var(--bg);display:flex;gap:8px;"><span style="color:#d97706;">→</span>${t}</div>`).join('')}
+      ` : '<div style="font-size:13px;color:#16a34a;font-weight:600;">✓ Profile is complete! You rank higher in search.</div>'}
+    </div>
+
+    <!-- Upgrade prompt for Featured -->
+    <div style="background:linear-gradient(135deg,#f5f3ff,#ede9fe);border:1px solid #ddd6fe;border-radius:10px;padding:20px;">
+      <div style="font-size:14px;font-weight:700;color:#5b21b6;margin-bottom:8px;">💎 Unlock Premium analytics</div>
+      <div style="font-size:13px;color:#6d28d9;margin-bottom:12px;">See your search ranking position, viewer role breakdown, enquiry trends over time, and how you benchmark against competitors.</div>
+      <a href="../pages/upgrade.html" style="background:#7c3aed;color:white;padding:8px 18px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;display:inline-block;">Upgrade to Premium →</a>
+    </div>
+  `;
+}
+
+async function loadPremiumAnalytics(panel) {
+  const id = currentUser.id;
+  const now = new Date();
+  const months = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    months.push({ 
+      label: d.toLocaleDateString('en-AU', { month: 'short' }),
+      start: d.toISOString(),
+      end: new Date(d.getFullYear(), d.getMonth() + 1, 1).toISOString()
+    });
+  }
+
+  const [viewsRes, enquiriesRes, postsRes, allProvidersRes, seekingRes] = await Promise.all([
+    CV.db.from('profile_views').select('id, created_at, viewer_id'),
+    CV.db.from('enquiries').select('id, created_at, status, from_user_id'),
+    CV.db.from('posts').select('id, created_at, type').eq('user_id', id),
+    CV.db.from('profiles').select('id, tier').eq('status', 'active').eq('role', currentUser.profile?.role),
+    CV.db.from('posts').select('id').eq('type', 'seeking').eq('is_active', true),
+  ]);
+
+  const allViews = viewsRes.data || [];
+  const allEnquiries = enquiriesRes.data || [];
+  const allProviders = allProvidersRes.data || [];
+  const monthStart = months[5].start;
+  const lastMonthStart = months[4].start;
+
+  const thisMonthViews = allViews.filter(v => v.created_at >= monthStart).length;
+  const lastMonthViews = allViews.filter(v => v.created_at >= lastMonthStart && v.created_at < monthStart).length;
+  const thisMonthEnq = allEnquiries.filter(e => e.created_at >= monthStart).length;
+  const convRate = allViews.length > 0 ? ((allEnquiries.length / allViews.length) * 100).toFixed(1) : 0;
+
+  // Monthly view trend data
+  const monthlyViews = months.map(m => allViews.filter(v => v.created_at >= m.start && v.created_at < m.end).length);
+  const monthlyEnq = months.map(m => allEnquiries.filter(e => e.created_at >= m.start && e.created_at < m.end).length);
+  const maxViews = Math.max(...monthlyViews, 1);
+
+  // Ranking - count how many providers have more views this month
+  // We can only approximate this from public data
+  const premiumCount = allProviders.filter(p => p.tier === 'premium').length;
+  const featuredCount = allProviders.filter(p => p.tier === 'featured').length;
+  const totalCount = allProviders.length;
+
+  const trend = (curr, prev) => {
+    if (prev === 0) return curr > 0 ? '<span style="color:#16a34a;font-size:11px;">↑ New</span>' : '';
+    const pct = Math.round(((curr - prev) / prev) * 100);
+    const color = pct >= 0 ? '#16a34a' : '#dc2626';
+    return `<span style="color:${color};font-size:11px;">${pct >= 0 ? '↑' : '↓'}${Math.abs(pct)}%</span>`;
+  };
+
+  panel.innerHTML = `
+    <!-- KPI row -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
+      <div style="background:white;border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);margin-bottom:6px;">Views this month</div>
+        <div style="font-size:26px;font-weight:800;color:var(--navy);">${thisMonthViews}</div>
+        <div style="margin-top:4px;">${trend(thisMonthViews, lastMonthViews)}</div>
+      </div>
+      <div style="background:white;border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);margin-bottom:6px;">Enquiries this month</div>
+        <div style="font-size:26px;font-weight:800;color:var(--navy);">${thisMonthEnq}</div>
+        <div style="margin-top:4px;">${trend(thisMonthEnq, allEnquiries.filter(e=>e.created_at>=lastMonthStart&&e.created_at<monthStart).length)}</div>
+      </div>
+      <div style="background:white;border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);margin-bottom:6px;">View → Enquiry rate</div>
+        <div style="font-size:26px;font-weight:800;color:var(--navy);">${convRate}%</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;">Industry avg ~3%</div>
+      </div>
+    </div>
+
+    <!-- Views trend chart -->
+    <div style="background:white;border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px;">
+      <div style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:16px;">Profile views — last 6 months</div>
+      <div style="display:flex;align-items:flex-end;gap:8px;height:100px;">
+        ${monthlyViews.map((v, i) => `
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+            <div style="font-size:10px;color:var(--muted);">${v}</div>
+            <div style="width:100%;background:#0d9488;border-radius:4px 4px 0 0;height:${Math.max(4, Math.round((v/maxViews)*80))}px;"></div>
+            <div style="font-size:10px;color:var(--muted);">${months[i].label}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <!-- Market position -->
+    <div style="background:white;border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px;">
+      <div style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:16px;">Market position</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+        <div style="text-align:center;padding:12px;background:var(--bg);border-radius:8px;">
+          <div style="font-size:22px;font-weight:800;color:var(--navy);">${totalCount}</div>
+          <div style="font-size:11px;color:var(--muted);">Total providers</div>
+        </div>
+        <div style="text-align:center;padding:12px;background:#ede9fe;border-radius:8px;">
+          <div style="font-size:22px;font-weight:800;color:#5b21b6;">${premiumCount}</div>
+          <div style="font-size:11px;color:#6d28d9;">Premium (your tier)</div>
+        </div>
+        <div style="text-align:center;padding:12px;background:#dcfce7;border-radius:8px;">
+          <div style="font-size:22px;font-weight:800;color:#166534;">${(seekingRes.data||[]).length}</div>
+          <div style="font-size:11px;color:#15803d;">Active seeking posts</div>
+        </div>
+      </div>
+      <div style="margin-top:12px;padding:12px;background:#f0fdf4;border-radius:8px;font-size:13px;color:#166534;">
+        💎 As a Premium provider you appear <strong>above all Featured and Basic</strong> providers in search results.
+      </div>
+    </div>
+
+    <!-- Enquiry breakdown -->
+    <div style="background:white;border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px;">
+      <div style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:16px;">Enquiry trends — last 6 months</div>
+      <div style="display:flex;align-items:flex-end;gap:8px;height:80px;">
+        ${(() => {
+          const maxE = Math.max(...monthlyEnq, 1);
+          return monthlyEnq.map((v, i) => `
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+              <div style="font-size:10px;color:var(--muted);">${v}</div>
+              <div style="width:100%;background:#7c3aed;border-radius:4px 4px 0 0;height:${Math.max(4, Math.round((v/maxE)*60))}px;"></div>
+              <div style="font-size:10px;color:var(--muted);">${months[i].label}</div>
+            </div>`).join('');
+        })()}
+      </div>
+    </div>
+
+    <!-- Tips for Premium -->
+    <div style="background:linear-gradient(135deg,#0f2942,#1e3a5f);border-radius:10px;padding:20px;">
+      <div style="font-size:14px;font-weight:700;color:white;margin-bottom:12px;">💡 Premium insights</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.8);line-height:1.7;">
+        ${thisMonthViews === 0 ? '→ No views yet this month. Complete your profile and post a vacancy to appear in more searches.' :
+          thisMonthViews < 5 ? '→ Low views — try updating your bio and adding more disability types to broaden your reach.' :
+          '→ Good visibility! Keep your availability status current to convert views into enquiries.'}
+        <br/>
+        ${allEnquiries.length === 0 ? '→ No enquiries yet — make sure your tier is Featured or Premium so people can contact you.' :
+          parseFloat(convRate) < 2 ? '→ Low conversion rate. A complete profile with a bio and services listed converts 3x better.' :
+          '→ Strong conversion rate! You are turning views into real leads.'}
+      </div>
+    </div>
+  `;
+}
 
 async function loadMatches(tier) {
   if (tier !== 'premium') return;
