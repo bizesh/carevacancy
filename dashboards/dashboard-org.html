@@ -381,10 +381,13 @@ async function loadDashboardData() {
   document.getElementById('s-unread-label').textContent = `Unread: ${unread}`;
 
   if (unread > 0) {
-    const badge = document.getElementById('enq-badge');
-    badge.textContent = unread;
-    badge.style.display = 'inline-block';
-  }
+    const lastViewed = localStorage.getItem('matches-last-viewed') || '1970-01-01';
+    const newMatches = scored.filter(m => new Date(m.created_at) > new Date(lastViewed));
+    const badge = document.getElementById('matches-badge');
+    if (badge && newMatches.length > 0) {
+      badge.textContent = newMatches.length;
+      badge.style.display = 'inline-block';
+    }
 
   // Profile completion
   const p = currentUser.profile;
