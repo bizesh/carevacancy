@@ -122,4 +122,4 @@ function enquiryEmail(providerName, senderName, senderRole, subject, message, co
   `);
 }
 
-module.exports = { sendEmail, approvedEmail, rejectedEmail, enquiryEmail };
+module.exports = { sendEmail, emailWrapper, approvedEmail, rejectedEmail, enquiryEmail };

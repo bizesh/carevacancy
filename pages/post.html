@@ -289,8 +289,17 @@ async function submitPost() {
       is_active: true,
     };
 
-    const { error } = await CV.db.from('posts').insert(post);
+    const { data: newPost, error } = await CV.db.from('posts').insert(post).select().single();
     if (error) throw error;
+
+    // If seeking post - trigger auto-match for Premium providers
+    if (postType === 'seeking' && newPost?.id) {
+      fetch('/api/auto-match', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ postId: newPost.id })
+      }).catch(e => console.error('Auto-match error:', e));
+    }
 
     document.getElementById('post-success').textContent = '✓ Your post is live! Providers and participants can now find it.';
     document.getElementById('post-success').style.display = 'flex';
