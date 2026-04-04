@@ -41,11 +41,8 @@ module.exports = async function handler(req, res) {
 
     if (!post) return res.status(404).json({ error: 'Post not found' });
 
-    // Only send alerts for Featured/Premium providers (quality filter)
+    // All active providers trigger vacancy alerts (quality filtering done by post visibility)
     const providerTier = post.profiles?.tier || 'basic';
-    if (providerTier === 'basic') {
-      return res.status(200).json({ alerted: 0, message: 'Basic tier - no alerts sent' });
-    }
 
     // Find participants + family members whose profiles match
     // Match on: same state (if set) + overlapping disability_types
@@ -54,11 +51,12 @@ module.exports = async function handler(req, res) {
       .select('id, full_name, email, state, disability_types, role')
       .in('role', ['participant', 'family'])
       .eq('status', 'active')
-      .not('email', 'is', null);
+      .not('email', 'is', null)
+      .select('id, full_name, email, pref_state, pref_suburb, pref_support_types, disability_types, role');
 
-    // Filter by state if post has one
+    // Filter by pref_state — include participants in same state OR with no pref set (haven't filled profile)
     if (post.state) {
-      query = query.eq('state', post.state);
+      query = query.or('pref_state.eq.' + post.state + ',pref_state.is.null');
     }
 
     const { data: candidates } = await query;
@@ -71,9 +69,15 @@ module.exports = async function handler(req, res) {
     const postDisabilities = post.disability_types || [];
     const matched = candidates
       .filter(p => {
-        if (!postDisabilities.length) return true; // no disability filter = matches all
+        // Check support type preference match (pref_support_types uses category codes like 'sil','sc')
+        if (post.category) {
+          const supportPrefs = p.pref_support_types || [];
+          if (supportPrefs.length > 0 && !supportPrefs.includes(post.category)) return false;
+        }
+        // Disability type match
+        if (!postDisabilities.length) return true;
         const profileDisabilities = p.disability_types || [];
-        if (!profileDisabilities.length) return true; // participant hasnt set prefs = send to them
+        if (!profileDisabilities.length) return true; // no prefs set = send to them
         if (postDisabilities.includes('Any') || profileDisabilities.includes('Any')) return true;
         return profileDisabilities.some(d => postDisabilities.includes(d));
       })
