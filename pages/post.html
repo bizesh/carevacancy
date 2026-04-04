@@ -210,12 +210,25 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.body.style.visibility = 'visible';
 
   const profile = currentUser.profile;
-  const canPost = CV.TIERS[profile?.tier || 'basic'].canPostVacancies;
+  const canPostOffering = CV.TIERS[profile?.tier || 'basic'].canPostVacancies;
+  const isParticipantRole = ['participant','family'].includes(profile?.role);
 
-  if (!canPost) {
+  // Participants can always post seeking requests for free
+  // Providers need Featured/Premium to post offerings
+  const params = new URLSearchParams(window.location.search);
+  const initialType = params.get('type');
+
+  if (!canPostOffering && !isParticipantRole) {
+    // Provider on basic — block everything
     document.getElementById('post-form').style.display = 'none';
     document.getElementById('locked-state').style.display = 'block';
     return;
+  }
+
+  if (!canPostOffering && isParticipantRole) {
+    // Participant — force to seeking mode, hide offering option
+    document.getElementById('btn-offering').style.display = 'none';
+    setType('seeking', document.getElementById('btn-seeking'));
   }
 
   // Pre-select type from URL
