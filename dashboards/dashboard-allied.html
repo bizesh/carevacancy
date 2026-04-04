@@ -1140,7 +1140,7 @@ async function loadMatches(tier) {
   // Find seeking posts matching provider's categories
   let query = CV.db
     .from('posts')
-    .select('*, profiles!posts_user_id_fkey(full_name, org_name, role)')
+    .select('*, profiles!posts_user_id_fkey(full_name, org_name, role, email)')
     .eq('type', 'seeking')
     .eq('is_active', true)
     .in('category', myCategories)
@@ -1209,9 +1209,10 @@ async function loadMatches(tier) {
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
         ${m.disability_types.map(d => `<span style="font-size:11px;padding:2px 8px;border-radius:20px;background:#f0fdf4;color:#166534;">${d}</span>`).join('')}
       </div>` : ''}
-      <div style="display:flex;gap:8px;margin-top:4px;">
-        <a href="../pages/provider-profile.html?id=${currentUser.id}" style="background:var(--teal);color:white;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600;">View my profile →</a>
-        <span style="font-size:11px;color:var(--muted);align-self:center;">Your profile will be visible to them in search</span>
+      <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;align-items:center;">
+        ${poster?.email ? `<a href="mailto:${poster.email}" style="background:var(--teal);color:white;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600;">📧 Contact ${poster?.full_name?.split(' ')[0] || 'them'} →</a>` : ''}
+        ${poster?.email ? `<span style="font-size:11px;color:var(--muted);align-self:center;">${poster.email}</span>` : ''}
+        <a href="../pages/provider-profile.html?id=${currentUser.id}" style="background:white;border:1.5px solid var(--border);color:var(--navy);padding:7px 14px;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600;">View my profile</a>
       </div>
     </div>`;
   }).join('');
