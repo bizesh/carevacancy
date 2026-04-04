@@ -1140,7 +1140,7 @@ async function loadMatches(tier) {
   // Find seeking posts matching provider's categories
   let query = CV.db
     .from('posts')
-    .select('*, profiles!posts_user_id_fkey(full_name, org_name, role, email)')
+    .select('*, profiles!posts_user_id_fkey(full_name, org_name, role, email, phone)')
     .eq('type', 'seeking')
     .eq('is_active', true)
     .in('category', myCategories)
@@ -1209,10 +1209,15 @@ async function loadMatches(tier) {
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
         ${m.disability_types.map(d => `<span style="font-size:11px;padding:2px 8px;border-radius:20px;background:#f0fdf4;color:#166534;">${d}</span>`).join('')}
       </div>` : ''}
-      <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;align-items:center;">
-        ${poster?.email ? `<a href="mailto:${poster.email}" style="background:var(--teal);color:white;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600;">📧 Contact ${poster?.full_name?.split(' ')[0] || 'them'} →</a>` : ''}
-        ${poster?.email ? `<span style="font-size:11px;color:var(--muted);align-self:center;">${poster.email}</span>` : ''}
-        <a href="../pages/provider-profile.html?id=${currentUser.id}" style="background:white;border:1.5px solid var(--border);color:var(--navy);padding:7px 14px;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600;">View my profile</a>
+      <div style="background:var(--bg);border-radius:8px;padding:12px;margin-top:8px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Contact details</div>
+        ${poster?.email ? `<div style="font-size:13px;margin-bottom:4px;"><span style="color:var(--muted);font-size:11px;font-weight:600;margin-right:6px;">EMAIL</span><span style="color:var(--navy);font-weight:500;">${poster.email}</span></div>` : ''}
+        ${poster?.phone ? `<div style="font-size:13px;margin-bottom:8px;"><span style="color:var(--muted);font-size:11px;font-weight:600;margin-right:6px;">PHONE</span><span style="color:var(--navy);font-weight:500;">${poster.phone}</span></div>` : ''}
+        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+          ${poster?.email ? `<a href="mailto:${poster.email}" style="background:var(--teal);color:white;padding:7px 14px;border-radius:7px;text-decoration:none;font-size:12px;font-weight:600;">📧 Email</a>` : ''}
+          ${poster?.phone ? `<a href="tel:${poster.phone}" style="background:#16a34a;color:white;padding:7px 14px;border-radius:7px;text-decoration:none;font-size:12px;font-weight:600;">📞 Call</a>` : ''}
+          <a href="../pages/provider-profile.html?id=${currentUser.id}" style="background:white;border:1.5px solid var(--border);color:var(--navy);padding:7px 14px;border-radius:7px;text-decoration:none;font-size:12px;font-weight:600;">View my profile</a>
+        </div>
       </div>
     </div>`;
   }).join('');
@@ -1240,14 +1245,9 @@ async function openEnquiry(enqId) {
   document.getElementById('enq-modal-sender-role').textContent = roleLabels[s.role] || s.role || '';
   document.getElementById('enq-modal-sender-email').textContent = s.email || '';
   const phoneEl = document.getElementById('enq-modal-sender-phone');
-  if (phoneEl) {
-    if (s.phone) {
-      phoneEl.textContent = '📞 ' + s.phone;
-      phoneEl.style.display = 'block';
-    } else {
-      phoneEl.style.display = 'none';
-    }
-  }
+  const phoneRow = document.getElementById('enq-modal-sender-phone-row');
+  if (phoneEl) phoneEl.textContent = s.phone || '';
+  if (phoneRow) phoneRow.style.display = s.phone ? 'flex' : 'none';
   document.getElementById('enq-modal-date').textContent = new Date(enq.created_at).toLocaleDateString('en-AU', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
   document.getElementById('enq-modal-message').textContent = enq.message;
 
@@ -1491,8 +1491,14 @@ async function loadWaitlistBadge() {
           <div>
             <div style="font-weight:600;color:var(--navy);" id="enq-modal-sender-name">—</div>
             <div style="font-size:13px;color:var(--muted);" id="enq-modal-sender-role">—</div>
-            <div style="font-size:13px;color:var(--muted);margin-top:4px;" id="enq-modal-sender-email">—</div>
-            <div style="font-size:13px;color:var(--muted);margin-top:2px;" id="enq-modal-sender-phone" style="display:none;"></div>
+            <div style="font-size:13px;color:var(--muted);margin-top:6px;display:flex;align-items:center;gap:6px;" id="enq-modal-sender-email-row">
+              <span style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">Email</span>
+              <span id="enq-modal-sender-email" style="color:var(--navy);font-weight:500;">—</span>
+            </div>
+            <div style="font-size:13px;margin-top:4px;display:none;align-items:center;gap:6px;" id="enq-modal-sender-phone-row">
+              <span style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">Phone</span>
+              <span id="enq-modal-sender-phone" style="color:var(--navy);font-weight:500;"></span>
+            </div>
           </div>
           <div style="text-align:right;">
             <div style="font-size:12px;color:var(--muted);" id="enq-modal-date">—</div>
