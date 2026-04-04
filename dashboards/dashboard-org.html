@@ -75,6 +75,11 @@
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
       Analytics
     </button>
+    <button class="ds-item" id="waitlist-nav-item" onclick="switchPanel(this,'waitlist')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      Waitlist
+      <span class="ds-badge" id="waitlist-badge" style="display:none;background:#0d9488;">0</span>
+    </button>
     <button class="ds-item" id="matches-nav-item" onclick="switchPanel(this,'matches')" style="display:none;">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
       Matches
@@ -299,6 +304,15 @@
       </div>
     </div>
 
+    <!-- WAITLIST -->
+    <div class="dash-panel" id="panel-waitlist">
+      <h3 style="margin-bottom:4px;">Waitlist</h3>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Participants who have joined the waitlist for your vacancies.</p>
+      <div id="waitlist-content">
+        <div style="text-align:center;padding:40px;color:var(--muted);">Loading waitlist...</div>
+      </div>
+    </div>
+
     <!-- BILLING -->
     <div class="dash-panel" id="panel-billing">
       <h3 style="margin-bottom:16px;">Billing &amp; subscription</h3>
@@ -359,6 +373,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   await loadDashboardData();
   prefillProfile();
+  loadWaitlistBadge();
 });
 
 async function loadDashboardData() {
@@ -483,6 +498,7 @@ function upgradePlan(tier) {
 function switchPanel(btn, panel) {
   if (panel === 'analytics') { loadAnalytics(currentUser?.profile?.tier); }
   if (panel === 'billing') { loadBilling(); }
+  if (panel === 'waitlist') { loadWaitlist(); }
   if (panel === 'matches') {
     loadMatches(currentUser?.profile?.tier);
     localStorage.setItem('matches-last-viewed', new Date().toISOString());
@@ -493,7 +509,7 @@ function switchPanel(btn, panel) {
   if (btn) btn.classList.add('active');
   document.querySelectorAll('.dash-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('panel-' + panel).classList.add('active');
-  const titles = { overview:'Overview', vacancies:'My vacancies', enquiries:'Enquiries', seeking:'Seeking posts', matches:'Auto-matches', analytics:'Analytics', profile:'My profile', billing:'Billing' };
+  const titles = { overview:'Overview', vacancies:'My vacancies', enquiries:'Enquiries', seeking:'Seeking posts', matches:'Auto-matches', analytics:'Analytics', profile:'My profile', billing:'Billing', waitlist:'Waitlist' };
   document.getElementById('panel-title').textContent = titles[panel] || panel;
 }
 
@@ -1300,6 +1316,143 @@ function closeEnqModal(e) {
   }
 }
 
+
+async function loadWaitlist() {
+  const container = document.getElementById('waitlist-content');
+  try {
+    // Get all vacancies for this provider
+    const { data: posts } = await CV.db.from('posts')
+      .select('id, title, category, suburb, state, is_active')
+      .eq('user_id', currentUser.id)
+      .eq('type', 'offering')
+      .order('created_at', { ascending: false });
+
+    if (!posts || posts.length === 0) {
+      container.innerHTML = `<div style="text-align:center;padding:40px;color:var(--muted);">
+        <div style="font-size:32px;margin-bottom:12px;">📋</div>
+        <div style="font-size:15px;font-weight:500;color:var(--navy);">No vacancies yet</div>
+        <div style="font-size:13px;margin-top:6px;">Post a vacancy first, then participants can join your waitlist.</div>
+        <a href="../pages/post.html" style="display:inline-block;margin-top:16px;background:var(--teal);color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;">Post a vacancy →</a>
+      </div>`;
+      return;
+    }
+
+    // Get all waitlist entries for this provider
+    const { data: entries } = await CV.db.from('waitlist')
+      .select('*, profiles!waitlist_participant_id_fkey(id, full_name, email, phone, role, disability_types, state, suburb)')
+      .eq('provider_id', currentUser.id)
+      .order('created_at', { ascending: true });
+
+    const allEntries = entries || [];
+    const catLabels = { sil:'SIL/SDA', sc:'Support Coord.', pm:'Plan Manager', allied:'Allied Health', 'personal-care':'Personal Care', respite:'Respite', other:'Other' };
+    const statusColors = { waiting:'#dbeafe|#1e40af', contacted:'#fef9c3|#854d0e', filled:'#dcfce7|#15803d', removed:'#f1f5f9|#64748b' };
+
+    let html = '';
+
+    // Group entries by post
+    posts.forEach(post => {
+      const postEntries = allEntries.filter(e => e.post_id === post.id);
+      const waitingCount = postEntries.filter(e => e.status === 'waiting').length;
+
+      html += `<div style="background:white;border:1px solid var(--border);border-radius:14px;margin-bottom:20px;overflow:hidden;">
+        <div style="padding:16px 20px;background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--navy);">${post.title || catLabels[post.category] || 'Vacancy'}</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px;">${[post.suburb, post.state].filter(Boolean).join(', ') || 'Location not set'} &middot; ${catLabels[post.category] || post.category}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:12px;font-weight:700;background:${waitingCount > 0 ? '#dbeafe' : '#f1f5f9'};color:${waitingCount > 0 ? '#1e40af' : '#64748b'};padding:4px 12px;border-radius:20px;">${waitingCount} waiting</span>
+            ${!post.is_active ? '<span style="font-size:11px;background:#f1f5f9;color:var(--muted);padding:3px 9px;border-radius:10px;">Inactive</span>' : ''}
+          </div>
+        </div>`;
+
+      if (postEntries.length === 0) {
+        html += `<div style="padding:24px 20px;text-align:center;color:var(--muted);font-size:13px;">No one on the waitlist for this vacancy yet.</div>`;
+      } else {
+        html += `<div style="padding:0 20px;">`;
+        postEntries.forEach((entry, i) => {
+          const p = entry.profiles || {};
+          const name = p.full_name || 'Anonymous';
+          const initials = name.slice(0,2).toUpperCase();
+          const disabilities = (p.disability_types || []).slice(0,2).join(', ');
+          const location = [p.suburb, p.state].filter(Boolean).join(', ');
+          const [sbg, stxt] = (statusColors[entry.status] || '|').split('|');
+          const joinedDate = new Date(entry.created_at).toLocaleDateString('en-AU', { day:'numeric', month:'short', year:'numeric' });
+
+          html += `<div style="display:flex;align-items:flex-start;gap:14px;padding:14px 0;border-bottom:${i < postEntries.length-1 ? '1px solid var(--border)' : 'none'};">
+            <div style="width:40px;height:40px;border-radius:10px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:15px;color:var(--teal-dark);flex-shrink:0;">${initials}</div>
+            <div style="flex:1;min-width:0;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;flex-wrap:wrap;">
+                <span style="font-size:13px;font-weight:600;color:var(--navy);">${name}</span>
+                <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:${sbg};color:${stxt};">${entry.status}</span>
+                <span style="font-size:11px;color:var(--muted);">Joined ${joinedDate}</span>
+              </div>
+              ${location ? `<div style="font-size:12px;color:var(--muted);margin-bottom:3px;">📍 ${location}</div>` : ''}
+              ${disabilities ? `<div style="font-size:11px;color:var(--muted);">${disabilities}</div>` : ''}
+              ${entry.notes ? `<div style="font-size:12px;color:var(--navy);background:var(--bg);border-radius:6px;padding:6px 10px;margin-top:6px;font-style:italic;">"${entry.notes}"</div>` : ''}
+            </div>
+            <div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0;">
+              ${p.email ? `<a href="mailto:${p.email}" style="font-size:11px;background:var(--navy);color:white;padding:5px 10px;border-radius:6px;text-decoration:none;font-weight:600;text-align:center;">Email</a>` : ''}
+              <select onchange="updateWaitlistStatus('${entry.id}', this.value)" style="font-size:11px;border:1.5px solid var(--border);border-radius:6px;padding:4px 6px;font-family:'DM Sans',sans-serif;cursor:pointer;background:white;">
+                <option value="waiting" ${entry.status==='waiting'?'selected':''}>Waiting</option>
+                <option value="contacted" ${entry.status==='contacted'?'selected':''}>Contacted</option>
+                <option value="filled" ${entry.status==='filled'?'selected':''}>Filled</option>
+                <option value="removed" ${entry.status==='removed'?'selected':''}>Remove</option>
+              </select>
+            </div>
+          </div>`;
+        });
+        html += `</div>`;
+      }
+      html += `</div>`;
+    });
+
+    container.innerHTML = html || '<div style="text-align:center;padding:40px;color:var(--muted);">No waitlist entries yet.</div>';
+
+    // Update badge
+    const totalWaiting = allEntries.filter(e => e.status === 'waiting').length;
+    const badge = document.getElementById('waitlist-badge');
+    if (badge) {
+      badge.textContent = totalWaiting;
+      badge.style.display = totalWaiting > 0 ? 'inline-flex' : 'none';
+    }
+
+  } catch(e) {
+    console.error(e);
+    container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);">Could not load waitlist.</div>';
+  }
+}
+
+async function updateWaitlistStatus(entryId, status) {
+  try {
+    const { error } = await CV.db.from('waitlist')
+      .update({ status, updated_at: new Date().toISOString() })
+      .eq('id', entryId)
+      .eq('provider_id', currentUser.id);
+    if (error) throw error;
+    showToast('Status updated');
+    loadWaitlist(); // refresh
+  } catch(e) {
+    alert('Could not update status: ' + e.message);
+  }
+}
+
+
+async function loadWaitlistBadge() {
+  try {
+    const { count } = await CV.db.from('waitlist')
+      .select('id', { count: 'exact' })
+      .eq('provider_id', currentUser.id)
+      .eq('status', 'waiting');
+    const badge = document.getElementById('waitlist-badge');
+    if (badge && count > 0) {
+      badge.textContent = count;
+      badge.style.display = 'inline-flex';
+    }
+    const navItem = document.getElementById('waitlist-nav-item');
+    if (navItem) navItem.style.display = 'flex';
+  } catch(e) {}
+}
 </script>
 
 <!-- ENQUIRY DETAIL MODAL -->

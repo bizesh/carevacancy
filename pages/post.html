@@ -292,13 +292,22 @@ async function submitPost() {
     const { data: newPost, error } = await CV.db.from('posts').insert(post).select().single();
     if (error) throw error;
 
-    // If seeking post - trigger auto-match for Premium providers
+    // If seeking post — trigger auto-match for Premium providers
     if (postType === 'seeking' && newPost?.id) {
       fetch('/api/auto-match', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ postId: newPost.id })
       }).catch(e => console.error('Auto-match error:', e));
+    }
+
+    // If offering post — trigger vacancy alerts to matching participants
+    if (postType === 'offering' && newPost?.id) {
+      fetch('/api/notify-vacancy-alert', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ postId: newPost.id })
+      }).catch(e => console.error('Vacancy alert error:', e));
     }
 
     document.getElementById('post-success').textContent = '✓ Your post is live! Providers and participants can now find it.';
