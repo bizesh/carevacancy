@@ -213,22 +213,21 @@ document.addEventListener('DOMContentLoaded', async () => {
   const canPostOffering = CV.TIERS[profile?.tier || 'basic'].canPostVacancies;
   const isParticipantRole = ['participant','family'].includes(profile?.role);
 
-  // Participants can always post seeking requests for free
-  // Providers need Featured/Premium to post offerings
-  const params = new URLSearchParams(window.location.search);
-  const initialType = params.get('type');
-
-  if (!canPostOffering && !isParticipantRole) {
-    // Provider on basic — block everything
+  if (isParticipantRole) {
+    // Participants only seek — hide the toggle entirely and go straight to seeking form
+    document.querySelector('.post-toggle').style.display = 'none';
+    setType('seeking', document.getElementById('btn-seeking'));
+    document.querySelector('h1').textContent = 'Post a seeking request';
+    document.querySelector('h1 + p').textContent = 'Tell providers what you need and let them come to you.';
+  } else if (!canPostOffering) {
+    // Provider on basic — show upgrade screen
     document.getElementById('post-form').style.display = 'none';
     document.getElementById('locked-state').style.display = 'block';
     return;
-  }
-
-  if (!canPostOffering && isParticipantRole) {
-    // Participant — force to seeking mode, hide offering option
-    document.getElementById('btn-offering').style.display = 'none';
-    setType('seeking', document.getElementById('btn-seeking'));
+  } else {
+    // Provider on featured/premium — check URL param for initial type
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('type') === 'seeking') setType('seeking', document.getElementById('btn-seeking'));
   }
 
   // Pre-select type from URL
