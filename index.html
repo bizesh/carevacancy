@@ -639,13 +639,14 @@ function initCarousel(trackId, dotsId) {
     clearInterval(timer);
     timer = setInterval(() => go(idx + 1), 5000);
   }
+  function slide(dir) { go(idx + dir); }
   timer = setInterval(() => go(idx + 1), 5000);
-  return { go };
+  return { go, slide };
 }
 
 let carouselLO, carouselLI;
-function slideAd(dir)   { carouselLO && carouselLO.go(carouselLO._idx + dir); }
-function slideAdLI(dir) { carouselLI && carouselLI.go(carouselLI._idx + dir); }
+function slideAd(dir)   { carouselLO && carouselLO.slide(dir); }
+function slideAdLI(dir) { carouselLI && carouselLI.slide(dir); }
 
 // ══ SEARCH ══
 function setTab(btn, type) {

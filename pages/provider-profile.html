@@ -53,6 +53,7 @@
 .save-btn:hover{border-color:var(--teal);color:var(--teal);}
 .loading-profile{text-align:center;padding:80px 20px;grid-column:1/-1;}
 @media(max-width:900px){.profile-page{grid-template-columns:1fr;}.contact-card{position:static;}}
+@media(max-width:600px){.profile-page{padding:16px 4%;}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase.js"></script>
@@ -84,12 +85,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(window.location.search);
   const id = params.get('id');
   if (!id) { window.location.href = 'search.html'; return; }
-  await loadProfile(id);
   const user = await CV.getCurrentUser();
-  await CV.db.from('profile_views').insert({ profile_id: id, viewer_id: user?.id || null });
+  await loadProfile(id, user);
+  if (user) {
+    await CV.db.from('profile_views').insert({ profile_id: id, viewer_id: user.id || null });
+  }
 });
 
-async function loadProfile(id) {
+async function loadProfile(id, user) {
   try {
     const { data: p, error } = await CV.db.from('profiles').select('*').eq('id', id).eq('status','active').single();
     if (error || !p) {
@@ -97,7 +100,14 @@ async function loadProfile(id) {
       return;
     }
     profileData = p;
-    document.title = `${p.org_name || p.full_name} — CareVacancy`;
+    document.title = (p.org_name || p.full_name) + ' — CareVacancy';
+    
+    // Auth gate logic
+    const isLoggedIn = !!user;
+    const userTier = user?.profile?.tier || 'basic';
+    const hasFullAccess = isLoggedIn && userTier !== 'basic';
+    const isOwnProfile = user && user.id === p.id;
+    window._profileAccess = { isLoggedIn, hasFullAccess, isOwnProfile };
     const { data: posts } = await CV.db.from('posts').select('*').eq('user_id', id).eq('is_active', true).order('created_at', { ascending: false });
     renderProfile(p, posts || []);
   } catch(e) { console.error(e); }
@@ -276,5 +286,48 @@ async function saveProvider(providerId) {
   }
 }
 </script>
+
+<!-- AUTH GATE MODAL -->
+<div id="profile-gate-modal" style="display:none;position:fixed;inset:0;background:rgba(15,41,66,0.75);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:white;border-radius:20px;padding:36px;max-width:400px;width:100%;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,0.25);animation:fadeIn 0.25s ease;position:relative;">
+    <button onclick="document.getElementById('profile-gate-modal').style.display='none'" style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:20px;color:var(--muted);cursor:pointer;">&#215;</button>
+    <div id="gate-icon" style="font-size:36px;margin-bottom:14px;">&#128274;</div>
+    <h3 id="gate-title" style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--navy);margin-bottom:8px;">Log in to view &amp; enquire</h3>
+    <p id="gate-body" style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:22px;">Create a free account or log in to view full provider details and send enquiries.</p>
+    <a id="gate-primary-btn" href="login.html" style="display:block;width:100%;background:var(--teal);color:white;border:none;padding:13px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:9px;text-decoration:none;text-align:center;transition:background 0.2s;">&#128640; Create free account</a>
+    <a id="gate-secondary-btn" href="login.html" style="display:block;width:100%;background:var(--bg);color:var(--navy);border:1.5px solid var(--border);padding:11px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;text-align:center;">Log in &#8594;</a>
+  </div>
+</div>
+
+<script>
+function checkAccessThenEnquire() {
+  const access = window._profileAccess || {};
+  if (!access.isLoggedIn) {
+    document.getElementById('gate-icon').textContent = '\uD83D\uDD12';
+    document.getElementById('gate-title').textContent = 'Log in to send an enquiry';
+    document.getElementById('gate-body').textContent = 'Create a free account or log in to contact this provider directly.';
+    document.getElementById('gate-primary-btn').href = 'signup.html';
+    document.getElementById('gate-primary-btn').textContent = '\uD83D\uDE80 Create free account';
+    document.getElementById('gate-secondary-btn').href = 'login.html';
+    document.getElementById('gate-secondary-btn').textContent = 'Log in \u2192';
+    document.getElementById('profile-gate-modal').style.display = 'flex';
+    return;
+  }
+  if (!access.hasFullAccess && !access.isOwnProfile) {
+    document.getElementById('gate-icon').textContent = '\u2B50';
+    document.getElementById('gate-title').textContent = 'Upgrade to enquire';
+    document.getElementById('gate-body').textContent = 'You\'re on the Basic plan. Upgrade to Featured ($49/mo) to send enquiries and contact providers directly.';
+    document.getElementById('gate-primary-btn').href = '../pages/upgrade.html';
+    document.getElementById('gate-primary-btn').textContent = '\u2B50 Upgrade to Featured \u2192';
+    document.getElementById('gate-secondary-btn').onclick = function() { document.getElementById('profile-gate-modal').style.display='none'; };
+    document.getElementById('gate-secondary-btn').href = '#';
+    document.getElementById('gate-secondary-btn').textContent = 'Continue browsing';
+    document.getElementById('profile-gate-modal').style.display = 'flex';
+    return;
+  }
+  sendEnquiry();
+}
+</script>
+
 </body>
 </html>

@@ -195,6 +195,29 @@
           <label>AHPRA registration number <span class="req">*</span></label>
           <input type="text" id="ahpra" placeholder="e.g. OCC0001234567" oninput="clearError('ahpra')"/>
           <div class="field-hint">Required for OTs, physios, speech pathologists, psychologists</div>
+        </div>
+        <!-- Allied specialty -->
+        <div class="field-group" id="allied-specialty-group" style="display:none;">
+          <label>Allied health specialty <span class="req">*</span></label>
+          <select id="allied-specialty" onchange="toggleAlliedOther()">
+            <option value="">Select your specialty</option>
+            <option value="Occupational Therapy">Occupational Therapy (OT)</option>
+            <option value="Physiotherapy">Physiotherapy</option>
+            <option value="Speech Pathology">Speech Pathology</option>
+            <option value="Behaviour Support">Positive Behaviour Support (PBS)</option>
+            <option value="Psychology">Psychology</option>
+            <option value="Dietetics">Dietetics</option>
+            <option value="Exercise Physiology">Exercise Physiology</option>
+            <option value="Social Work">Social Work</option>
+            <option value="Other">Other</option>
+          </select>
+          <div class="field-error" id="allied-specialty-error"></div>
+        </div>
+        <div class="field-group" id="allied-specialty-other-group" style="display:none;">
+          <label>Please specify your specialty</label>
+          <input type="text" id="allied-specialty-other" placeholder="e.g. Music Therapy"/>
+        </div>
+        <div style="display:none;"><!-- spacer to close ahpra field-group properly
           <div class="field-error" id="ahpra-error"></div>
         </div>
 
@@ -248,6 +271,19 @@
             <label class="check-pill"><input type="checkbox" value="personal-care"/> Personal Care</label>
           </div>
         </div>
+      </div>
+
+      <!-- VERIFICATION DOCUMENTS (providers only) -->
+      <div id="verification-docs-section" style="display:none;margin-bottom:20px;">
+        <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:8px;">Verification documents <span style="font-weight:400;color:var(--muted);font-size:12px;">(optional but speeds up approval)</span></div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6;">Upload any relevant documents: NDIS registration certificate, business registration, ABN confirmation, AHPRA certificate, insurance certificate, etc. Up to 10 files. PDF, JPG, PNG accepted.</div>
+        <div id="doc-upload-area" style="border:2px dashed var(--border);border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:border-color 0.2s;" onclick="document.getElementById('doc-files').click()" ondragover="event.preventDefault();this.style.borderColor='var(--teal)'" ondragleave="this.style.borderColor='var(--border)'" ondrop="handleDocDrop(event)">
+          <div style="font-size:24px;margin-bottom:8px;">📎</div>
+          <div style="font-size:13px;font-weight:500;color:var(--navy);">Click to upload or drag and drop</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px;">PDF, JPG, PNG, DOCX — max 10MB per file — up to 10 files</div>
+        </div>
+        <input type="file" id="doc-files" multiple accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx" style="display:none;" onchange="handleDocSelect(this)"/>
+        <div id="doc-file-list" style="margin-top:10px;display:flex;flex-direction:column;gap:6px;"></div>
       </div>
 
       <!-- TERMS -->
@@ -308,6 +344,12 @@
 let selectedRole = null;
 
 // ── ROLE SELECTION ──
+
+function toggleAlliedOther() {
+  const val = document.getElementById('allied-specialty').value;
+  document.getElementById('allied-specialty-other-group').style.display = val === 'Other' ? 'block' : 'none';
+}
+
 function selectRole(role) {
   selectedRole = role;
   document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
@@ -343,6 +385,7 @@ function updateDetailsForm() {
   const isParticipant = ['participant','family'].includes(selectedRole);
 
   document.getElementById('provider-fields').style.display = isProvider ? 'block' : 'none';
+  document.getElementById('verification-docs-section').style.display = isProvider ? 'block' : 'none';
   document.getElementById('participant-fields').style.display = isParticipant ? 'block' : 'none';
 
   // Customise labels per role
@@ -363,6 +406,7 @@ function updateDetailsForm() {
 
   // Show AHPRA field for allied health
   document.getElementById('ahpra-group').style.display = selectedRole === 'allied' ? 'block' : 'none';
+  document.getElementById('allied-specialty-group').style.display = selectedRole === 'allied' ? 'block' : 'none';
   document.getElementById('registration-group').style.display = selectedRole !== 'allied' ? 'block' : 'none';
 
   // Update title
@@ -480,10 +524,30 @@ async function submitSignup() {
       profile.org_name = CV.sanitise(document.getElementById('org-name').value.trim());
       profile.abn = document.getElementById('abn').value.replace(/\s/g,'');
       profile.state = document.getElementById('state').value;
-      profile.phone = document.getElementById('phone').value.trim();
+      profile.street_address = document.getElementById('street-address').value.trim() || null;
+      profile.suburb = document.getElementById('suburb-field').value.trim() || null;
+      profile.postcode = document.getElementById('postcode-field').value.trim() || null;
+      const phoneVal = document.getElementById('phone').value.trim();
+      if (phoneVal && !CV.isValidPhone(phoneVal)) {
+        document.getElementById('signup-error').textContent = 'Please enter a valid Australian phone number (e.g. 04XX XXX XXX or 08 XXXX XXXX).';
+        document.getElementById('signup-error').style.display = 'flex';
+        btn.disabled = false; spinner.classList.remove('show'); return;
+      }
+      profile.phone = phoneVal;
       profile.ndis_registration = document.getElementById('registration')?.value.trim() || null;
       if (selectedRole === 'allied') {
         profile.ahpra_number = document.getElementById('ahpra').value.trim();
+        const spec = document.getElementById('allied-specialty').value;
+        if (!spec) {
+          document.getElementById('signup-error').textContent = 'Please select your allied health specialty.';
+          document.getElementById('signup-error').style.display = 'flex';
+          btn.disabled = false; spinner.classList.remove('show'); return;
+        }
+        profile.allied_specialty = spec === 'Other'
+          ? (document.getElementById('allied-specialty-other').value.trim() || 'Other')
+          : spec;
+        // Also set services array for search matching
+        profile.services = [profile.allied_specialty.toLowerCase().replace(/\s+/g,'-')];
       }
       // Flag for admin verification queue
       profile.verification_status = 'unverified';
@@ -501,6 +565,14 @@ async function submitSignup() {
     // Save profile to database
     const { error: profileError } = await CV.db.from('profiles').insert(profile);
     if (profileError) throw profileError;
+
+    // Upload verification docs if any
+    if (selectedDocs.length > 0) {
+      const uploaded = await uploadVerificationDocs(authData.user.id);
+      if (uploaded.length > 0) {
+        await CV.db.from('profiles').update({ verification_docs: uploaded }).eq('id', authData.user.id);
+      }
+    }
 
     // Notify admin of new provider signup (insert into verification queue)
     if (isProvider) {
@@ -591,6 +663,57 @@ function checkPasswordStrength() {
 // Pre-select role from URL param
 const urlRole = new URLSearchParams(window.location.search).get('role');
 if (urlRole) selectRole(urlRole);
+
+let selectedDocs = [];
+
+function handleDocSelect(input) {
+  addDocs(Array.from(input.files));
+  input.value = '';
+}
+
+function handleDocDrop(event) {
+  event.preventDefault();
+  document.getElementById('doc-upload-area').style.borderColor = 'var(--border)';
+  addDocs(Array.from(event.dataTransfer.files));
+}
+
+function addDocs(files) {
+  files.forEach(f => {
+    if (selectedDocs.length >= 10) { alert('Maximum 10 files allowed.'); return; }
+    if (f.size > 10 * 1024 * 1024) { alert(f.name + ' is too large. Max 10MB per file.'); return; }
+    selectedDocs.push(f);
+  });
+  renderDocList();
+}
+
+function removeDoc(idx) {
+  selectedDocs.splice(idx, 1);
+  renderDocList();
+}
+
+function renderDocList() {
+  const list = document.getElementById('doc-file-list');
+  list.innerHTML = selectedDocs.map((f, i) =>
+    '<div style="display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 12px;">' +
+    '<span style="font-size:16px;">' + (f.type.includes('pdf') ? '📄' : '🖼️') + '</span>' +
+    '<div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:500;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + f.name + '</div>' +
+    '<div style="font-size:11px;color:var(--muted);">' + (f.size / 1024).toFixed(0) + ' KB</div></div>' +
+    '<button onclick="removeDoc(' + i + ')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0;line-height:1;">&#215;</button></div>'
+  ).join('');
+}
+
+async function uploadVerificationDocs(userId) {
+  if (selectedDocs.length === 0) return [];
+  const uploaded = [];
+  for (const file of selectedDocs) {
+    const ext = file.name.split('.').pop();
+    const path = userId + '/' + Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + ext;
+    const { data, error } = await CV.db.storage.from('verification-docs').upload(path, file);
+    if (!error && data) uploaded.push({ name: file.name, path: data.path });
+  }
+  return uploaded;
+}
+
 </script>
 </body>
 </html>

@@ -10,6 +10,7 @@
 <script src="../js/supabase.js"></script>
 </head>
 <body>
+<div class="dash-sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
 
 <div class="dash-sidebar">
   <a class="ds-logo" href="../index.html">Care<span>Vacancy</span></a>
@@ -52,7 +53,7 @@
 </div>
 
 <div class="dash-main">
-  <div class="dash-topbar">
+  <div class="dash-topbar"><button class="dash-hamburger" onclick="toggleSidebar()" aria-label="Menu">&#9776;</button>
     <span class="dash-topbar-title" id="panel-title">Find providers</span>
     <a href="../pages/search.html" class="btn btn-primary btn-sm">Search providers</a>
   </div>

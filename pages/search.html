@@ -78,6 +78,12 @@
 @media(max-width:900px){
   .search-page{grid-template-columns:1fr;}
   .filters-sidebar{display:none;}
+  .search-header{flex-direction:column;gap:10px;}
+  .results-grid{grid-template-columns:1fr!important;}
+}
+@media(max-width:600px){
+  .search-bar-wrap{flex-direction:column;}
+  .search-bar-wrap input,.search-bar-wrap select,.search-bar-wrap button{width:100%;}
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

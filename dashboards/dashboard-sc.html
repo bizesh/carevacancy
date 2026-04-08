@@ -401,15 +401,22 @@ async function loadDashboardData() {
 
   // Profile completion
   const p = currentUser.profile;
-  let complete = 0;
-  if (p.org_name) complete += 20;
-  if (p.bio) complete += 20;
-  if (p.suburb) complete += 15;
-  if (p.services?.length > 0) complete += 15;
-  if (p.disability_types?.length > 0) complete += 15;
-  if (p.phone) complete += 15;
+  // Profile completion - each field worth equal share to reach 100%
+  const completionFields = [
+    { val: p.org_name || p.full_name, label: 'Add your name' },
+    { val: p.bio, label: 'Write a bio' },
+    { val: p.phone, label: 'Add a phone number' },
+    { val: p.suburb, label: 'Add your suburb' },
+    { val: p.state, label: 'Add your state' },
+    { val: p.services?.length > 0, label: 'Add your services' },
+  ];
+  const filled = completionFields.filter(f => f.val).length;
+  const complete = Math.round((filled / completionFields.length) * 100);
   document.getElementById('pc-bar').style.width = complete + '%';
-  document.getElementById('pc-text').textContent = complete === 100 ? '✓ Profile complete!' : `${complete}% complete — finish your profile to rank higher in search`;
+  const missing = completionFields.filter(f => !f.val).map(f => f.label);
+  document.getElementById('pc-text').textContent = complete === 100
+    ? '\u2713 Profile complete! You\'re fully visible in search.'
+    : complete + '% complete \u2014 ' + (missing[0] || 'finish your profile') + ' to rank higher';
 
   // Render posts
   renderPosts(activePosts);
