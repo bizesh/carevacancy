@@ -878,6 +878,44 @@ function closeSidebar() {
   if (sidebar) sidebar.classList.remove('open');
 }
 
+
+function renderQueueDocs(docs, userId) {
+  var html = '<div style="margin-top:12px;padding:14px;background:var(--bg);border-radius:10px;border:1px solid var(--border);">';
+  html += '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);margin-bottom:10px;">Uploaded documents (' + docs.length + ')</div>';
+  html += '<div style="display:flex;flex-wrap:wrap;gap:8px;">';
+  docs.forEach(function(doc) {
+    var ext = (doc.name || '').split('.').pop().toLowerCase();
+    var icon = ext === 'pdf' ? '📄' : (ext === 'jpg' || ext === 'jpeg' || ext === 'png' || ext === 'webp') ? '🖼️' : '📝';
+    var size = doc.size ? ' (' + (doc.size / 1024).toFixed(0) + ' KB)' : '';
+    html += '<button onclick="downloadDoc('' + (doc.path||'') + '','' + (doc.name||'file') + '')" ';
+    html += 'style="display:flex;align-items:center;gap:6px;background:white;border:1.5px solid var(--border);border-radius:8px;padding:7px 12px;font-size:12px;font-weight:500;color:var(--navy);cursor:pointer;font-family:DM Sans,sans-serif;transition:border-color 0.15s;" ';
+    html += 'onmouseover="this.style.borderColor='var(--teal)'" onmouseout="this.style.borderColor='var(--border)'">';
+    html += icon + ' ' + (doc.name || 'Document') + size;
+    html += '</button>';
+  });
+  html += '</div></div>';
+  return html;
+}
+
+async function downloadDoc(path, name) {
+  try {
+    var result = await CV.db.storage.from('verification-docs').createSignedUrl(path, 60);
+    if (result.data && result.data.signedUrl) {
+      var a = document.createElement('a');
+      a.href = result.data.signedUrl;
+      a.download = name;
+      a.target = '_blank';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } else {
+      alert('Could not generate download link.');
+    }
+  } catch(e) {
+    alert('Download failed: ' + e.message);
+  }
+}
+
 </script>
 
 <!-- USER EDIT MODAL -->

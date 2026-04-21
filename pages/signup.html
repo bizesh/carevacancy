@@ -309,6 +309,25 @@
         </div>
       </div>
 
+      <!-- VERIFICATION DOCUMENTS (providers only) -->
+      <div id="verification-docs-section" style="display:none;margin-bottom:24px;">
+        <hr class="divider" style="margin:20px 0;"/>
+        <div class="auth-section-title" style="font-size:12px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Verification documents</div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6;">Upload documents to verify your credentials — NDIS registration certificate, ABN confirmation, AHPRA certificate, business registration, insurance, employment letter, etc. <strong>Up to 10 files.</strong> Speeds up your approval significantly.</p>
+        <div id="doc-upload-area"
+          onclick="document.getElementById('doc-files').click()"
+          ondragover="event.preventDefault();this.style.borderColor='var(--teal)';this.style.background='#f0fdfa';"
+          ondragleave="this.style.borderColor='var(--border)';this.style.background='var(--bg)';"
+          ondrop="handleDocDrop(event)"
+          style="border:2px dashed var(--border);border-radius:10px;padding:24px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--bg);">
+          <div style="font-size:28px;margin-bottom:8px;">📎</div>
+          <div style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:4px;">Click to upload or drag and drop</div>
+          <div style="font-size:12px;color:var(--muted);">PDF, JPG, PNG, DOCX — max 10MB per file — up to 10 files</div>
+        </div>
+        <input type="file" id="doc-files" multiple accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx" style="display:none;" onchange="handleDocSelect(this)"/>
+        <div id="doc-file-list" style="margin-top:10px;display:flex;flex-direction:column;gap:6px;"></div>
+      </div>
+
       <!-- TERMS -->
       <div class="field-group" style="margin-top:8px;">
         <label class="check-label-inline">
@@ -403,6 +422,7 @@ function updateDetailsForm() {
   const isParticipant = ['participant','family'].includes(selectedRole);
 
   document.getElementById('provider-fields').style.display = isProvider ? 'block' : 'none';
+  document.getElementById('verification-docs-section').style.display = isProvider ? 'block' : 'none';
   document.getElementById('participant-fields').style.display = isParticipant ? 'block' : 'none';
 
   // Customise labels per role
@@ -588,6 +608,14 @@ async function submitSignup() {
     const { error: profileError } = await CV.db.from('profiles').insert(profile);
     if (profileError) throw profileError;
 
+    // Upload verification docs if provider selected any
+    if (typeof selectedDocs !== 'undefined' && selectedDocs.length > 0) {
+      var uploaded = await uploadVerificationDocs(authData.user.id);
+      if (uploaded.length > 0) {
+        await CV.db.from('profiles').update({ verification_docs: uploaded }).eq('id', authData.user.id);
+      }
+    }
+
     // Notify admin of new provider signup (insert into verification queue)
     if (isProvider) {
       await CV.db.from('verification_queue').insert({
@@ -671,6 +699,75 @@ function checkPasswordStrength() {
 // Pre-select role from URL param
 const urlRole = new URLSearchParams(window.location.search).get('role');
 if (urlRole) selectRole(urlRole);
+
+var selectedDocs = [];
+
+function handleDocSelect(input) {
+  addDocs(Array.from(input.files));
+  input.value = '';
+}
+
+function handleDocDrop(event) {
+  event.preventDefault();
+  var area = document.getElementById('doc-upload-area');
+  area.style.borderColor = 'var(--border)';
+  area.style.background = 'var(--bg)';
+  addDocs(Array.from(event.dataTransfer.files));
+}
+
+function addDocs(files) {
+  var allowed = ['application/pdf','image/jpeg','image/png','image/webp',
+    'application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+  files.forEach(function(f) {
+    if (selectedDocs.length >= 10) { alert('Maximum 10 files allowed.'); return; }
+    if (f.size > 10 * 1024 * 1024) { alert(f.name + ' exceeds 10MB limit.'); return; }
+    if (!allowed.includes(f.type) && !f.name.match(/\.(pdf|jpg|jpeg|png|webp|doc|docx)$/i)) {
+      alert(f.name + ' is not a supported file type.'); return;
+    }
+    selectedDocs.push(f);
+  });
+  renderDocList();
+}
+
+function removeDoc(idx) {
+  selectedDocs.splice(idx, 1);
+  renderDocList();
+}
+
+function renderDocList() {
+  var list = document.getElementById('doc-file-list');
+  if (!list) return;
+  var html = '';
+  selectedDocs.forEach(function(f, i) {
+    var icon = f.type.includes('pdf') ? '📄' : f.type.includes('image') ? '🖼️' : '📝';
+    var size = (f.size / 1024).toFixed(0) + ' KB';
+    html += '<div style="display:flex;align-items:center;gap:10px;background:white;border:1px solid var(--border);border-radius:8px;padding:8px 12px;">';
+    html += '<span style="font-size:18px;">' + icon + '</span>';
+    html += '<div style="flex:1;min-width:0;">';
+    html += '<div style="font-size:12px;font-weight:500;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + f.name + '</div>';
+    html += '<div style="font-size:11px;color:var(--muted);">' + size + '</div>';
+    html += '</div>';
+    html += '<button onclick="removeDoc(' + i + ')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:0;line-height:1;" title="Remove">&#215;</button>';
+    html += '</div>';
+  });
+  list.innerHTML = html;
+}
+
+async function uploadVerificationDocs(userId) {
+  if (!selectedDocs.length) return [];
+  var uploaded = [];
+  for (var i = 0; i < selectedDocs.length; i++) {
+    var file = selectedDocs[i];
+    var ext = file.name.split('.').pop();
+    var path = userId + '/' + Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + ext;
+    var result = await CV.db.storage.from('verification-docs').upload(path, file);
+    if (!result.error && result.data) {
+      uploaded.push({ name: file.name, path: result.data.path, size: file.size });
+    }
+  }
+  return uploaded;
+}
+
 </script>
 </body>
 </html>
