@@ -215,6 +215,8 @@ let activeChips = { disability:[], support:[], availability:[], tier:[] };
 let searchTimer;
 
 // Read URL params on load
+let searchCurrentUser = null;
+
 document.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search);
   const type = params.get('type') || '';
@@ -349,7 +351,7 @@ function resultCard(p) {
   const bio = p.bio || 'No description provided yet.';
 
   return `
-  <div class="result-card" onclick="window.location='provider-profile.html?id=${p.id}'">
+  <div class="result-card" onclick="viewProvider('${p.id}')">
     <div class="rc-tier-pill">
       ${p.tier === 'premium' ? '<span class="rc-badge rb-premium">💎 Premium</span>' : p.tier === 'featured' ? '<span class="rc-badge rb-featured">⭐ Featured</span>' : ''}
     </div>
@@ -373,7 +375,7 @@ function resultCard(p) {
       ${disabilities.length > 0 ? `<div class="rc-tags">${disabilities.map(d => `<span class="rc-tag">${d}</span>`).join('')}</div>` : ''}
       ${services.length > 0 ? `<div class="rc-tags">${services.map(s => `<span class="rc-tag">${s}</span>`).join('')}</div>` : ''}
       <div class="rc-actions">
-        <button class="rc-btn-primary" onclick="event.stopPropagation();window.location='provider-profile.html?id=${p.id}'">View profile</button>
+        <button class="rc-btn-primary" onclick="event.stopPropagation();viewProvider('${p.id}')">View profile</button>
         <button class="rc-btn-outline" onclick="event.stopPropagation();saveProvider('${p.id}')">♡ Save</button>
       </div>
     </div>
@@ -390,6 +392,53 @@ async function saveProvider(providerId) {
     if (e.message?.includes('unique')) alert('Already saved!');
   }
 }
+
+function viewProvider(id) {
+  if (!searchCurrentUser) {
+    // Show login gate instead of navigating
+    if (!document.getElementById('search-gate-modal')) {
+      const modal = document.createElement('div');
+      modal.id = 'search-gate-modal';
+      modal.style.cssText = 'display:flex;position:fixed;inset:0;background:rgba(15,41,66,0.75);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center;padding:20px;';
+      modal.innerHTML = '<div style="background:white;border-radius:20px;padding:36px;max-width:400px;width:100%;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,0.25);position:relative;">'
+        + '<button onclick="document.getElementById(\'search-gate-modal\').style.display=\'none\'" style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:20px;color:#64748b;cursor:pointer;">&#215;</button>'
+        + '<div style="font-size:36px;margin-bottom:14px;">&#128274;</div>'
+        + '<h3 style="font-family:DM Serif Display,serif;font-size:22px;color:#0f2942;margin-bottom:8px;">Log in to view provider</h3>'
+        + '<p style="font-size:13px;color:#64748b;line-height:1.6;margin-bottom:22px;">Create a free account or log in to view full provider profiles and send enquiries.</p>'
+        + '<a href="signup.html" style="display:block;width:100%;background:#0d9488;color:white;padding:13px;border-radius:9px;font-size:14px;font-weight:700;text-decoration:none;margin-bottom:9px;">&#128640; Create free account</a>'
+        + '<a href="login.html" style="display:block;width:100%;background:#f8fafc;color:#0f2942;border:1.5px solid #e2e8f0;padding:11px;border-radius:9px;font-size:13px;font-weight:600;text-decoration:none;">Log in &#8594;</a>'
+        + '</div>';
+      modal.addEventListener('click', e => { if(e.target===modal) modal.style.display='none'; });
+      document.body.appendChild(modal);
+    } else {
+      document.getElementById('search-gate-modal').style.display = 'flex';
+    }
+    return;
+  }
+  const tier = searchCurrentUser.profile ? (searchCurrentUser.profile.tier || 'basic') : 'basic';
+  if (tier === 'basic') {
+    if (!document.getElementById('search-upgrade-modal')) {
+      const modal = document.createElement('div');
+      modal.id = 'search-upgrade-modal';
+      modal.style.cssText = 'display:flex;position:fixed;inset:0;background:rgba(15,41,66,0.75);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center;padding:20px;';
+      modal.innerHTML = '<div style="background:white;border-radius:20px;padding:36px;max-width:400px;width:100%;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,0.25);position:relative;">'
+        + '<button onclick="document.getElementById(\'search-upgrade-modal\').style.display=\'none\'" style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:20px;color:#64748b;cursor:pointer;">&#215;</button>'
+        + '<div style="font-size:36px;margin-bottom:14px;">&#11088;</div>'
+        + '<h3 style="font-family:DM Serif Display,serif;font-size:22px;color:#0f2942;margin-bottom:8px;">Upgrade to view &amp; enquire</h3>'
+        + '<p style="font-size:13px;color:#64748b;line-height:1.6;margin-bottom:22px;">You\'re on the Basic plan. Upgrade to Featured ($49/mo) to view full provider profiles and send enquiries.</p>'
+        + '<a href="upgrade.html" style="display:block;width:100%;background:#0d9488;color:white;padding:13px;border-radius:9px;font-size:14px;font-weight:700;text-decoration:none;margin-bottom:9px;">Upgrade to Featured &#8594;</a>'
+        + '<button onclick="document.getElementById(\'search-upgrade-modal\').style.display=\'none\'" style="display:block;width:100%;background:#f8fafc;color:#0f2942;border:1.5px solid #e2e8f0;padding:11px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;">Continue browsing</button>'
+        + '</div>';
+      modal.addEventListener('click', e => { if(e.target===modal) modal.style.display='none'; });
+      document.body.appendChild(modal);
+    } else {
+      document.getElementById('search-upgrade-modal').style.display = 'flex';
+    }
+    return;
+  }
+  window.location.href = 'provider-profile.html?id=' + id;
+}
+
 </script>
 </body>
 </html>
