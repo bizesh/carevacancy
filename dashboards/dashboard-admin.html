@@ -23,7 +23,6 @@ body{display:flex;min-height:100vh;}
 
 .main{margin-left:224px;flex:1;}
 .topbar{background:white;border-bottom:1px solid var(--border);padding:0 28px;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
-@media(max-width:900px){#admin-hamburger{display:block!important;}}
 .topbar-title{font-size:16px;font-weight:600;color:var(--navy);}
 .content{padding:28px;}
 
@@ -92,7 +91,6 @@ body{display:flex;min-height:100vh;}
 <script src="../js/nav.js"></script>
 </head>
 <body>
-<div class="dash-sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:49;"></div>
 
 <div class="sidenav">
   <div class="sidenav-logo"><a href="../index.html">Care<span>Vacancy</span></a></div>
@@ -134,7 +132,7 @@ body{display:flex;min-height:100vh;}
 </div>
 
 <div class="main">
-  <div class="topbar"><button style="display:none;background:none;border:none;color:var(--navy);font-size:22px;cursor:pointer;padding:4px 8px;" id="admin-hamburger" onclick="toggleSidebar()">&#9776;</button>
+  <div class="topbar">
     <span class="topbar-title" id="panel-title">Verification Queue</span>
     <div style="display:flex;gap:10px;align-items:center;">
       <span style="font-size:12px;color:var(--muted);" id="last-refresh"></span>
@@ -212,13 +210,29 @@ body{display:flex;min-height:100vh;}
     <!-- REVENUE PANEL -->
     <div class="panel" id="panel-revenue">
       <h3 style="margin-bottom:20px;">Revenue Overview</h3>
-      <div id="revenue-content"><div style="text-align:center;padding:40px;color:var(--muted);">Loading revenue data...</div></div>
+      <div id="revenue-content"><div style="text-align:center;padding:40px;color:var(--muted);">Loading...</div></div>
+      <div style="display:none;">
+        <div style="margin-top:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+          <div style="background:var(--bg);border-radius:var(--radius-sm);padding:16px;">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:5px;">MRR</div>
+            <div style="font-size:22px;font-weight:700;color:var(--navy);">$0</div>
+          </div>
+          <div style="background:var(--bg);border-radius:var(--radius-sm);padding:16px;">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:5px;">Featured subs</div>
+            <div style="font-size:22px;font-weight:700;color:var(--navy);">0</div>
+          </div>
+          <div style="background:var(--bg);border-radius:var(--radius-sm);padding:16px;">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:5px;">Premium subs</div>
+            <div style="font-size:22px;font-weight:700;color:var(--navy);">0</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- LISTINGS PANEL -->
     <div class="panel" id="panel-listings">
       <h3 style="margin-bottom:20px;">All Listings</h3>
-      <div id="listings-content"><div style="text-align:center;padding:40px;color:var(--muted);">Loading listings...</div></div>
+      <div id="listings-content"><div style="text-align:center;padding:40px;color:var(--muted);">Loading...</div></div>
     </div>
 
     <!-- ANALYTICS PANEL -->
@@ -287,7 +301,7 @@ async function loadStats() {
 // ── QUEUE ──
 async function loadQueue() {
   let query = CV.db.from('verification_queue')
-    .select('*, profiles(full_name, email, org_name, abn, ndis_registration, ahpra_number, role, state, phone)')
+    .select('*, profiles!verification_queue_user_id_fkey(full_name, email, org_name, abn, ndis_registration, ahpra_number, role, state, phone, allied_specialty, verification_docs, street_address, postcode)')
     .order('submitted_at', { ascending: false });
 
   if (currentFilter !== 'all') {
@@ -738,164 +752,6 @@ async function signOut() {
   await CV.db.auth.signOut();
   window.location.href = '../pages/login.html';
   window.location.href = '../index.html';
-}
-
-async function loadAdminRevenue() {
-  const container = document.getElementById('revenue-content');
-  try {
-    const [featuredRes, premiumRes, allRes] = await Promise.all([
-      CV.db.from('profiles').select('id',{count:'exact'}).eq('tier','featured').eq('status','active'),
-      CV.db.from('profiles').select('id',{count:'exact'}).eq('tier','premium').eq('status','active'),
-      CV.db.from('profiles').select('id, org_name, full_name, tier, email, created_at, stripe_subscription_id')
-        .in('tier',['featured','premium']).eq('status','active').order('tier',{ascending:false}),
-    ]);
-    const featured = featuredRes.count || 0;
-    const premium = premiumRes.count || 0;
-    const mrr = (featured * 49) + (premium * 99);
-    const subs = allRes.data || [];
-
-    container.innerHTML = `
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;">
-        <div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:18px;">
-          <div style="font-size:11px;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.05em;">MRR</div>
-          <div style="font-size:28px;font-weight:700;color:var(--navy);">$${mrr}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px;">per month (estimated)</div>
-        </div>
-        <div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:18px;">
-          <div style="font-size:11px;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.05em;">ARR</div>
-          <div style="font-size:28px;font-weight:700;color:var(--teal);">$${mrr * 12}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px;">annualised</div>
-        </div>
-        <div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:18px;">
-          <div style="font-size:11px;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.05em;">Featured</div>
-          <div style="font-size:28px;font-weight:700;color:var(--navy);">${featured}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px;">× $49/mo</div>
-        </div>
-        <div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:18px;">
-          <div style="font-size:11px;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.05em;">Premium</div>
-          <div style="font-size:28px;font-weight:700;color:#7c3aed;">${premium}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px;">× $99/mo</div>
-        </div>
-      </div>
-      <div style="background:white;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
-        <div style="padding:16px 20px;border-bottom:1px solid var(--border);font-size:14px;font-weight:600;color:var(--navy);">Active subscriptions</div>
-        ${subs.length === 0 ? '<div style="padding:32px;text-align:center;color:var(--muted);">No paid subscriptions yet.</div>' :
-          '<table style="width:100%;border-collapse:collapse;">' +
-          '<thead><tr style="background:var(--bg);"><th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">Provider</th><th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">Email</th><th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">Plan</th><th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">MRR</th><th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">Stripe</th></tr></thead>' +
-          '<tbody>' + subs.map(s => {
-            const name = s.org_name || s.full_name || 'Unknown';
-            const price = s.tier === 'premium' ? '$99' : '$49';
-            const tierBadge = s.tier === 'premium'
-              ? '<span style="background:#ede9fe;color:#5b21b6;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;">Premium</span>'
-              : '<span style="background:#ccfbf1;color:#0f766e;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;">Featured</span>';
-            const stripeStatus = s.stripe_subscription_id
-              ? '<span style="color:#16a34a;font-size:11px;">✓ Active</span>'
-              : '<span style="color:var(--muted);font-size:11px;">Manual</span>';
-            return '<tr style="border-top:1px solid var(--border);">' +
-              '<td style="padding:12px 16px;font-size:13px;font-weight:500;color:var(--navy);">' + name + '</td>' +
-              '<td style="padding:12px 16px;font-size:12px;color:var(--muted);">' + (s.email||'—') + '</td>' +
-              '<td style="padding:12px 16px;">' + tierBadge + '</td>' +
-              '<td style="padding:12px 16px;font-size:13px;font-weight:600;color:var(--navy);">' + price + '/mo</td>' +
-              '<td style="padding:12px 16px;">' + stripeStatus + '</td>' +
-              '</tr>';
-          }).join('') +
-          '</tbody></table>'
-        }
-      </div>`;
-  } catch(e) {
-    container.innerHTML = '<div style="padding:32px;text-align:center;color:var(--muted);">Could not load revenue data.</div>';
-  }
-}
-
-async function loadAdminListings() {
-  const container = document.getElementById('listings-content');
-  try {
-    const { data: posts } = await CV.db.from('posts')
-      .select('*, profiles!posts_user_id_fkey(org_name, full_name, role, tier)')
-      .order('created_at', { ascending: false })
-      .limit(50);
-
-    if (!posts || posts.length === 0) {
-      container.innerHTML = '<div style="padding:32px;text-align:center;color:var(--muted);">No listings yet.</div>';
-      return;
-    }
-
-    const catLabels = { sil:'SIL/SDA', sda:'SDA', sc:'Support Coord.', pm:'Plan Manager', allied:'Allied Health', 'personal-care':'Personal Care', respite:'Respite', other:'Other' };
-    const active = posts.filter(p => p.is_active).length;
-    const offering = posts.filter(p => p.type === 'offering').length;
-    const seeking = posts.filter(p => p.type === 'seeking').length;
-
-    container.innerHTML = `
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;">
-        <div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;">
-          <div style="font-size:24px;font-weight:700;color:var(--navy);">${posts.length}</div>
-          <div style="font-size:12px;color:var(--muted);">Total listings</div>
-        </div>
-        <div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;">
-          <div style="font-size:24px;font-weight:700;color:var(--teal);">${active}</div>
-          <div style="font-size:12px;color:var(--muted);">Active</div>
-        </div>
-        <div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;">
-          <div style="font-size:24px;font-weight:700;color:var(--navy);">${offering} offering / ${seeking} seeking</div>
-          <div style="font-size:12px;color:var(--muted);">By type</div>
-        </div>
-      </div>
-      <div style="background:white;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
-        <table style="width:100%;border-collapse:collapse;">
-          <thead><tr style="background:var(--bg);">
-            <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">Title</th>
-            <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">Provider</th>
-            <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">Type</th>
-            <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">Category</th>
-            <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">Location</th>
-            <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">Status</th>
-            <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">Action</th>
-          </tr></thead>
-          <tbody>${posts.map(post => {
-            const prov = post.profiles || {};
-            const name = prov.org_name || prov.full_name || 'Unknown';
-            const loc = [post.suburb, post.state].filter(Boolean).join(', ') || '—';
-            const typeBadge = post.type === 'offering'
-              ? '<span style="background:#dcfce7;color:#15803d;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;">Offering</span>'
-              : '<span style="background:#ede9fe;color:#5b21b6;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;">Seeking</span>';
-            const statusBadge = post.is_active
-              ? '<span style="background:#dcfce7;color:#15803d;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;">Active</span>'
-              : '<span style="background:#f1f5f9;color:#64748b;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;">Inactive</span>';
-            return '<tr style="border-top:1px solid var(--border);">' +
-              '<td style="padding:12px 16px;font-size:13px;font-weight:500;color:var(--navy);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (post.title||'—') + '</td>' +
-              '<td style="padding:12px 16px;font-size:12px;color:var(--muted);">' + name + '</td>' +
-              '<td style="padding:12px 16px;">' + typeBadge + '</td>' +
-              '<td style="padding:12px 16px;font-size:12px;color:var(--muted);">' + (catLabels[post.category]||post.category||'—') + '</td>' +
-              '<td style="padding:12px 16px;font-size:12px;color:var(--muted);">' + loc + '</td>' +
-              '<td style="padding:12px 16px;">' + statusBadge + '</td>' +
-              '<td style="padding:12px 16px;"><button onclick="toggleListing('' + post.id + '',' + post.is_active + ')" style="background:none;border:1.5px solid var(--border);color:var(--muted);padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;">' + (post.is_active ? 'Deactivate' : 'Activate') + '</button></td>' +
-              '</tr>';
-          }).join('')}</tbody>
-        </table>
-      </div>`;
-  } catch(e) {
-    container.innerHTML = '<div style="padding:32px;text-align:center;color:var(--muted);">Could not load listings.</div>';
-  }
-}
-
-async function toggleListing(postId, isActive) {
-  try {
-    const { error } = await CV.db.from('posts').update({ is_active: !isActive }).eq('id', postId);
-    if (error) throw error;
-    showToast('Listing ' + (!isActive ? 'activated' : 'deactivated'));
-    loadAdminListings();
-  } catch(e) {
-    alert('Could not update listing: ' + e.message);
-  }
-}
-
-function toggleSidebar() {
-  document.querySelector('.dash-sidebar').classList.toggle('open');
-  document.getElementById('sidebar-overlay').classList.toggle('open');
-}
-function closeSidebar() {
-  document.querySelector('.dash-sidebar').classList.remove('open');
-  document.getElementById('sidebar-overlay').classList.remove('open');
 }
 </script>
 
