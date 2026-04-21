@@ -23,6 +23,7 @@ body{display:flex;min-height:100vh;}
 
 .main{margin-left:224px;flex:1;}
 .topbar{background:white;border-bottom:1px solid var(--border);padding:0 28px;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
+@media(max-width:900px){#admin-hamburger{display:block!important;}}
 .topbar-title{font-size:16px;font-weight:600;color:var(--navy);}
 .content{padding:28px;}
 
@@ -91,6 +92,7 @@ body{display:flex;min-height:100vh;}
 <script src="../js/nav.js"></script>
 </head>
 <body>
+<div id="sidebar-overlay" onclick="closeSidebar()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:49;"></div>
 
 <div class="sidenav">
   <div class="sidenav-logo"><a href="../index.html">Care<span>Vacancy</span></a></div>
@@ -132,7 +134,7 @@ body{display:flex;min-height:100vh;}
 </div>
 
 <div class="main">
-  <div class="topbar">
+  <div class="topbar"><button id="admin-hamburger" onclick="toggleSidebar()" style="display:none;background:none;border:none;color:var(--navy);font-size:22px;cursor:pointer;padding:4px 8px;">&#9776;</button>
     <span class="topbar-title" id="panel-title">Verification Queue</span>
     <div style="display:flex;gap:10px;align-items:center;">
       <span style="font-size:12px;color:var(--muted);" id="last-refresh"></span>
@@ -211,22 +213,6 @@ body{display:flex;min-height:100vh;}
     <div class="panel" id="panel-revenue">
       <h3 style="margin-bottom:20px;">Revenue Overview</h3>
       <div id="revenue-content"><div style="text-align:center;padding:40px;color:var(--muted);">Loading...</div></div>
-      <div style="display:none;">
-        <div style="margin-top:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
-          <div style="background:var(--bg);border-radius:var(--radius-sm);padding:16px;">
-            <div style="font-size:11px;color:var(--muted);margin-bottom:5px;">MRR</div>
-            <div style="font-size:22px;font-weight:700;color:var(--navy);">$0</div>
-          </div>
-          <div style="background:var(--bg);border-radius:var(--radius-sm);padding:16px;">
-            <div style="font-size:11px;color:var(--muted);margin-bottom:5px;">Featured subs</div>
-            <div style="font-size:22px;font-weight:700;color:var(--navy);">0</div>
-          </div>
-          <div style="background:var(--bg);border-radius:var(--radius-sm);padding:16px;">
-            <div style="font-size:11px;color:var(--muted);margin-bottom:5px;">Premium subs</div>
-            <div style="font-size:22px;font-weight:700;color:var(--navy);">0</div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- LISTINGS PANEL -->
@@ -301,7 +287,7 @@ async function loadStats() {
 // ── QUEUE ──
 async function loadQueue() {
   let query = CV.db.from('verification_queue')
-    .select('*, profiles!verification_queue_user_id_fkey(full_name, email, org_name, abn, ndis_registration, ahpra_number, role, state, phone, allied_specialty, verification_docs, street_address, postcode)')
+    .select('*, profiles!verification_queue_user_id_fkey(full_name, email, org_name, abn, ndis_registration, ahpra_number, role, state, phone, allied_specialty, verification_docs)')
     .order('submitted_at', { ascending: false });
 
   if (currentFilter !== 'all') {
@@ -753,6 +739,145 @@ async function signOut() {
   window.location.href = '../pages/login.html';
   window.location.href = '../index.html';
 }
+
+async function loadAdminRevenue() {
+  const el = document.getElementById('revenue-content');
+  if (!el) return;
+  try {
+    const [fRes, pRes, subsRes] = await Promise.all([
+      CV.db.from('profiles').select('id',{count:'exact'}).eq('tier','featured').eq('status','active'),
+      CV.db.from('profiles').select('id',{count:'exact'}).eq('tier','premium').eq('status','active'),
+      CV.db.from('profiles').select('id,org_name,full_name,tier,email,stripe_subscription_id').in('tier',['featured','premium']).eq('status','active').order('tier',{ascending:false}),
+    ]);
+    const f = fRes.count||0, p = pRes.count||0, mrr = (f*49)+(p*99);
+    const subs = subsRes.data||[];
+    let html = '';
+    html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;">';
+    html += '<div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:18px;"><div style="font-size:11px;color:var(--muted);margin-bottom:5px;text-transform:uppercase;">MRR</div><div style="font-size:28px;font-weight:700;color:var(--navy);">$' + mrr + '</div></div>';
+    html += '<div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:18px;"><div style="font-size:11px;color:var(--muted);margin-bottom:5px;text-transform:uppercase;">ARR</div><div style="font-size:28px;font-weight:700;color:var(--teal);">$' + (mrr*12) + '</div></div>';
+    html += '<div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:18px;"><div style="font-size:11px;color:var(--muted);margin-bottom:5px;text-transform:uppercase;">Featured</div><div style="font-size:28px;font-weight:700;color:var(--navy);">' + f + '</div></div>';
+    html += '<div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:18px;"><div style="font-size:11px;color:var(--muted);margin-bottom:5px;text-transform:uppercase;">Premium</div><div style="font-size:28px;font-weight:700;color:#7c3aed;">' + p + '</div></div>';
+    html += '</div>';
+    html += '<div style="background:white;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">';
+    html += '<div style="padding:14px 20px;border-bottom:1px solid var(--border);font-size:14px;font-weight:600;color:var(--navy);">Active subscriptions</div>';
+    if (subs.length === 0) {
+      html += '<div style="padding:32px;text-align:center;color:var(--muted);">No paid subscriptions yet.</div>';
+    } else {
+      html += '<table style="width:100%;border-collapse:collapse;">';
+      html += '<thead><tr style="background:var(--bg);">';
+      html += '<th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">Provider</th>';
+      html += '<th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">Email</th>';
+      html += '<th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">Plan</th>';
+      html += '<th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">MRR</th>';
+      html += '</tr></thead><tbody>';
+      subs.forEach(function(s) {
+        var name = s.org_name || s.full_name || 'Unknown';
+        var badge = s.tier === 'premium'
+          ? '<span style="background:#ede9fe;color:#5b21b6;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;">Premium</span>'
+          : '<span style="background:#ccfbf1;color:#0f766e;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;">Featured</span>';
+        var price = s.tier === 'premium' ? '$99' : '$49';
+        html += '<tr style="border-top:1px solid var(--border);">';
+        html += '<td style="padding:12px 16px;font-size:13px;font-weight:500;color:var(--navy);">' + name + '</td>';
+        html += '<td style="padding:12px 16px;font-size:12px;color:var(--muted);">' + (s.email||'—') + '</td>';
+        html += '<td style="padding:12px 16px;">' + badge + '</td>';
+        html += '<td style="padding:12px 16px;font-size:13px;font-weight:600;color:var(--navy);">' + price + '/mo</td>';
+        html += '</tr>';
+      });
+      html += '</tbody></table>';
+    }
+    html += '</div>';
+    el.innerHTML = html;
+  } catch(e) {
+    console.error('Revenue error:', e);
+    var el2 = document.getElementById('revenue-content');
+    if (el2) el2.innerHTML = '<div style="padding:32px;text-align:center;color:var(--muted);">Could not load revenue: ' + e.message + '</div>';
+  }
+}
+
+async function loadAdminListings() {
+  var el = document.getElementById('listings-content');
+  if (!el) return;
+  try {
+    var res = await CV.db.from('posts')
+      .select('*, profiles!posts_user_id_fkey(org_name,full_name,role,tier)')
+      .order('created_at',{ascending:false}).limit(50);
+    var posts = res.data || [];
+    if (!posts.length) { el.innerHTML = '<div style="padding:32px;text-align:center;color:var(--muted);">No listings yet.</div>'; return; }
+    var catL = {sil:'SIL/SDA',sda:'SDA',sc:'Support Coord.',pm:'Plan Manager',allied:'Allied Health'};
+    var active = posts.filter(function(p){return p.is_active;}).length;
+    var offering = posts.filter(function(p){return p.type==='offering';}).length;
+    var seeking = posts.filter(function(p){return p.type==='seeking';}).length;
+    var html = '';
+    html += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;">';
+    html += '<div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;"><div style="font-size:24px;font-weight:700;color:var(--navy);">' + posts.length + '</div><div style="font-size:12px;color:var(--muted);">Total</div></div>';
+    html += '<div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;"><div style="font-size:24px;font-weight:700;color:var(--teal);">' + active + '</div><div style="font-size:12px;color:var(--muted);">Active</div></div>';
+    html += '<div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--navy);">' + offering + ' / ' + seeking + '</div><div style="font-size:12px;color:var(--muted);">Offering / Seeking</div></div>';
+    html += '</div>';
+    html += '<div style="background:white;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">';
+    html += '<table style="width:100%;border-collapse:collapse;">';
+    html += '<thead><tr style="background:var(--bg);">';
+    html += '<th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">Title</th>';
+    html += '<th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">Provider</th>';
+    html += '<th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">Type</th>';
+    html += '<th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">Category</th>';
+    html += '<th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">Location</th>';
+    html += '<th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">Status</th>';
+    html += '<th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">Action</th>';
+    html += '</tr></thead><tbody>';
+    posts.forEach(function(post) {
+      var prov = post.profiles || {};
+      var name = prov.org_name || prov.full_name || 'Unknown';
+      var loc = [post.suburb, post.state].filter(Boolean).join(', ') || '—';
+      var typeB = post.type === 'offering'
+        ? '<span style="background:#dcfce7;color:#15803d;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;">Offering</span>'
+        : '<span style="background:#ede9fe;color:#5b21b6;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;">Seeking</span>';
+      var statB = post.is_active
+        ? '<span style="background:#dcfce7;color:#15803d;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;">Active</span>'
+        : '<span style="background:#f1f5f9;color:#64748b;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;">Inactive</span>';
+      var btnLabel = post.is_active ? 'Deactivate' : 'Activate';
+      var isActiveStr = post.is_active ? 'true' : 'false';
+      html += '<tr style="border-top:1px solid var(--border);">';
+      html += '<td style="padding:12px 16px;font-size:13px;font-weight:500;color:var(--navy);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (post.title||'—') + '</td>';
+      html += '<td style="padding:12px 16px;font-size:12px;color:var(--muted);">' + name + '</td>';
+      html += '<td style="padding:12px 16px;">' + typeB + '</td>';
+      html += '<td style="padding:12px 16px;font-size:12px;color:var(--muted);">' + (catL[post.category]||post.category||'—') + '</td>';
+      html += '<td style="padding:12px 16px;font-size:12px;color:var(--muted);">' + loc + '</td>';
+      html += '<td style="padding:12px 16px;">' + statB + '</td>';
+      html += '<td style="padding:12px 16px;"><button data-id="' + post.id + '" data-active="' + isActiveStr + '" onclick="toggleListing(this)" style="background:none;border:1.5px solid var(--border);color:var(--muted);padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;">' + btnLabel + '</button></td>';
+      html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+    el.innerHTML = html;
+  } catch(e) {
+    console.error('Listings error:', e);
+    var el2 = document.getElementById('listings-content');
+    if (el2) el2.innerHTML = '<div style="padding:32px;text-align:center;color:var(--muted);">Could not load listings: ' + e.message + '</div>';
+  }
+}
+
+async function toggleListing(btn) {
+  var postId = btn.getAttribute('data-id');
+  var isActive = btn.getAttribute('data-active') === 'true';
+  try {
+    await CV.db.from('posts').update({is_active: !isActive}).eq('id', postId);
+    showToast('Listing ' + (isActive ? 'deactivated' : 'activated'));
+    loadAdminListings();
+  } catch(e) { alert('Could not update: ' + e.message); }
+}
+
+function toggleSidebar() {
+  var overlay = document.getElementById('sidebar-overlay');
+  var sidebar = document.querySelector('.sidenav');
+  if (overlay) overlay.style.display = overlay.style.display === 'none' ? 'block' : 'none';
+  if (sidebar) sidebar.classList.toggle('open');
+}
+function closeSidebar() {
+  var overlay = document.getElementById('sidebar-overlay');
+  var sidebar = document.querySelector('.sidenav');
+  if (overlay) overlay.style.display = 'none';
+  if (sidebar) sidebar.classList.remove('open');
+}
+
 </script>
 
 <!-- USER EDIT MODAL -->
