@@ -215,6 +215,18 @@ body{display:flex;min-height:100vh;}
       <div id="revenue-content"><div style="text-align:center;padding:40px;color:var(--muted);">Loading...</div></div>
     </div>
 
+    <!-- ENQUIRIES PANEL -->
+    <div class="panel" id="panel-enquiries">
+      <h3 style="margin-bottom:20px;">All Enquiries</h3>
+      <div id="enquiries-content"><div style="text-align:center;padding:40px;color:var(--muted);">Loading...</div></div>
+    </div>
+
+    <!-- STORAGE PANEL -->
+    <div class="panel" id="panel-storage">
+      <h3 style="margin-bottom:20px;">Verification Documents</h3>
+      <div id="storage-content"><div style="text-align:center;padding:40px;color:var(--muted);">Loading...</div></div>
+    </div>
+
     <!-- LISTINGS PANEL -->
     <div class="panel" id="panel-listings">
       <h3 style="margin-bottom:20px;">All Listings</h3>
@@ -710,11 +722,13 @@ function switchPanel(btn, panel) {
   if (panel === 'analytics') loadAdminAnalytics();
   if (panel === 'revenue') loadAdminRevenue();
   if (panel === 'listings') loadAdminListings();
+  if (panel === 'enquiries') loadAdminEnquiries();
+  if (panel === 'storage') loadAdminStorage();
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   btn.classList.add('active');
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.getElementById('panel-' + panel).classList.add('active');
-  const titles = { queue:'Verification Queue', users:'All Users', revenue:'Revenue', listings:'All Listings', analytics:'Platform Analytics' };
+  const titles = { queue:'Verification Queue', users:'All Users', revenue:'Revenue', listings:'All Listings', analytics:'Platform Analytics', enquiries:'All Enquiries', storage:'Verification Documents' };
   document.getElementById('panel-title').textContent = titles[panel] || panel;
   if (panel === 'users') loadUsers();
 }
@@ -880,26 +894,30 @@ function closeSidebar() {
 
 
 function renderQueueDocs(docs, userId) {
-  var html = '<div style="margin-top:12px;padding:14px;background:var(--bg);border-radius:10px;border:1px solid var(--border);">';
-  html += '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);margin-bottom:10px;">Uploaded documents (' + docs.length + ')</div>';
+  var html = '<div style="margin-top:12px;padding:14px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;">';
+  html += '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#64748b;margin-bottom:10px;">Uploaded documents (' + docs.length + ')</div>';
   html += '<div style="display:flex;flex-wrap:wrap;gap:8px;">';
   docs.forEach(function(doc) {
-    var ext = (doc.name || '').split('.').pop().toLowerCase();
+    var name = doc.name || 'Document';
+    var ext = name.split('.').pop().toLowerCase();
     var icon = ext === 'pdf' ? '📄' : (ext === 'jpg' || ext === 'jpeg' || ext === 'png' || ext === 'webp') ? '🖼️' : '📝';
-    var size = doc.size ? ' (' + (doc.size / 1024).toFixed(0) + ' KB)' : '';
-    html += '<button onclick="downloadDoc('' + (doc.path||'') + '','' + (doc.name||'file') + '')" ';
-    html += 'style="display:flex;align-items:center;gap:6px;background:white;border:1.5px solid var(--border);border-radius:8px;padding:7px 12px;font-size:12px;font-weight:500;color:var(--navy);cursor:pointer;font-family:DM Sans,sans-serif;transition:border-color 0.15s;" ';
-    html += 'onmouseover="this.style.borderColor='var(--teal)'" onmouseout="this.style.borderColor='var(--border)'">';
-    html += icon + ' ' + (doc.name || 'Document') + size;
+    var size = doc.size ? ' · ' + (doc.size / 1024).toFixed(0) + ' KB' : '';
+    html += '<button data-path="' + (doc.path||'') + '" data-name="' + name + '" onclick="downloadDoc(this)"';
+    html += ' style="display:flex;align-items:center;gap:6px;background:white;border:1.5px solid #e2e8f0;border-radius:8px;padding:7px 12px;font-size:12px;font-weight:500;color:#0f2942;cursor:pointer;font-family:DM Sans,sans-serif;">';
+    html += icon + ' ' + name + size;
     html += '</button>';
   });
   html += '</div></div>';
   return html;
 }
 
-async function downloadDoc(path, name) {
+async function downloadDoc(btn) {
+  var path = btn.getAttribute('data-path');
+  var name = btn.getAttribute('data-name');
+  if (!path) { alert('No file path found.'); return; }
   try {
-    var result = await CV.db.storage.from('verification-docs').createSignedUrl(path, 60);
+    btn.textContent = '⏳ Loading...';
+    var result = await CV.db.storage.from('verification-docs').createSignedUrl(path, 120);
     if (result.data && result.data.signedUrl) {
       var a = document.createElement('a');
       a.href = result.data.signedUrl;
@@ -909,10 +927,107 @@ async function downloadDoc(path, name) {
       a.click();
       document.body.removeChild(a);
     } else {
-      alert('Could not generate download link.');
+      alert('Could not generate download link. Check Supabase storage permissions.');
     }
   } catch(e) {
     alert('Download failed: ' + e.message);
+  }
+  btn.textContent = '📄 ' + name;
+}
+
+
+async function loadAdminEnquiries() {
+  var el = document.getElementById('enquiries-content');
+  if (!el) return;
+  try {
+    var res = await CV.db.from('enquiries')
+      .select('*, profiles!enquiries_from_user_id_fkey(full_name, org_name, email, role), profiles!enquiries_to_user_id_fkey(full_name, org_name, email, role)')
+      .order('created_at', { ascending: false })
+      .limit(100);
+    var enqs = res.data || [];
+    if (!enqs.length) { el.innerHTML = '<div style="padding:32px;text-align:center;color:var(--muted);">No enquiries yet.</div>'; return; }
+
+    var html = '';
+    html += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;">';
+    html += '<div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;"><div style="font-size:24px;font-weight:700;color:var(--navy);">' + enqs.length + '</div><div style="font-size:12px;color:var(--muted);">Total enquiries</div></div>';
+    var unread = enqs.filter(function(e){return e.status === 'unread';}).length;
+    html += '<div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;"><div style="font-size:24px;font-weight:700;color:var(--amber);">' + unread + '</div><div style="font-size:12px;color:var(--muted);">Unread</div></div>';
+    var week = enqs.filter(function(e){return new Date(e.created_at) > new Date(Date.now()-7*86400000);}).length;
+    html += '<div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;"><div style="font-size:24px;font-weight:700;color:var(--teal);">' + week + '</div><div style="font-size:12px;color:var(--muted);">Last 7 days</div></div>';
+    html += '</div>';
+    html += '<div style="background:white;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">';
+    html += '<table style="width:100%;border-collapse:collapse;">';
+    html += '<thead><tr style="background:var(--bg);">';
+    html += '<th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">From</th>';
+    html += '<th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">To</th>';
+    html += '<th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">Subject</th>';
+    html += '<th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">Status</th>';
+    html += '<th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);">Date</th>';
+    html += '</tr></thead><tbody>';
+    enqs.forEach(function(e) {
+      var from = e['profiles!enquiries_from_user_id_fkey'] || {};
+      var to = e['profiles!enquiries_to_user_id_fkey'] || {};
+      var fromName = from.org_name || from.full_name || 'Unknown';
+      var toName = to.org_name || to.full_name || 'Unknown';
+      var statusBadge = e.status === 'unread'
+        ? '<span style="background:#fef3c7;color:#92400e;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;">Unread</span>'
+        : '<span style="background:#f1f5f9;color:#64748b;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;">Read</span>';
+      var date = new Date(e.created_at).toLocaleDateString('en-AU', {day:'numeric',month:'short',year:'numeric'});
+      html += '<tr style="border-top:1px solid var(--border);">';
+      html += '<td style="padding:12px 16px;font-size:13px;color:var(--navy);">' + fromName + '<div style="font-size:11px;color:var(--muted);">' + (from.email||'') + '</div></td>';
+      html += '<td style="padding:12px 16px;font-size:13px;color:var(--navy);">' + toName + '</td>';
+      html += '<td style="padding:12px 16px;font-size:13px;color:var(--muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (e.subject||'—') + '</td>';
+      html += '<td style="padding:12px 16px;">' + statusBadge + '</td>';
+      html += '<td style="padding:12px 16px;font-size:12px;color:var(--muted);">' + date + '</td>';
+      html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+    el.innerHTML = html;
+  } catch(e) {
+    console.error(e);
+    var el2 = document.getElementById('enquiries-content');
+    if (el2) el2.innerHTML = '<div style="padding:32px;text-align:center;color:var(--muted);">Could not load enquiries: ' + e.message + '</div>';
+  }
+}
+
+async function loadAdminStorage() {
+  var el = document.getElementById('storage-content');
+  if (!el) return;
+  try {
+    // Get all profiles that have verification docs
+    var res = await CV.db.from('profiles')
+      .select('id, full_name, org_name, email, role, status, verification_docs')
+      .not('verification_docs', 'eq', '[]')
+      .not('verification_docs', 'is', null)
+      .order('created_at', { ascending: false });
+    var providers = (res.data || []).filter(function(p){ return p.verification_docs && p.verification_docs.length > 0; });
+
+    if (!providers.length) {
+      el.innerHTML = '<div style="padding:32px;text-align:center;color:var(--muted);">No uploaded documents found.</div>';
+      return;
+    }
+
+    var html = '<div style="font-size:13px;color:var(--muted);margin-bottom:16px;">' + providers.length + ' providers have uploaded verification documents.</div>';
+    providers.forEach(function(p) {
+      var name = p.org_name || p.full_name || 'Unknown';
+      var statusBadge = p.status === 'active'
+        ? '<span style="background:#dcfce7;color:#15803d;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;">Active</span>'
+        : p.status === 'pending'
+        ? '<span style="background:#fef3c7;color:#92400e;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;">Pending</span>'
+        : '<span style="background:#f1f5f9;color:#64748b;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;">' + p.status + '</span>';
+      html += '<div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:12px;">';
+      html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">';
+      html += '<div><div style="font-size:14px;font-weight:600;color:var(--navy);">' + name + '</div>';
+      html += '<div style="font-size:12px;color:var(--muted);">' + (p.email||'') + ' · ' + (p.role||'') + '</div></div>';
+      html += statusBadge + '</div>';
+      html += renderQueueDocs(p.verification_docs, p.id);
+      html += '</div>';
+    });
+    el.innerHTML = html;
+  } catch(e) {
+    console.error(e);
+    var el2 = document.getElementById('storage-content');
+    if (el2) el2.innerHTML = '<div style="padding:32px;text-align:center;color:var(--muted);">Could not load storage: ' + e.message + '</div>';
   }
 }
 
