@@ -741,10 +741,10 @@ function renderCard(post, type) {
   if (disabilities) tags.push('<span class="pc-tag">' + disabilities + '</span>');
 
   const actionBtn = hasAccess
-    ? '<button class="pc-action-btn" onclick="event.stopPropagation();gateAction(\'enquire\',\'' + post.id + '\')">&#128172; ' + (type==='seeking'?'View request':'View &amp; enquire') + '</button>'
+    ? '<button class="pc-action-btn" onclick="event.stopPropagation();gateAction(\'enquire\',\'' + post.user_id + '\')">&#128172; ' + (type==='seeking'?'View request':'View &amp; enquire') + '</button>'
     : '<button class="pc-action-btn locked" onclick="event.stopPropagation();gateAction(\'view\')">&#128274; Log in / Sign up</button>';
 
-  return '<div class="post-card" onclick="gateAction(\'view\',\'' + post.id + '\')">'
+  return '<div class="post-card" onclick="gateAction(\'view\',\'' + post.user_id + '\')">'
     + '<div class="pc-row">'
     + '<div class="pc-icon ' + (post.category||type) + '">' + catIcon(post.category||type) + '</div>'
     + '<div class="pc-body">'
